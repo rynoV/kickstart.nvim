@@ -640,7 +640,6 @@ require('lazy').setup({
         -- ts_ls = {},
         --
 
-        fsautocomplete = {},
         lua_ls = {
           -- cmd = { ... },
           -- filetypes = { ... },
@@ -656,6 +655,11 @@ require('lazy').setup({
           },
         },
       }
+
+      local is_windows = vim.fn.has 'win64' == 1
+      if is_windows then
+        servers.fsautocomplete = {}
+      end
 
       -- Ensure the servers and tools above are installed
       --
@@ -673,8 +677,14 @@ require('lazy').setup({
       local ensure_installed = vim.tbl_keys(servers or {})
       vim.list_extend(ensure_installed, {
         'stylua', -- Used to format Lua code
-        'fantomas', -- F# formatting
       })
+
+      if is_windows then
+        vim.list_extend(ensure_installed, {
+          'fantomas', -- F# formatting
+        })
+      end
+
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
       require('mason-lspconfig').setup {
@@ -803,13 +813,13 @@ require('lazy').setup({
           -- Accept ([y]es) the completion.
           --  This will auto-import if your LSP supports it.
           --  This will expand snippets if the LSP sent a snippet.
-          ['<C-y>'] = cmp.mapping.confirm { select = true },
+          -- ['<C-y>'] = cmp.mapping.confirm { select = true },
 
           -- If you prefer more traditional completion keymaps,
           -- you can uncomment the following lines
-          --['<CR>'] = cmp.mapping.confirm { select = true },
-          --['<Tab>'] = cmp.mapping.select_next_item(),
-          --['<S-Tab>'] = cmp.mapping.select_prev_item(),
+          ['<CR>'] = cmp.mapping.confirm { select = true },
+          ['<Tab>'] = cmp.mapping.select_next_item(),
+          ['<S-Tab>'] = cmp.mapping.select_prev_item(),
 
           -- Manually trigger a completion from nvim-cmp.
           --  Generally you don't need this, because nvim-cmp will display
