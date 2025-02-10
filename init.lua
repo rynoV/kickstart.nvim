@@ -663,6 +663,12 @@ require('lazy').setup({
         servers.fsautocomplete = {}
       end
 
+      local is_linux = vim.fn.has 'unix' == 1
+      local is_macos = vim.fn.has 'mac' == 1
+      if is_linux or is_macos then
+        servers.rust_analyzer = {}
+      end
+
       -- Ensure the servers and tools above are installed
       --
       -- To check the current status of installed tools and/or manually install
