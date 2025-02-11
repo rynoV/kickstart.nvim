@@ -214,6 +214,15 @@ vim.api.nvim_create_autocmd('ColorScheme', {
   end,
 })
 
+-- From :help :DiffOrig
+local function diff_orig()
+  vim.cmd 'vert new | set buftype=nofile | read ++edit # | 0d_ | diffthis | wincmd p | diffthis'
+end
+
+vim.api.nvim_create_user_command('DiffOrig', diff_orig, {
+  desc = 'Diff with the original file',
+})
+
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'

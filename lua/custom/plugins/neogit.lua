@@ -10,4 +10,9 @@ return {
     -- 'echasnovski/mini.pick', -- optional
   },
   cmd = 'Neogit',
+  opts = function(_, opts)
+    opts.integrations = { telescope = true, diffview = true }
+    opts.disable_hint = true
+    return opts
+  end,
 }
