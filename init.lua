@@ -697,7 +697,7 @@ require('lazy').setup({
 
       if is_windows then
         vim.list_extend(ensure_installed, {
-          'fantomas', -- F# formatting
+          -- 'fantomas', -- F# formatting
         })
       end
 
@@ -733,7 +733,7 @@ require('lazy').setup({
       },
     },
     opts = {
-      notify_on_error = false,
+      notify_on_error = true,
       format_on_save = function(bufnr)
         -- Disable "format_on_save lsp_fallback" for languages that don't
         -- have a well standardized coding style. You can add additional
@@ -752,9 +752,14 @@ require('lazy').setup({
       end,
       formatters_by_ft = {
         lua = { 'stylua' },
-        fsharp = { 'fantomas' },
+        -- Don't set formatter for F# so that the fsautocomplete formatting will be used, which respects project specific fantomas versions and settings
+        -- fsharp = { 'fantomas' },
         json = { 'prettier' },
         markdown = { 'prettier' },
+        -- Use the "_" filetype to run formatters on filetypes that don't
+        -- have other formatters configured.
+        ['_'] = { 'trim_whitespace' },
+
         -- Conform can also run multiple formatters sequentially
         -- python = { "isort", "black" },
         --
