@@ -645,15 +645,13 @@ require('lazy').setup({
       }
 
       local is_windows = vim.fn.has 'win64' == 1
-      if is_windows then
-        servers.fsautocomplete = {}
-      end
-
       local is_linux = vim.fn.has 'unix' == 1
       local is_macos = vim.fn.has 'mac' == 1
       if is_linux or is_macos then
         servers.rust_analyzer = {}
       end
+
+      servers.fsautocomplete = {}
 
       -- Ensure the servers and tools above are installed
       --
