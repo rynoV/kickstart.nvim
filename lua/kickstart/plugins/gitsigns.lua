@@ -5,32 +5,47 @@
 return {
   {
     'lewis6991/gitsigns.nvim',
+    dependencies = {
+      'ghostbuster91/nvim-next',
+    },
     opts = {
+      signs = {
+        add = { text = '+' },
+        change = { text = '~' },
+        delete = { text = '_' },
+        topdelete = { text = '‾' },
+        changedelete = { text = '~' },
+      },
       on_attach = function(bufnr)
-        local gitsigns = require 'gitsigns'
+        local next_integrations = require 'nvim-next.integrations'
+        local gitsigns = package.loaded.gitsigns
 
         local function map(mode, l, r, opts)
           opts = opts or {}
           opts.buffer = bufnr
           vim.keymap.set(mode, l, r, opts)
         end
-
+        local nngs = next_integrations.gitsigns(gitsigns)
         -- Navigation
         map('n', ']c', function()
           if vim.wo.diff then
-            vim.cmd.normal { ']c', bang = true }
-          else
-            gitsigns.nav_hunk 'next'
+            return ']c'
           end
-        end, { desc = 'Jump to next git [c]hange' })
+          vim.schedule(function()
+            nngs.next_hunk()
+          end)
+          return '<Ignore>'
+        end, { desc = 'Jump to next git [c]hange', expr = true })
 
         map('n', '[c', function()
           if vim.wo.diff then
-            vim.cmd.normal { '[c', bang = true }
-          else
-            gitsigns.nav_hunk 'prev'
+            return '[c'
           end
-        end, { desc = 'Jump to previous git [c]hange' })
+          vim.schedule(function()
+            nngs.prev_hunk()
+          end)
+          return '<Ignore>'
+        end, { desc = 'Jump to previous git [c]hange', expr = true })
 
         -- Actions
         -- visual mode

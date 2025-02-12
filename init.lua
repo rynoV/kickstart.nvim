@@ -257,24 +257,6 @@ require('lazy').setup({
   -- Use `opts = {}` to force a plugin to be loaded.
   --
 
-  -- Here is a more advanced example where we pass configuration
-  -- options to `gitsigns.nvim`. This is equivalent to the following Lua:
-  --    require('gitsigns').setup({ ... })
-  --
-  -- See `:help gitsigns` to understand what the configuration keys do
-  { -- Adds git related signs to the gutter, as well as utilities for managing changes
-    'lewis6991/gitsigns.nvim',
-    opts = {
-      signs = {
-        add = { text = '+' },
-        change = { text = '~' },
-        delete = { text = '_' },
-        topdelete = { text = '‾' },
-        changedelete = { text = '~' },
-      },
-    },
-  },
-
   -- NOTE: Plugins can also be configured to run Lua code when they are loaded.
   --
   -- This is often very useful to both group configuration, as well as handle
@@ -941,73 +923,76 @@ require('lazy').setup({
     'nvim-treesitter/nvim-treesitter',
     dependencies = {
       'nvim-treesitter/nvim-treesitter-textobjects',
+      'ghostbuster91/nvim-next',
     },
     build = ':TSUpdate',
     main = 'nvim-treesitter.configs', -- Sets main module to use for opts
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
-    opts = {
-      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },
-      -- Autoinstall languages that are not installed
-      auto_install = true,
-      highlight = {
-        enable = true,
-        -- Some languages depend on vim's regex highlighting system (such as Ruby) for indent rules.
-        --  If you are experiencing weird indenting issues, add the language to
-        --  the list of additional_vim_regex_highlighting and disabled languages for indent.
-        additional_vim_regex_highlighting = { 'ruby' },
-      },
-      indent = { enable = true, disable = { 'ruby' } },
-      textobjects = {
-        select = {
+    opts = function()
+      require('nvim-next.integrations').treesitter_textobjects()
+      return {
+        ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },
+        -- Autoinstall languages that are not installed
+        auto_install = true,
+        highlight = {
           enable = true,
+          -- Some languages depend on vim's regex highlighting system (such as Ruby) for indent rules.
+          --  If you are experiencing weird indenting issues, add the language to
+          --  the list of additional_vim_regex_highlighting and disabled languages for indent.
+          additional_vim_regex_highlighting = { 'ruby' },
+        },
+        indent = { enable = true, disable = { 'ruby' } },
+        textobjects = {
+          select = {
+            enable = true,
 
-          -- Automatically jump forward to textobj, similar to targets.vim
-          lookahead = true,
+            -- Automatically jump forward to textobj, similar to targets.vim
+            lookahead = true,
 
-          keymaps = {
-            ['af'] = { query = '@function.outer', desc = 'Around function' },
-            ['if'] = { query = '@function.inner', desc = 'Inside function' },
+            keymaps = {
+              ['af'] = { query = '@function.outer', desc = 'Around function' },
+              ['if'] = { query = '@function.inner', desc = 'Inside function' },
+            },
+            selection_modes = {
+              ['@function.outer'] = 'V', -- linewise
+            },
+            include_surrounding_whitespace = false,
           },
-          selection_modes = {
-            ['@function.outer'] = 'V', -- linewise
+          lsp_interop = {
+            enable = true,
+            border = 'none',
+            floating_preview_opts = {},
+            peek_definition_code = {
+              ['<leader>df'] = '@function.outer',
+            },
           },
-          include_surrounding_whitespace = false,
         },
-        move = {
+        nvim_next = {
           enable = true,
-          set_jumps = true, -- whether to set jumps in the jumplist
-          goto_next_start = {
-            [']f'] = { query = '@function.outer', desc = 'Next function start' },
-          },
-          goto_next_end = {
-            [']F'] = { query = '@function.outer', desc = 'Next function end' },
-          },
-          goto_previous_start = {
-            ['[f'] = { query = '@function.outer', desc = 'Previous function start' },
-          },
-          goto_previous_end = {
-            ['[F'] = { query = '@function.outer', desc = 'Previous function end' },
-          },
-          -- Below will go to either the start or the end, whichever is closer.
-          -- Use if you want more granular movements
-          -- Make it even more gradual by adding multiple queries and regex.
-          goto_next = {
-            [']d'] = '@conditional.outer',
-          },
-          goto_previous = {
-            ['[d'] = '@conditional.outer',
-          },
-        },
-        lsp_interop = {
-          enable = true,
-          border = 'none',
-          floating_preview_opts = {},
-          peek_definition_code = {
-            ['<leader>df'] = '@function.outer',
+          textobjects = {
+            move = {
+              goto_next_start = {
+                [']f'] = { query = '@function.outer', desc = 'Next function start' },
+              },
+              goto_next_end = {
+                [']F'] = { query = '@function.outer', desc = 'Next function end' },
+              },
+              goto_previous_start = {
+                ['[f'] = { query = '@function.outer', desc = 'Previous function start' },
+              },
+              goto_previous_end = {
+                ['[F'] = { query = '@function.outer', desc = 'Previous function end' },
+              },
+              -- Below will go to either the start or the end, whichever is closer.
+              -- Use if you want more granular movements
+              -- Make it even more gradual by adding multiple queries and regex.
+              goto_next = {},
+              goto_previous = {},
+            },
           },
         },
-      },
-    },
+      }
+    end,
     -- There are additional nvim-treesitter modules that you can use to interact
     -- with nvim-treesitter. You should go explore a few and see what interests you:
     --
@@ -1069,6 +1054,15 @@ require('lazy').setup({
     },
   },
 })
+
+-- For some reason these only work when placing them after the plugin spec
+local next_integrations = require 'nvim-next.integrations'
+local nndiag = next_integrations.diagnostic()
+local nqf = next_integrations.quickfix()
+vim.keymap.set('n', '[q', nqf.cprevious, { desc = 'previous quickfix list item' })
+vim.keymap.set('n', ']q', nqf.cnext, { desc = 'next quickfix list item' })
+vim.keymap.set('n', '[d', nndiag.goto_prev { severity = { min = vim.diagnostic.severity.WARN } }, { desc = 'previous diagnostic' })
+vim.keymap.set('n', ']d', nndiag.goto_next { severity = { min = vim.diagnostic.severity.WARN } }, { desc = 'next diagnostic' })
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
