@@ -26,26 +26,24 @@ return {
           vim.keymap.set(mode, l, r, opts)
         end
         local nngs = next_integrations.gitsigns(gitsigns)
+
+        local util = require 'custom.util'
         -- Navigation
         map('n', ']c', function()
           if vim.wo.diff then
-            return ']c'
-          end
-          vim.schedule(function()
+            util.next_change()
+          else
             nngs.next_hunk()
-          end)
-          return '<Ignore>'
-        end, { desc = 'Jump to next git [c]hange', expr = true })
+          end
+        end, { desc = 'Jump to next git [c]hange' })
 
         map('n', '[c', function()
           if vim.wo.diff then
-            return '[c'
-          end
-          vim.schedule(function()
+            util.prev_change()
+          else
             nngs.prev_hunk()
-          end)
-          return '<Ignore>'
-        end, { desc = 'Jump to previous git [c]hange', expr = true })
+          end
+        end, { desc = 'Jump to previous git [c]hange' })
 
         -- Actions
         -- visual mode

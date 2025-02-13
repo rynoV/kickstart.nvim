@@ -1110,32 +1110,10 @@ vim.keymap.set('n', ']q', nqf.cnext, { desc = 'next quickfix list item' })
 vim.keymap.set('n', '[d', nndiag.goto_prev { severity = { min = vim.diagnostic.severity.WARN } }, { desc = 'previous diagnostic' })
 vim.keymap.set('n', ']d', nndiag.goto_next { severity = { min = vim.diagnostic.severity.WARN } }, { desc = 'next diagnostic' })
 
-local next_move = require 'nvim-next.move'
-local prev_change, next_change = next_move.make_repeatable_pair(function(_)
-  print 'PREV'
-  local status, err = pcall(vim.api.nvim_feedkeys, '[c', 'n')
-  if not status then
-    vim.notify('No more items', vim.log.levels.INFO)
-  end
-end, function(_)
-  print 'NEXT'
-  local status, err = pcall(vim.api.nvim_feedkeys, ']c', 'n')
-  if not status then
-    vim.notify('No more items', vim.log.levels.INFO)
-  end
-end)
+local util = require 'custom.util'
 
-vim.api.nvim_create_autocmd('BufRead', {
-  desc = 'Diff mode customization',
-  group = vim.api.nvim_create_augroup('calum-diff-mode', { clear = true }),
-  callback = function(info)
-    if vim.wo[vim.fn.bufwinid(info.buf)].diff == true then
-      -- vim.keymap.del('n', '[c', { buffer = info.buf })
-      -- vim.keymap.set('n', '[c', prev_change, { buffer = info.buf, desc = 'previous change' })
-      -- vim.keymap.set('n', ']c', next_change, { buffer = info.buf, desc = 'next change' })
-    end
-  end,
-})
+vim.keymap.set('n', '[c', util.prev_change, { desc = 'previous change' })
+vim.keymap.set('n', ']c', util.next_change, { desc = 'next change' })
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
