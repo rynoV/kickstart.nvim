@@ -29,6 +29,9 @@ return {
     -- 'echasnovski/mini.pick', -- optional
   },
   cmd = 'Neogit',
+  keys = {
+    { '<leader>mg', '<cmd>Neogit<cr>', desc = 'Neogit', mode = 'n' },
+  },
   opts = function(_, opts)
     opts.integrations = { telescope = true, diffview = true }
     opts.disable_hint = true
