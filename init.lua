@@ -210,6 +210,7 @@ vim.api.nvim_create_autocmd('ColorScheme', {
     vim.api.nvim_set_hl(0, '@lsp.type.module', { link = '@lsp.type.class' })
     vim.api.nvim_set_hl(0, '@lsp.type.variable', { link = '@variable' })
     vim.api.nvim_set_hl(0, '@keyword.import', { link = '@keyword' })
+    vim.api.nvim_set_hl(0, 'DiagnosticUnnecessary', { underdotted = true })
   end,
 })
 
