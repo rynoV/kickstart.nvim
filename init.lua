@@ -339,7 +339,12 @@ require('lazy').setup({
     event = 'VimEnter',
     branch = '0.1.x',
     dependencies = {
-      'nvim-lua/plenary.nvim',
+      {
+        'nvim-lua/plenary.nvim',
+        config = function()
+          require('plenary.filetype').add_file 'fsharp'
+        end,
+      },
       { -- If encountering errors, see telescope-fzf-native README for installation instructions
         'nvim-telescope/telescope-fzf-native.nvim',
 
