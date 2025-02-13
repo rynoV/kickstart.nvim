@@ -488,6 +488,12 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>sn', function()
         builtin.find_files { cwd = vim.fn.stdpath 'config' }
       end, { desc = '[S]earch [N]eovim files' })
+      vim.keymap.set('n', '<leader>sc', function()
+        require('telescope.builtin').find_files {
+          ---@diagnostic disable-next-line: param-type-mismatch
+          cwd = vim.fs.joinpath(vim.fn.stdpath 'data', 'lazy'),
+        }
+      end, { desc = '[Search] plugin [c]ode' })
     end,
   },
 
