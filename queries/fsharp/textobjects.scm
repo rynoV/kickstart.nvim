@@ -6,4 +6,5 @@
 
 (member_defn
   (method_or_prop_defn
-    (declaration_expression) @function.inner)) @function.outer
+    ; Match the last child as the body
+    (_) @function.inner .)) @function.outer
