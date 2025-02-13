@@ -166,7 +166,14 @@ vim.opt.scrolloff = 10
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
 -- Diagnostic keymaps
-vim.keymap.set('n', '<leader>q', vim.diagnostic.setqflist, { desc = 'Open diagnostic [Q]uickfix list' })
+vim.keymap.set('n', '<leader>lQ', vim.diagnostic.setqflist, { desc = 'Open diagnostic [Q]uickfix list' })
+vim.keymap.set('n', '<leader>lq', function()
+  vim.diagnostic.setqflist { open = false }
+end, { desc = 'Set diagnostic [Q]uickfix list' })
+vim.keymap.set('n', '<leader>lL', vim.diagnostic.setloclist, { desc = 'Open diagnostic [L]ocation list' })
+vim.keymap.set('n', '<leader>ll', function()
+  vim.diagnostic.setloclist { open = false }
+end, { desc = 'Set diagnostic [L]ocation list' })
 
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
@@ -326,7 +333,8 @@ require('lazy').setup({
         { '<leader>t', group = '[T]oggle' },
         { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },
         { '<leader>m', group = 'Misc' },
-        { '<leader>w', proxy = '<c-w>', group = 'Window commands' },
+        { '<leader>w', proxy = '<c-w>', group = '[W]indows' },
+        { '<leader>l', group = '[L]ists' },
       },
     },
   },
@@ -1116,8 +1124,40 @@ require('lazy').setup({
 local next_integrations = require 'nvim-next.integrations'
 local nndiag = next_integrations.diagnostic()
 local nqf = next_integrations.quickfix()
+
+local move = require 'nvim-next.move'
+-- These are relative to the cursor, and don't work in the loc window
+local prev_loc_item_relative, next_loc_item_relative = move.make_repeatable_pair(function(_)
+  local status, _ = pcall(vim.cmd['lbefore'])
+  if not status then
+    vim.notify('No more items', vim.log.levels.INFO, { title = 'LocList' })
+  end
+end, function(_)
+  local status, _ = pcall(vim.cmd['lafter'])
+  if not status then
+    vim.notify('No more items', vim.log.levels.INFO, { title = 'LocList' })
+  end
+end)
+
+-- These are based on the current position in the loc list, and do work in the loc window
+local prev_loc_item_absolute, next_loc_item_absolute = move.make_repeatable_pair(function(_)
+  local status, _ = pcall(vim.cmd['lprevious'])
+  if not status then
+    vim.notify('No more items', vim.log.levels.INFO, { title = 'LocList' })
+  end
+end, function(_)
+  local status, _ = pcall(vim.cmd['lnext'])
+  if not status then
+    vim.notify('No more items', vim.log.levels.INFO, { title = 'LocList' })
+  end
+end)
+
 vim.keymap.set('n', '[q', nqf.cprevious, { desc = 'previous quickfix list item' })
 vim.keymap.set('n', ']q', nqf.cnext, { desc = 'next quickfix list item' })
+vim.keymap.set('n', '[l', prev_loc_item_relative, { desc = 'previous location list item relative to cursor' })
+vim.keymap.set('n', ']l', next_loc_item_relative, { desc = 'next location list item relative to cursor' })
+vim.keymap.set('n', '[L', prev_loc_item_absolute, { desc = 'previous location list item' })
+vim.keymap.set('n', ']L', next_loc_item_absolute, { desc = 'next location list item' })
 vim.keymap.set('n', '[d', nndiag.goto_prev { severity = { min = vim.diagnostic.severity.WARN } }, { desc = 'previous diagnostic' })
 vim.keymap.set('n', ']d', nndiag.goto_next { severity = { min = vim.diagnostic.severity.WARN } }, { desc = 'next diagnostic' })
 
