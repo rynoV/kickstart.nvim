@@ -532,7 +532,20 @@ require('lazy').setup({
       'WhoIsSethDaniel/mason-tool-installer.nvim',
 
       -- Useful status updates for LSP.
-      { 'j-hui/fidget.nvim', opts = {} },
+      {
+        'j-hui/fidget.nvim',
+        opts = {
+          progress = {
+            suppress_on_insert = true,
+            ignore = {
+              function(msg)
+                -- FSAutocomplete is noisy with the "checking" messages, and it also seems to cause cursor flickering for some reason
+                return msg.lsp_client.name == 'fsautocomplete' and string.find(string.lower(msg.title), 'checking')
+              end,
+            },
+          },
+        },
+      },
 
       -- Allows extra capabilities provided by nvim-cmp
       'hrsh7th/cmp-nvim-lsp',
