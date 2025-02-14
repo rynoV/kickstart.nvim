@@ -26,7 +26,13 @@
   block: (_) @context.end) @context
 
 (for_expression
-  (_) @context.end .) @context
+  (_)
+  (_)
+  (_) @context.end) @context
+
+(while_expression
+  (_)
+  (_) @context.end) @context
 
 (try_expression) @context
 
