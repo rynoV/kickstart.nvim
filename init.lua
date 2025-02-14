@@ -1082,6 +1082,12 @@ require('lazy').setup({
     --    - Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
   },
   {
+    'nvim-treesitter/nvim-treesitter-context',
+    opts = {
+      enable = true,
+    },
+  },
+  {
     'RRethy/nvim-treesitter-textsubjects',
     config = function()
       require('nvim-treesitter-textsubjects').configure {}
