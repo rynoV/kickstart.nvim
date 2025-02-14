@@ -1024,6 +1024,11 @@ require('lazy').setup({
     main = 'nvim-treesitter.configs', -- Sets main module to use for opts
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
     opts = function()
+      local parser_config = require('nvim-treesitter.parsers').get_parser_configs()
+      ---@diagnostic disable-next-line: param-type-mismatch
+      -- parser_config.fsharp.install_info.url = 'https://github.com/rynoV/tree-sitter-fsharp'
+      parser_config.fsharp.install_info.url = vim.fs.joinpath(vim.fn.stdpath 'config', 'tree-sitter-fsharp')
+
       require('nvim-next.integrations').treesitter_textobjects()
       return {
         ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },

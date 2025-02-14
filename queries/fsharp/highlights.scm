@@ -1,0 +1,6 @@
+; extends
+
+[
+  "while!"
+] @keyword.repeat
+

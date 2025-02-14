@@ -1,0 +1,3 @@
+[submodule "tree-sitter-fsharp"]
+	path = tree-sitter-fsharp
+	url = https://github.com/rynoV/tree-sitter-fsharp
