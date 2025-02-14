@@ -4,12 +4,13 @@
       body: (_) @function.inner)
    ) @function.outer
 
-; A workaround for functions with record destructuring arguments not recognized as functions
+; A workaround for functions with destructuring/pattern arguments not recognized as functions
 (declaration_expression
    (function_or_value_defn
       (value_declaration_left
         (identifier_pattern
-          (record_pattern)))
+          (long_identifier_or_op)
+          (_)))
       body: (_) @function.inner)
    ) @function.outer
 
