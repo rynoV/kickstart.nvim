@@ -1,20 +1,16 @@
 (function_or_value_defn
-   (function_declaration_left)
    body: (_) @context.end
    ) @context
 
-; A workaround for functions with destructuring/pattern arguments not recognized as functions
-(function_or_value_defn
-  (value_declaration_left
-    (identifier_pattern
-      (long_identifier_or_op)
-      (_)))
-  body: (_) @context.end) @context
+(fun_expression
+  (_) ; Arguments
+  (_) @context.end) @context
 
 (member_defn
   (method_or_prop_defn
-    ; Match the last child as the body
-    (_) @context.end .)) @context
+    ; Match whatever is after the args as the body. This handles comments which may follow the body and mess things up
+    args: (_)
+    (_) @context.end)) @context
 
 (type_definition
   ([
@@ -25,3 +21,17 @@
    (anon_type_defn
      block: (_) @context.end)
   ])) @context
+
+(ce_expression
+  block: (_) @context.end) @context
+
+(for_expression
+  (_) @context.end .) @context
+
+(try_expression) @context
+
+(match_expression
+  (rules) @context.end) @context
+
+(rule
+  block: (_) @context.end) @context
