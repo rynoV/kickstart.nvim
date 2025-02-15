@@ -23,7 +23,10 @@
   ])) @context
 
 (ce_expression
-  block: (_) @context.end) @context
+  .
+  (_)
+  .
+  (_) @context.end) @context
 
 (for_expression
   (_)

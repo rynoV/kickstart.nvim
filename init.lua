@@ -158,6 +158,11 @@ vim.opt.cursorline = true
 -- Minimal number of screen lines to keep above and below the cursor.
 vim.opt.scrolloff = 10
 
+-- Folding is enabled by default, but no folds are closed. Use zM to get a file
+-- outline, or za to fold at the cursor, and zi to toggle folding.
+vim.opt.foldenable = true
+vim.opt.foldlevel = 9999
+
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 
