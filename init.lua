@@ -1105,6 +1105,9 @@ require('lazy').setup({
     opts = {
       enable = true,
     },
+    config = function()
+      vim.keymap.set('n', '<leader>tx', '<cmd>TSContextToggle<cr>', { desc = 'Toggle code context' })
+    end,
   },
   {
     'RRethy/nvim-treesitter-textsubjects',

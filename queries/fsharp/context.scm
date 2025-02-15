@@ -40,4 +40,5 @@
   (rules) @context.end) @context
 
 (rule
-  block: (_) @context.end) @context
+  pattern: (_)
+  (_) @context.end) @context
