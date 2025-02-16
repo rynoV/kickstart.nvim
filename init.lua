@@ -336,6 +336,7 @@ require('lazy').setup({
         { '<leader>r', group = '[R]ename' },
         { '<leader>s', group = '[S]earch' },
         { '<leader>t', group = '[T]oggle' },
+        { '<leader>td', group = '[D]ebug' },
         { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },
         { '<leader>m', group = 'Misc' },
         { '<leader>w', proxy = '<c-w>', group = '[W]indows' },
