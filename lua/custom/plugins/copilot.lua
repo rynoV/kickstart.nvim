@@ -46,8 +46,6 @@ return {
     -- build = "make tiktoken", -- Only on MacOS or Linux
     opts = {
       model = 'claude-3.5-sonnet',
-      auto_insert_mode = true,
-      insert_at_end = true,
       highlight_headers = false,
       separator = '---',
       error_header = '> [!ERROR] Error',
