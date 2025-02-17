@@ -163,6 +163,8 @@ vim.opt.scrolloff = 10
 vim.opt.foldenable = true
 vim.opt.foldlevel = 9999
 
+vim.opt.completeopt:append { 'noinsert', 'popup' }
+
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 
@@ -234,6 +236,25 @@ end
 vim.api.nvim_create_user_command('DiffOrig', diff_orig, {
   desc = 'Diff with the original file',
 })
+
+local toggle_qf = function()
+  if (vim.fn.getqflist { winid = 1 }).winid == 0 then
+    vim.cmd 'copen'
+  else
+    vim.cmd 'cclose'
+  end
+end
+
+local toggle_loc = function()
+  if (vim.fn.getloclist(0, { winid = 1 })).winid == 0 then
+    vim.cmd 'lopen'
+  else
+    vim.cmd 'lclose'
+  end
+end
+
+vim.keymap.set('n', '<leader>tq', toggle_qf, { desc = 'toggle quickfix list' })
+vim.keymap.set('n', '<leader>tl', toggle_loc, { desc = 'toggle location list' })
 
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
