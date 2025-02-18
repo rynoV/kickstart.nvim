@@ -22,33 +22,78 @@ return {
       end,
       desc = '[S]elect [S]cratch Buffer',
     },
+    {
+      '<leader>mC',
+      function()
+        require('snacks').terminal.colorize()
+      end,
+      desc = 'Colorize buffer',
+    },
+    -- Open git in browser
+    {
+      '<leader>mgr',
+      function()
+        ---@diagnostic disable-next-line: missing-fields
+        require('snacks').gitbrowse.open { what = 'repo' }
+      end,
+      desc = 'Open git repo',
+    },
+    {
+      '<leader>mgb',
+      function()
+        ---@diagnostic disable-next-line: missing-fields
+        require('snacks').gitbrowse.open { what = 'branch' }
+      end,
+      desc = 'Open git branch',
+    },
+    {
+      '<leader>mgc',
+      function()
+        ---@diagnostic disable-next-line: missing-fields
+        require('snacks').gitbrowse.open { what = 'commit' }
+      end,
+      desc = 'Open git commit',
+    },
+    {
+      '<leader>mgf',
+      function()
+        ---@diagnostic disable-next-line: missing-fields
+        require('snacks').gitbrowse.open { what = 'file' }
+      end,
+      desc = 'Open git file',
+    },
+    {
+      '<leader>mgp',
+      function()
+        ---@diagnostic disable-next-line: missing-fields
+        require('snacks').gitbrowse.open { what = 'permalink' }
+      end,
+      desc = 'Open git permalink',
+    },
+    -- Delete buffer without affecting windows/tabs
+    {
+      '<leader>bd',
+      function()
+        require('snacks').bufdelete.delete()
+      end,
+      desc = 'Delete buffer',
+    },
+    {
+      '<leader>bO',
+      function()
+        require('snacks').bufdelete.other()
+      end,
+      desc = 'Delete other buffers',
+    },
+    {
+      '<leader>bA',
+      function()
+        require('snacks').bufdelete.all()
+      end,
+      desc = 'Delete all buffers',
+    },
   },
   config = function()
-    -- Delete buffer without affecting windows/tabs
-    vim.keymap.set('n', '<leader>bd', require('snacks').bufdelete.delete, { desc = 'Delete buffer' })
-    vim.keymap.set('n', '<leader>bO', require('snacks').bufdelete.other, { desc = 'Delete other buffers' })
-    vim.keymap.set('n', '<leader>bA', require('snacks').bufdelete.all, { desc = 'Delete other buffers' })
-
-    -- Open git in browser
-    vim.keymap.set('n', '<leader>mgr', function()
-      ---@diagnostic disable-next-line: missing-fields
-      require('snacks').gitbrowse.open { what = 'repo' }
-    end, { desc = 'Open git repo' })
-    vim.keymap.set('n', '<leader>mgb', function()
-      require('snacks').gitbrowse.open { what = 'branch' }
-    end, { desc = 'Open git branch' })
-    vim.keymap.set('n', '<leader>mgc', function()
-      require('snacks').gitbrowse.open { what = 'commit' }
-    end, { desc = 'Open git commit' })
-    vim.keymap.set('n', '<leader>mgf', function()
-      require('snacks').gitbrowse.open { what = 'file' }
-    end, { desc = 'Open git file' })
-    vim.keymap.set('n', '<leader>mgp', function()
-      require('snacks').gitbrowse.open { what = 'permalink' }
-    end, { desc = 'Open git permalink' })
-
-    vim.keymap.set('n', '<leader>mC', require('snacks').terminal.colorize, { desc = 'Colorize buffer' })
-
     -- Inform LSP about file rename in mini.files
     vim.api.nvim_create_autocmd('User', {
       pattern = 'MiniFilesActionRename',

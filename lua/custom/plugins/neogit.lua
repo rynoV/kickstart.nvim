@@ -30,7 +30,7 @@ return {
   },
   cmd = 'Neogit',
   keys = {
-    { '<leader>mg', '<cmd>Neogit<cr>', desc = 'Neogit', mode = 'n' },
+    { '<leader>mgg', '<cmd>Neogit<cr>', desc = 'Neogit', mode = 'n' },
   },
   opts = function(_, opts)
     opts.integrations = { telescope = true, diffview = true }
