@@ -6,6 +6,23 @@ return {
     gitbrowse = {},
     quickfile = {}, -- When doing `nvim somefile.txt`, render the file as quickly as possible, before loading plugins
   },
+  keys = {
+    {
+      '<leader>ts',
+      function()
+        ---@diagnostic disable-next-line: missing-fields
+        Snacks.scratch { ft = 'markdown' }
+      end,
+      desc = '[S]cratch Buffer',
+    },
+    {
+      '<leader>tS',
+      function()
+        Snacks.scratch.select()
+      end,
+      desc = '[S]elect [S]cratch Buffer',
+    },
+  },
   config = function()
     -- Delete buffer without affecting windows/tabs
     vim.keymap.set('n', '<leader>bd', require('snacks').bufdelete.delete, { desc = 'Delete buffer' })
@@ -29,5 +46,15 @@ return {
     vim.keymap.set('n', '<leader>mgp', function()
       require('snacks').gitbrowse.open { what = 'permalink' }
     end, { desc = 'Open git permalink' })
+
+    vim.keymap.set('n', '<leader>mC', require('snacks').terminal.colorize, { desc = 'Colorize buffer' })
+
+    -- Inform LSP about file rename in mini.files
+    vim.api.nvim_create_autocmd('User', {
+      pattern = 'MiniFilesActionRename',
+      callback = function(event)
+        Snacks.rename.on_rename_file(event.data.from, event.data.to)
+      end,
+    })
   end,
 }
