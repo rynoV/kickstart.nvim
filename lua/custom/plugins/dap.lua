@@ -69,10 +69,11 @@ return {
     end
 
     vim.keymap.set('n', '<leader>tdb', dap.toggle_breakpoint, { desc = 'Breakpoint' })
-    vim.keymap.set('n', '<leader>tdr', dap.repl.toggle, { desc = 'Breakpoint' })
+    vim.keymap.set('n', '<leader>tdr', dap.repl.toggle, { desc = 'Repl' })
     vim.keymap.set('n', '<leader>tdBB', dap.clear_breakpoints, { desc = 'Clear all breakpoints' })
     vim.keymap.set('n', '<leader>tdu', dapui.toggle, { desc = 'UI' })
     vim.keymap.set('n', '<leader>tdd', dap.run_last, { desc = 'Run last session' })
+    vim.keymap.set('n', '<leader>tdS', dap.close, { desc = 'Stop debugging' })
     vim.keymap.set('n', '<F4>', dap.restart, { desc = 'Debug restart' })
     vim.keymap.set('n', '<F5>', dap.continue, { desc = 'Debug start/continue' })
     vim.keymap.set('n', '<F6>', dap.run_to_cursor, { desc = 'Debug run to cursor' })
