@@ -115,7 +115,7 @@ vim.opt.showmode = false
 --  Remove this option if you want your OS clipboard to remain independent.
 --  See `:help 'clipboard'`
 --
---  On wsl, my solution for the clipboard was to install win32yank in windows (eg with winget). Also needed to ensure xclip wasn't installed.
+-- On wsl, my solution for the clipboard was to install win32yank in windows (eg with winget). Also needed to ensure xclip wasn't installed on the linux distro.
 vim.schedule(function()
   vim.opt.clipboard = 'unnamedplus'
 end)
@@ -482,14 +482,17 @@ require('lazy').setup({
 
       -- See `:help telescope.builtin`
       local builtin = require 'telescope.builtin'
+      local custom = require 'custom.telescope_config'
       vim.keymap.set('n', '<leader>sh', builtin.help_tags, { desc = '[S]earch [H]elp' })
       vim.keymap.set('v', '<leader>sh', function()
         builtin.help_tags { default_text = getVisualSelection() }
       end, { desc = '[S]earch [H]elp' })
       vim.keymap.set('n', '<leader>sk', builtin.keymaps, { desc = '[S]earch [K]eymaps' })
-      vim.keymap.set('n', '<leader>sf', builtin.find_files, { desc = '[S]earch [F]iles' })
+      -- Default is to try searching all files tracked by git, fallback to default search if not in git
+      vim.keymap.set('n', '<leader>sf', custom.project_files, { desc = '[S]earch [F]iles' })
+      vim.keymap.set('n', '<leader>sF', builtin.find_files, { desc = '[S]earch all [F]iles' })
       vim.keymap.set('v', '<leader>sf', function()
-        builtin.find_files { default_text = getVisualSelection() }
+        custom.project_files { default_text = getVisualSelection() }
       end, { desc = '[S]earch [F]iles' })
       vim.keymap.set('n', '<leader>ss', builtin.builtin, { desc = '[S]earch [S]elect Telescope' })
       vim.keymap.set('n', '<leader>s*', builtin.grep_string, { desc = '[S]earch current [W]ord' })

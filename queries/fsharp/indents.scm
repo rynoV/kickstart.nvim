@@ -3,6 +3,9 @@
   ; In some cases the declaration expression isn't parsed immediately
   (ERROR (value_declaration_left))
   (ERROR (function_declaration_left))
+  (type_extension_elements)
+  (do_expression)
+  (ce_expression)
   (fun_expression)
   (member_defn)
   (module_defn)
@@ -21,10 +24,6 @@
   (anon_record_expression
     (with_field_expression) @indent.begin)
 ] @indent.begin
-
-; These seem like they're going to be tricky. Same for function application across multiple lines
-; ((ce_expression
-;    block: (_) @indent.begin))
 
 (
  (if_expression

@@ -2,9 +2,12 @@ return {
   'folke/snacks.nvim',
   ---@type snacks.Config
   opts = {
-    bigfile = {},
-    gitbrowse = {},
-    quickfile = {}, -- When doing `nvim somefile.txt`, render the file as quickly as possible, before loading plugins
+    bigfile = {
+      enabled = true,
+    },
+    quickfile = {
+      enabled = true,
+    }, -- When doing `nvim somefile.txt`, render the file as quickly as possible, before loading plugins
   },
   keys = {
     {
