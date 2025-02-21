@@ -118,12 +118,14 @@ local setup_configuration = function(dap, dap_utils, config)
           local current_working_dir = vim.fn.getcwd()
           return select_dll(current_working_dir, proj_file_ext) or dap.ABORT
         end,
+        justMyCode = false,
       },
       {
         type = 'coreclr',
         name = 'Attach',
         request = 'attach',
         processId = dap_utils.pick_process,
+        justMyCode = false,
       },
 
       {
@@ -134,6 +136,7 @@ local setup_configuration = function(dap, dap_utils, config)
           local current_working_dir = vim.fn.getcwd()
           return smart_pick_process(dap_utils, current_working_dir) or dap.ABORT
         end,
+        justMyCode = false,
       },
     }
   end
