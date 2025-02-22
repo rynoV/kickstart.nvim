@@ -1,3 +1,6 @@
+(module_defn
+  (identifier) @context.end) @context
+
 (function_or_value_defn
    body: (_) @context.end
    ) @context
