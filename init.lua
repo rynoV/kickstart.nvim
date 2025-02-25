@@ -168,6 +168,8 @@ vim.opt.completeopt:append { 'noinsert', 'popup' }
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 
+vim.keymap.set('n', 'gV', '`[v`]', { desc = 'Select last yank/paste' })
+
 -- Clear highlights on search when pressing <Esc> in normal mode
 --  See `:help hlsearch`
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
