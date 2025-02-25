@@ -169,6 +169,8 @@ vim.opt.completeopt:append { 'noinsert', 'popup' }
 --  See `:help vim.keymap.set()`
 
 vim.keymap.set('n', 'gV', '`[v`]', { desc = 'Select last yank/paste' })
+vim.keymap.set('n', '<A-8>', [[m`/\<<C-r><C-w>\><CR>``]], { desc = 'Do `*` but stay on current match and preserve window scroll position' })
+vim.keymap.set('n', '<A-3>', [[m`?\<<C-r><C-w>\><CR>``]], { desc = 'Do `#` but stay on current match and preserve window scroll position' })
 
 -- Clear highlights on search when pressing <Esc> in normal mode
 --  See `:help hlsearch`
