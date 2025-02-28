@@ -23,6 +23,9 @@
      block: (_) @context.end)
    (anon_type_defn
      block: (_) @context.end)
+   (type_extension
+     (type_extension_elements
+       block: (_) @context.end))
   ])) @context
 
 (ce_expression
