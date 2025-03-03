@@ -586,6 +586,12 @@ require('lazy').setup({
               end,
             },
           },
+          notification = {
+            window = {
+              -- Make the window look nicer assuming theme has a transparent background
+              winblend = 0,
+            },
+          },
         },
       },
 
@@ -1012,7 +1018,11 @@ require('lazy').setup({
   {
     'folke/tokyonight.nvim',
     priority = 1000, -- Make sure to load this before all the other start plugins.
-    init = function()
+    config = function()
+      ---@diagnostic disable-next-line: missing-fields
+      require('tokyonight').setup {
+        transparent = true,
+      }
       vim.cmd.colorscheme 'tokyonight-storm'
     end,
   },
