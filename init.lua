@@ -368,6 +368,7 @@ require('lazy').setup({
         { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },
         { '<leader>m', group = '[M]isc' },
         { '<leader>mg', group = '[G]it' },
+        { '<leader>ms', group = '[S]nippets' },
         { '<leader>w', proxy = '<c-w>', group = '[W]indows' },
         { '<leader>b', group = '[B]uffers' },
         { '<leader>l', group = '[L]ists' },
@@ -919,6 +920,15 @@ require('lazy').setup({
           --   end,
           -- },
         },
+        keys = {
+          {
+            '<leader>mse',
+            function()
+              require('luasnip.loaders').edit_snippet_files()
+            end,
+            desc = '[E]dit snippets',
+          },
+        },
       },
       'saadparwaiz1/cmp_luasnip',
 
@@ -933,6 +943,7 @@ require('lazy').setup({
       local cmp = require 'cmp'
       local luasnip = require 'luasnip'
       luasnip.config.setup {}
+      require('luasnip.loaders.from_lua').load { paths = { vim.fn.stdpath 'config' .. '/snippets' } }
 
       opts.snippet = {
         expand = function(args)
