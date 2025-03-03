@@ -168,6 +168,9 @@ vim.opt.completeopt:append { 'noinsert', 'popup' }
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 
+-- Hold over from emacs muscle memory
+vim.keymap.set('c', '<C-g>', '<Esc>')
+
 vim.keymap.set('n', 'gV', '`[v`]', { desc = 'Select last yank/paste' })
 vim.keymap.set('n', '<A-8>', [[m`/\<<C-r><C-w>\><CR>``]], { desc = 'Do `*` but stay on current match and preserve window scroll position' })
 vim.keymap.set('n', '<A-3>', [[m`?\<<C-r><C-w>\><CR>``]], { desc = 'Do `#` but stay on current match and preserve window scroll position' })
@@ -454,6 +457,7 @@ require('lazy').setup({
             i = {
               -- Don't go to normal mode, just close
               ['<esc>'] = actions.close,
+              ['<C-g>'] = actions.close,
               -- Delete to start of line instead of scrolling
               ['<C-u>'] = false,
             },
