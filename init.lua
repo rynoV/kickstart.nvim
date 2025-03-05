@@ -168,6 +168,9 @@ vim.opt.completeopt:append { 'noinsert', 'popup' }
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 
+vim.keymap.set('n', '[<enter>', 'm`O<Esc>``', { desc = 'Add line above' })
+vim.keymap.set('n', ']<enter>', 'm`o<Esc>``', { desc = 'Add line below' })
+
 -- Hold over from emacs muscle memory
 vim.keymap.set('c', '<C-g>', '<Esc>')
 
