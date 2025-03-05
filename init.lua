@@ -411,6 +411,28 @@ require('lazy').setup({
 
       -- Useful for getting pretty icons, but requires a Nerd Font.
       { 'nvim-tree/nvim-web-devicons', enabled = vim.g.have_nerd_font },
+
+      -- https://github.com/danielfalk/smart-open.nvim
+      -- Note: requires sqlite 3 to be installed
+      -- Allows for intelligently searching for open buffers and files to open
+      {
+        'danielfalk/smart-open.nvim',
+        branch = '0.3.x',
+        cond = function()
+          if vim.fn.executable 'sqlite3' == 1 then
+            return true
+          else
+            vim.notify('Sqlite3 is not installed. Telescope smart open may not work properly.', vim.log.levels.WARN)
+            return false
+          end
+        end,
+        config = function()
+          require('telescope').load_extension 'smart_open'
+        end,
+        dependencies = {
+          'kkharji/sqlite.lua',
+        },
+      },
     },
     config = function()
       -- Telescope is a fuzzy finder that comes with a lot of different things that
@@ -468,6 +490,9 @@ require('lazy').setup({
           ['ui-select'] = {
             require('telescope.themes').get_dropdown(),
           },
+          smart_open = {
+            match_algorithm = 'fzf',
+          },
         },
       }
 
@@ -517,9 +542,12 @@ require('lazy').setup({
         builtin.oldfiles { only_cwd = true }
       end, { desc = '[S]earch Recent Files in CWD' })
       vim.keymap.set('n', '<leader>s>', builtin.oldfiles, { desc = '[S]earch All Recent Files' })
-      vim.keymap.set('n', '<leader><leader>', function()
+      vim.keymap.set('n', '<leader>sb', function()
         builtin.buffers { sort_mru = true, sort_lastused = true }
-      end, { desc = '[ ] Find existing buffers' })
+      end, { desc = '[S]earch [B]uffers' })
+      vim.keymap.set('n', '<leader><leader>', function()
+        require('telescope').extensions.smart_open.smart_open()
+      end, { desc = '[ ] Smart open' })
 
       -- Slightly advanced example of overriding default behavior and theme
       vim.keymap.set('n', '<leader>/', function()
