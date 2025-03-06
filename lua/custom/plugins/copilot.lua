@@ -47,6 +47,7 @@ return {
     opts = {
       model = 'claude-3.5-sonnet',
       highlight_headers = false,
+      references_display = 'write',
       separator = '---',
       error_header = '> [!ERROR] Error',
       prompts = {
@@ -61,6 +62,7 @@ return {
     keys = {
       { '<leader>tc', '<cmd>CopilotChatToggle<cr>', desc = 'Toggle Copilot Chat' },
       { '<leader>mc', '<cmd>CopilotChatCommit<cr>', desc = 'Commit message for staged changes' },
+      { '<leader>cc', '<cmd>CopilotChatPrompts<cr>', desc = 'Copilot prompt' },
     },
   },
 }
