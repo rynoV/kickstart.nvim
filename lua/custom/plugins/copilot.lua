@@ -45,7 +45,7 @@ return {
     },
     -- build = "make tiktoken", -- Only on MacOS or Linux
     opts = {
-      model = 'claude-3.5-sonnet',
+      model = 'claude-3.7-sonnet',
       highlight_headers = false,
       references_display = 'write',
       separator = '---',
