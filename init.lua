@@ -813,24 +813,26 @@ require('lazy').setup({
       }
 
       local is_windows = vim.fn.has 'win64' == 1
-      local is_linux = vim.fn.has 'unix' == 1
       local is_macos = vim.fn.has 'mac' == 1
+      local is_linux = vim.fn.has 'unix' == 1 and not is_macos
       if is_linux or is_macos then
         servers.rust_analyzer = {}
       end
 
-      servers.fsautocomplete = {
-        settings = {
-          FSharp = {
-            -- This is false by default, but useful for importing from other modules/namespaces
-            ExternalAutocomplete = true,
-            -- Default is "this"
-            InterfaceStubGenerationObjectIdentifier = 'x',
-            -- Default is true, but often I use longer names for clarity
-            SimplifyNameAnalyzer = false,
+      if is_linux or is_windows then
+        servers.fsautocomplete = {
+          settings = {
+            FSharp = {
+              -- This is false by default, but useful for importing from other modules/namespaces
+              ExternalAutocomplete = true,
+              -- Default is "this"
+              InterfaceStubGenerationObjectIdentifier = 'x',
+              -- Default is true, but often I use longer names for clarity
+              SimplifyNameAnalyzer = false,
+            },
           },
-        },
-      }
+        }
+      end
 
       -- Ensure the servers and tools above are installed
       --
@@ -845,7 +847,10 @@ require('lazy').setup({
       --
       -- You can add other tools here that you want Mason to install
       -- for you, so that they are available from within Neovim.
-      local ensure_installed = vim.tbl_keys(servers or {})
+      local ensure_installed = vim.tbl_filter(function(v)
+        -- We don't want rust_analyzer to be automatically installed
+        return v ~= 'rust_analyzer'
+      end, vim.tbl_keys(servers or {}))
       vim.list_extend(ensure_installed, {
         'stylua', -- Used to format Lua code
         'prettier',
@@ -859,18 +864,20 @@ require('lazy').setup({
 
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
+      local server_setup = function(server_name)
+        local server = servers[server_name] or {}
+        -- This handles overriding only values explicitly passed
+        -- by the server configuration above. Useful when disabling
+        -- certain features of an LSP (for example, turning off formatting for ts_ls)
+        server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
+        require('lspconfig')[server_name].setup(server)
+      end
+
       require('mason-lspconfig').setup {
-        handlers = {
-          function(server_name)
-            local server = servers[server_name] or {}
-            -- This handles overriding only values explicitly passed
-            -- by the server configuration above. Useful when disabling
-            -- certain features of an LSP (for example, turning off formatting for ts_ls)
-            server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
-            require('lspconfig')[server_name].setup(server)
-          end,
-        },
+        handlers = { server_setup },
       }
+
+      server_setup 'rust_analyzer'
     end,
   },
 
