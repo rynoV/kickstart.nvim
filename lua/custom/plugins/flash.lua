@@ -22,20 +22,26 @@ return {
       }
     end
     local labels = 'aoeuhtnsidqjkmwv,.pgcr'
-    return {
+    ---@type Flash.Config
+    local opts = {
       labels = labels,
       modes = {
         treesitter = {
           labels = labels,
+          label = {
+            style = 'overlay',
+          },
         },
       },
       label = {
+        style = 'overlay',
         uppercase = false,
         rainbow = {
           enabled = true,
         },
       },
     }
+    return opts
   end,
   -- stylua: ignore
   keys = {
