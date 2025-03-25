@@ -180,6 +180,7 @@ vim.keymap.set('n', '<A-3>', [[m`?\<<C-r><C-w>\><CR>``]], { desc = 'Do `#` but s
 
 -- Clear highlights on search when pressing <Esc> in normal mode
 --  See `:help hlsearch`
+--  Note this is overridden in the `flash` plugin config
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
 -- Diagnostic keymaps
