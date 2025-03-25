@@ -52,10 +52,12 @@ return {
       error_header = '> [!ERROR] Error',
       prompts = {
         CommitVerbose = {
-          prompt = '> #git:staged\n\nWrite commit message for the change with commitizen convention. Make sure the title has maximum 50 characters and message is wrapped at 72 characters. Wrap the whole message in code block with language gitcommit.',
+          prompt = 'Write commit message for the change with commitizen convention. Make sure the title has maximum 50 characters and message is wrapped at 72 characters. Wrap the whole message in code block with language gitcommit.',
+          context = 'git:staged',
         },
         Commit = {
-          prompt = '> #git:staged\n\nWrite a succinct commit message for the change. Make sure the title has maximum 50 characters and message is wrapped at 72 characters. Wrap the whole message in code block with language gitcommit.',
+          prompt = 'Write a succinct commit message for the change. Make sure the title has maximum 50 characters and message is wrapped at 72 characters. Wrap the whole message in code block with language gitcommit.',
+          context = 'git:staged',
         },
       },
     },
