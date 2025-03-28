@@ -279,7 +279,26 @@ end
 vim.keymap.set('n', '<leader>tq', toggle_qf, { desc = 'toggle quickfix list' })
 vim.keymap.set('n', '<leader>tl', toggle_loc, { desc = 'toggle location list' })
 
-vim.diagnostic.config { virtual_lines = true }
+--- This is used to allow toggling virtual lines completely off or only on the
+--- current line, remembering the previous config when toggling it back on.
+---@type vim.diagnostic.Opts.VirtualLines
+local virtual_lines_conf = { current_line = false }
+
+vim.diagnostic.config { virtual_lines = false }
+
+vim.keymap.set('n', '<leader>tK', function()
+  local new_config = not virtual_lines_conf.current_line
+  virtual_lines_conf = { current_line = new_config }
+  -- Only update the active config if virtual lines are enabled
+  if vim.diagnostic.config().virtual_lines then
+    vim.diagnostic.config { virtual_lines = virtual_lines_conf }
+  end
+end, { desc = 'Toggle diagnostic show only on current line' })
+
+vim.keymap.set('n', '<leader>tk', function()
+  local new_config = not vim.diagnostic.config().virtual_lines
+  vim.diagnostic.config { virtual_lines = new_config and virtual_lines_conf or false }
+end, { desc = 'Toggle diagnostic show' })
 
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
