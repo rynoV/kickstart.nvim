@@ -423,7 +423,6 @@ require('lazy').setup({
   { -- Fuzzy Finder (files, lsp, etc)
     'nvim-telescope/telescope.nvim',
     event = 'VimEnter',
-    branch = '0.1.x',
     dependencies = {
       {
         'nvim-lua/plenary.nvim',
@@ -660,7 +659,7 @@ require('lazy').setup({
             ignore = {
               function(msg)
                 -- FSAutocomplete is noisy with the "checking" messages, and it also seems to cause cursor flickering for some reason
-                return msg.lsp_client.name == 'fsautocomplete' and string.find(string.lower(msg.title), 'checking')
+                return msg.lsp_client.name == 'fsautocomplete' and string.find(string.lower(msg.title or ''), 'checking')
               end,
             },
           },
