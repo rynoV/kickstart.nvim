@@ -431,12 +431,21 @@ require('lazy').setup({
       { 'nvim-tree/nvim-web-devicons', enabled = vim.g.have_nerd_font },
 
       -- https://github.com/danielfalk/smart-open.nvim
-      -- Note: requires sqlite 3 to be installed
+      -- Note: requires sqlite 3 to be installed. See below for Windows install instructions
       -- Allows for intelligently searching for open buffers and files to open
       {
         'danielfalk/smart-open.nvim',
         branch = '0.3.x',
         cond = function()
+          -- On Windows, go to https://www.sqlite.org/download.html and extract to the below directory in the config folder
+          if vim.fn.has 'win64' == 1 then
+            local sqlite_dll_path = vim.fn.stdpath 'config' .. '/sqlite/sqlite3.dll'
+            if vim.fn.filereadable(sqlite_dll_path) == 1 then
+              vim.g.sqlite_clib_path = sqlite_dll_path
+              return true
+            end
+          end
+
           if vim.fn.executable 'sqlite3' == 1 then
             return true
           else
