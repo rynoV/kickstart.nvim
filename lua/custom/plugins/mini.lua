@@ -14,7 +14,9 @@ return { -- Collection of various small independent plugins/modules
     -- g=: evaluate
     -- gr: replace with register
     -- gm: multiply
-    require('mini.operators').setup()
+    require('mini.operators').setup {
+      replace = { prefix = 'cr' },
+    }
 
     -- Better Around/Inside textobjects
     --
