@@ -163,13 +163,16 @@ vim.opt.scrolloff = 10
 vim.opt.foldenable = true
 vim.opt.foldlevel = 9999
 
+-- Show a border for floating windows
+vim.opt.winborder = 'rounded'
+
+-- Behaviour I'm used to when closing tabs
+vim.opt.tabclose = { 'uselast', 'left' }
+
 vim.opt.completeopt:append { 'noinsert', 'popup' }
 
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
-
-vim.keymap.set('n', '[<enter>', 'm`O<Esc>``', { desc = 'Add line above' })
-vim.keymap.set('n', ']<enter>', 'm`o<Esc>``', { desc = 'Add line below' })
 
 -- Hold over from emacs muscle memory
 vim.keymap.set('c', '<C-g>', '<Esc>')
@@ -240,6 +243,14 @@ vim.api.nvim_create_autocmd('ColorScheme', {
   end,
 })
 
+vim.api.nvim_create_autocmd('TermOpen', {
+  desc = 'Terminal specific options',
+  group = vim.api.nvim_create_augroup('calum-terminal-settings', { clear = true }),
+  callback = function()
+    vim.opt_local.relativenumber = true
+  end,
+})
+
 -- From :help :DiffOrig
 local function diff_orig()
   vim.cmd 'vert new | set buftype=nofile | read ++edit # | 0d_ | diffthis | wincmd p | diffthis'
@@ -267,6 +278,8 @@ end
 
 vim.keymap.set('n', '<leader>tq', toggle_qf, { desc = 'toggle quickfix list' })
 vim.keymap.set('n', '<leader>tl', toggle_loc, { desc = 'toggle location list' })
+
+vim.diagnostic.config { virtual_lines = true }
 
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
@@ -683,9 +696,6 @@ require('lazy').setup({
           --  To jump back, press <C-t>.
           map('gd', require('telescope.builtin').lsp_definitions, '[G]oto [D]efinition')
 
-          -- Find references for the word under your cursor.
-          map('gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
-
           -- Jump to the implementation of the word under your cursor.
           --  Useful when your language has ways of declaring types without an actual implementation.
           map('gI', require('telescope.builtin').lsp_implementations, '[G]oto [I]mplementation')
@@ -702,14 +712,6 @@ require('lazy').setup({
           -- Fuzzy find all the symbols in your current workspace.
           --  Similar to document symbols, except searches over your entire project.
           map('<leader>sw', require('telescope.builtin').lsp_dynamic_workspace_symbols, '[W]orkspace [S]ymbols')
-
-          -- Rename the variable under your cursor.
-          --  Most Language Servers support renaming across files, etc.
-          map('<leader>rn', vim.lsp.buf.rename, '[R]e[n]ame')
-
-          -- Execute a code action, usually your cursor needs to be on top of an error
-          -- or a suggestion from your LSP for this to activate.
-          map('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction', { 'n', 'x' })
 
           -- WARN: This is not Goto Definition, this is Goto Declaration.
           --  For example, in C this would take you to the header.
@@ -752,6 +754,12 @@ require('lazy').setup({
             map('<leader>th', function()
               vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled { bufnr = event.buf })
             end, '[T]oggle Inlay [H]ints')
+          end
+
+          if client and client:supports_method 'textDocument/foldingRange' then
+            local win = vim.api.nvim_get_current_win()
+            vim.wo[win][0].foldmethod = 'expr'
+            vim.wo[win][0].foldexpr = 'v:lua.vim.lsp.foldexpr()'
           end
         end,
       })
@@ -1073,6 +1081,7 @@ require('lazy').setup({
           -- DiffText sits on top of DiffChange, so it should stand out
           highlights.DiffChange = { bg = colors.polar_night.bright }
           highlights.DiffText = { bg = colors.polar_night.brightest }
+          highlights.FloatBorder = { fg = colors.frost.artic_ocean }
         end,
       }
       vim.cmd.colorscheme 'nord'
