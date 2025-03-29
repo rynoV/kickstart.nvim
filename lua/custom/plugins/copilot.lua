@@ -11,7 +11,7 @@ return {
           hide_during_completion = true,
           debounce = 75,
           keymap = {
-            accept = '<Tab>',
+            accept = false, -- Accepting is handled in the completions.lua keymap
             accept_word = '<M-l>',
             accept_line = '<M-Right>',
             next = '<M-\\>', -- use this to trigger

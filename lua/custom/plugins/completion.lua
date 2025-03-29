@@ -1,6 +1,7 @@
 return {
   'saghen/blink.cmp',
   dependencies = {
+    'zbirenbaum/copilot.lua',
     'L3MON4D3/LuaSnip',
     build = (function()
       -- Build Step is needed for regex support in snippets.
@@ -79,6 +80,19 @@ return {
         preset = 'enter',
         ['<C-space>'] = { 'show_documentation', 'hide_documentation' },
         ['<C-n>'] = { 'show', 'select_next', 'fallback_to_mappings' },
+        ['<Tab>'] = {
+          function()
+            local copilot = require 'copilot.suggestion'
+            if copilot.is_visible() then
+              copilot.accept()
+              return true
+            else
+              return false
+            end
+          end,
+          'snippet_forward',
+          'fallback',
+        },
         ['<A-1>'] = {
           function(cmp)
             cmp.accept { index = 1 }
