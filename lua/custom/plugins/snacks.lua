@@ -25,13 +25,6 @@ return {
       end,
       desc = '[S]elect [S]cratch Buffer',
     },
-    {
-      '<leader>mC',
-      function()
-        require('snacks').terminal.colorize()
-      end,
-      desc = 'Colorize buffer',
-    },
     -- Open git in browser
     {
       '<leader>mgr',

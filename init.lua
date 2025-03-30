@@ -251,6 +251,18 @@ vim.api.nvim_create_autocmd('TermOpen', {
   end,
 })
 
+-- From :help terminal-scrollback-pager
+function TermHl()
+  local b = vim.api.nvim_create_buf(false, true)
+  local chan = vim.api.nvim_open_term(b, {})
+  vim.api.nvim_chan_send(chan, table.concat(vim.api.nvim_buf_get_lines(0, 0, -1, false), '\n'))
+  vim.api.nvim_win_set_buf(0, b)
+end
+
+vim.api.nvim_create_user_command('TermHl', TermHl, { desc = 'Highlights ANSI termcodes in curbuf' })
+
+vim.keymap.set('n', '<leader>mC', TermHl, { desc = 'Highlight ANSI termcodes in curbuf' })
+
 -- From :help :DiffOrig
 local function diff_orig()
   vim.cmd 'vert new | set buftype=nofile | read ++edit # | 0d_ | diffthis | wincmd p | diffthis'
