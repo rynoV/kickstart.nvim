@@ -1247,6 +1247,7 @@ local util = require 'custom.util'
 
 vim.keymap.set('n', '[c', util.prev_change, { desc = 'previous change' })
 vim.keymap.set('n', ']c', util.next_change, { desc = 'next change' })
+vim.keymap.set('n', '<leader>mf', util.open_file_in_last_tab, { desc = 'Open file at cursor in previously accessed tab page' })
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
