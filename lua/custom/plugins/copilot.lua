@@ -38,6 +38,10 @@ return {
       references_display = 'write',
       separator = '---',
       error_header = '> [!ERROR] Error',
+      selection = function(source)
+        local select = require 'CopilotChat.select'
+        return select.visual(source)
+      end,
       prompts = {
         CommitVerbose = {
           prompt = 'Write commit message for the change with commitizen convention. Make sure the title has maximum 50 characters and message is wrapped at 72 characters. Wrap the whole message in code block with language gitcommit.',
