@@ -2,53 +2,55 @@ return {
   'saghen/blink.cmp',
   dependencies = {
     'zbirenbaum/copilot.lua',
-    'L3MON4D3/LuaSnip',
-    build = (function()
-      -- Build Step is needed for regex support in snippets.
-      -- This step is not supported in many windows environments.
-      -- Remove the below condition to re-enable on windows.
-      if vim.fn.has 'win32' == 1 or vim.fn.executable 'make' == 0 then
-        return
-      end
-      return 'make install_jsregexp'
-    end)(),
-    config = function()
-      local luasnip = require 'luasnip'
-      luasnip.config.setup {}
-      require('luasnip.loaders.from_lua').load { paths = { vim.fn.stdpath 'config' .. '/snippets' } }
-    end,
-    keys = {
-      {
-        '<leader>mse',
-        function()
-          require('luasnip.loaders').edit_snippet_files()
-        end,
-        desc = '[E]dit snippets',
-      },
-      -- Note blink.cmp configures tab and shift-tab for this
-      {
-        '<C-l>',
-        function()
-          local luasnip = require 'luasnip'
+    {
+      'L3MON4D3/LuaSnip',
+      build = (function()
+        -- Build Step is needed for regex support in snippets.
+        -- This step is not supported in many windows environments.
+        -- Remove the below condition to re-enable on windows.
+        if vim.fn.has 'win32' == 1 or vim.fn.executable 'make' == 0 then
+          return
+        end
+        return 'make install_jsregexp'
+      end)(),
+      config = function()
+        local luasnip = require 'luasnip'
+        luasnip.config.setup {}
+        require('luasnip.loaders.from_lua').load { paths = { vim.fn.stdpath 'config' .. '/snippets' } }
+      end,
+      keys = {
+        {
+          '<leader>mse',
+          function()
+            require('luasnip.loaders').edit_snippet_files()
+          end,
+          desc = '[E]dit snippets',
+        },
+        -- Note blink.cmp configures tab and shift-tab for this
+        {
+          '<C-l>',
+          function()
+            local luasnip = require 'luasnip'
 
-          if luasnip.expand_or_locally_jumpable() then
-            luasnip.expand_or_jump()
-          end
-        end,
-        desc = 'Expand or jump in snippet',
-        mode = { 'i', 's' },
-      },
-      {
-        '<C-h>',
-        function()
-          local luasnip = require 'luasnip'
+            if luasnip.expand_or_locally_jumpable() then
+              luasnip.expand_or_jump()
+            end
+          end,
+          desc = 'Expand or jump in snippet',
+          mode = { 'i', 's' },
+        },
+        {
+          '<C-h>',
+          function()
+            local luasnip = require 'luasnip'
 
-          if luasnip.locally_jumpable(-1) then
-            luasnip.jump(-1)
-          end
-        end,
-        desc = 'Jump back in snippet',
-        mode = { 'i', 's' },
+            if luasnip.locally_jumpable(-1) then
+              luasnip.jump(-1)
+            end
+          end,
+          desc = 'Jump back in snippet',
+          mode = { 'i', 's' },
+        },
       },
     },
   },
