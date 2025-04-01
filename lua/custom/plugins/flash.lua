@@ -26,6 +26,7 @@ return {
     local opts = {
       labels = labels,
       modes = {
+        char = { enabled = false },
         treesitter = {
           labels = labels,
           label = {
