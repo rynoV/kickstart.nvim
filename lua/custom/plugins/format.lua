@@ -58,8 +58,12 @@ return {
     vim.api.nvim_create_user_command('FormatToggle', function(args)
       if args.bang then
         vim.b.disable_autoformat = not vim.b.disable_autoformat
+        local status = vim.b.disable_autoformat and 'disabled' or 'enabled'
+        vim.notify('Buffer auto formatting ' .. status)
       else
         vim.g.disable_autoformat = not vim.g.disable_autoformat
+        local status = vim.g.disable_autoformat and 'disabled' or 'enabled'
+        vim.notify('Global auto formatting ' .. status)
       end
     end, {
       desc = 'Toggle autoformat-on-save',
