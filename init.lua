@@ -916,6 +916,9 @@ require('lazy').setup({
       }
 
       server_setup 'rust_analyzer'
+
+      -- Servers configured manually in the `lsp` folder
+      vim.lsp.enable 'surrealql-lsp-server'
     end,
   },
 
