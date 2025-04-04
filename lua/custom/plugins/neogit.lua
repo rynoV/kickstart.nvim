@@ -6,7 +6,6 @@ return {
       'sindrets/diffview.nvim', -- optional - Diff integration
 
       -- Only one of these is needed.
-      'nvim-telescope/telescope.nvim', -- optional
       -- 'ibhagwan/fzf-lua', -- optional
       -- 'echasnovski/mini.pick', -- optional
     },
@@ -15,7 +14,7 @@ return {
       { '<leader>mgg', '<cmd>Neogit<cr>', desc = 'Neogit', mode = 'n' },
     },
     opts = function(_, opts)
-      opts.integrations = { telescope = true, diffview = true }
+      opts.integrations = { diffview = true }
       opts.disable_hint = true
       return opts
     end,
