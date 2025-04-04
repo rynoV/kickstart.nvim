@@ -173,6 +173,20 @@ return {
       desc = '[S]earch [B]uffers',
     },
     {
+      '<leader>sp',
+      function()
+        Snacks.picker.projects()
+      end,
+      desc = '[S]earch [P]rojects',
+    },
+    {
+      '<leader>sf',
+      function()
+        Snacks.picker.files()
+      end,
+      desc = '[S]earch [F]iles',
+    },
+    {
       '<leader>s?',
       function()
         Snacks.picker()
@@ -374,8 +388,21 @@ return {
       },
     },
     words = {},
-    dashboard = {},
+    dashboard = { example = 'files' },
     input = {},
+    picker = {
+      layout = {
+        -- reverse = true,
+        preset = function()
+          return vim.o.columns >= 120 and 'telescope' or 'vertical'
+        end,
+      },
+      formatters = {
+        file = {
+          filename_first = true,
+        },
+      },
+    },
   },
   init = function()
     -- Inform LSP about file rename in mini.files
