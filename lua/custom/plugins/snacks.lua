@@ -374,6 +374,8 @@ return {
       },
     },
     words = {},
+    dashboard = {},
+    input = {},
   },
   init = function()
     -- Inform LSP about file rename in mini.files
