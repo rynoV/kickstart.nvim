@@ -187,6 +187,13 @@ return {
       desc = '[S]earch [F]iles',
     },
     {
+      '<leader>s.',
+      function()
+        Snacks.picker.recent()
+      end,
+      desc = 'Recent files',
+    },
+    {
       '<leader>s?',
       function()
         Snacks.picker()
@@ -307,7 +314,7 @@ return {
       desc = 'Goto Declaration',
     },
     {
-      'gr',
+      'grr',
       function()
         Snacks.picker.lsp_references()
       end,
@@ -383,6 +390,10 @@ return {
     quickfile = { enabled = true }, -- When doing `nvim somefile.txt`, render the file as quickly as possible, before loading plugins
     indent = {
       enabled = true,
+      -- Shows only the indent guide for the current scope
+      indent = {
+        enabled = false,
+      },
       animate = {
         enabled = false,
       },
