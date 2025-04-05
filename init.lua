@@ -240,7 +240,12 @@ vim.api.nvim_create_autocmd('ColorScheme', {
     vim.api.nvim_set_hl(0, '@lsp.type.module', { link = '@lsp.type.class' })
     vim.api.nvim_set_hl(0, '@lsp.type.variable', { link = '@variable' })
     vim.api.nvim_set_hl(0, '@keyword.import', { link = '@keyword' })
+    local original_diag_unnecessary = vim.api.nvim_get_hl(0, { name = 'DiagnosticUnnecessary' })
     vim.api.nvim_set_hl(0, 'DiagnosticUnnecessary', { underdotted = true })
+    -- Snacks dim uses this highlight group by default, which usually looks
+    -- good so we avoid overriding it for snack dim only
+    ---@diagnostic disable-next-line: param-type-mismatch
+    vim.api.nvim_set_hl(0, 'SnacksDim', original_diag_unnecessary)
     vim.api.nvim_set_hl(0, 'TabLineFill', {})
   end,
 })
@@ -478,6 +483,7 @@ require('lazy').setup({
               -- Make the window look nicer assuming theme has a transparent background
               winblend = 0,
             },
+            override_vim_notify = false,
           },
         },
       },

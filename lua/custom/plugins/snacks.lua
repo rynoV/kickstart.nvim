@@ -383,6 +383,41 @@ return {
         }
       end,
     },
+    {
+      '<leader>sn',
+      function()
+        Snacks.picker.notifications()
+      end,
+      desc = 'Notification History',
+    },
+    {
+      '<leader>un',
+      function()
+        Snacks.notifier.hide()
+      end,
+      desc = 'Dismiss All Notifications',
+    },
+    {
+      '<leader>sx',
+      function()
+        Snacks.scratch.select()
+      end,
+      desc = 'Select Scratch Buffer',
+    },
+    {
+      '<leader>z',
+      function()
+        Snacks.zen()
+      end,
+      desc = 'Toggle Zen Mode',
+    },
+    {
+      '<leader>Z',
+      function()
+        Snacks.zen.zoom()
+      end,
+      desc = 'Toggle Zoom',
+    },
   },
   ---@type snacks.Config
   opts = {
@@ -412,6 +447,12 @@ return {
         file = {
           filename_first = true,
         },
+      },
+    },
+    notifier = {},
+    zen = {
+      toggles = {
+        dim = false,
       },
     },
   },
