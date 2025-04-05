@@ -279,46 +279,6 @@ vim.api.nvim_create_user_command('DiffOrig', diff_orig, {
   desc = 'Diff with the original file',
 })
 
-local toggle_qf = function()
-  if (vim.fn.getqflist { winid = 1 }).winid == 0 then
-    vim.cmd 'copen'
-  else
-    vim.cmd 'cclose'
-  end
-end
-
-local toggle_loc = function()
-  if (vim.fn.getloclist(0, { winid = 1 })).winid == 0 then
-    vim.cmd 'lopen'
-  else
-    vim.cmd 'lclose'
-  end
-end
-
-vim.keymap.set('n', '<leader>tq', toggle_qf, { desc = 'toggle quickfix list' })
-vim.keymap.set('n', '<leader>tl', toggle_loc, { desc = 'toggle location list' })
-
---- This is used to allow toggling virtual lines completely off or only on the
---- current line, remembering the previous config when toggling it back on.
----@type vim.diagnostic.Opts.VirtualLines
-local virtual_lines_conf = { current_line = false }
-
-vim.diagnostic.config { virtual_lines = false }
-
-vim.keymap.set('n', '<leader>tK', function()
-  local new_config = not virtual_lines_conf.current_line
-  virtual_lines_conf = { current_line = new_config }
-  -- Only update the active config if virtual lines are enabled
-  if vim.diagnostic.config().virtual_lines then
-    vim.diagnostic.config { virtual_lines = virtual_lines_conf }
-  end
-end, { desc = 'Toggle diagnostic show only on current line' })
-
-vim.keymap.set('n', '<leader>tk', function()
-  local new_config = not vim.diagnostic.config().virtual_lines
-  vim.diagnostic.config { virtual_lines = new_config and virtual_lines_conf or false }
-end, { desc = 'Toggle diagnostic show' })
-
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
@@ -532,16 +492,6 @@ require('lazy').setup({
           end
 
           local client = vim.lsp.get_client_by_id(event.data.client_id)
-
-          -- The following code creates a keymap to toggle inlay hints in your
-          -- code, if the language server you are using supports them
-          --
-          -- This may be unwanted, since they displace some of your code
-          if client and client.supports_method(vim.lsp.protocol.Methods.textDocument_inlayHint) then
-            map('<leader>th', function()
-              vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled { bufnr = event.buf })
-            end, '[T]oggle Inlay [H]ints')
-          end
 
           if client and client:supports_method 'textDocument/foldingRange' then
             local win = vim.api.nvim_get_current_win()
@@ -844,8 +794,28 @@ require('lazy').setup({
     opts = {
       enable = true,
     },
-    config = function()
-      vim.keymap.set('n', '<leader>tx', '<cmd>TSContextToggle<cr>', { desc = 'Toggle code context' })
+    init = function()
+      vim.api.nvim_create_autocmd('User', {
+        pattern = 'VeryLazy',
+        callback = function()
+          local m = require 'treesitter-context'
+          Snacks.toggle
+            .new({
+              name = 'Code context',
+              get = function()
+                return m.enabled()
+              end,
+              set = function(v)
+                if v then
+                  m.enable()
+                else
+                  m.disable()
+                end
+              end,
+            })
+            :map '<leader>tx'
+        end,
+      })
     end,
   },
   {
@@ -944,6 +914,80 @@ local util = require 'custom.util'
 vim.keymap.set('n', '[c', util.prev_change, { desc = 'previous change' })
 vim.keymap.set('n', ']c', util.next_change, { desc = 'next change' })
 vim.keymap.set('n', '<leader>mf', util.open_file_in_last_tab, { desc = 'Open file at cursor in previously accessed tab page' })
+
+--- This is used to allow toggling virtual lines completely off or only on the
+--- current line, remembering the previous config when toggling it back on.
+---@type vim.diagnostic.Opts.VirtualLines
+local virtual_lines_conf = { current_line = false }
+
+vim.diagnostic.config { virtual_lines = false }
+
+Snacks.toggle
+  .new({
+    name = 'Diagnostic show',
+    get = function()
+      return not not vim.diagnostic.config().virtual_lines
+    end,
+    set = function(v)
+      vim.diagnostic.config { virtual_lines = v and virtual_lines_conf or false }
+    end,
+  })
+  :map '<leader>tk'
+
+Snacks.toggle
+  .new({
+    name = 'Diagnostic show current line',
+    get = function()
+      return virtual_lines_conf.current_line
+    end,
+    set = function(v)
+      virtual_lines_conf = { current_line = v }
+      if vim.diagnostic.config().virtual_lines then
+        vim.diagnostic.config { virtual_lines = virtual_lines_conf }
+      end
+    end,
+  })
+  :map '<leader>tK'
+
+Snacks.toggle
+  .new({
+    wk_desc = {
+      enabled = 'Hide ',
+      disabled = 'Show ',
+    },
+    name = 'Quickfix list',
+    get = function()
+      return (vim.fn.getqflist { winid = 1 }).winid ~= 0
+    end,
+    set = function(v)
+      if v then
+        vim.cmd 'copen'
+      else
+        vim.cmd 'cclose'
+      end
+    end,
+  })
+  :map '<leader>tq'
+
+Snacks.toggle
+  .new({
+    wk_desc = {
+      enabled = 'Hide ',
+      disabled = 'Show ',
+    },
+    name = 'Location list',
+    get = function()
+      return (vim.fn.getloclist(0, { winid = 1 })).winid ~= 0
+    end,
+    set = function(v)
+      if v then
+        vim.cmd 'lopen'
+      else
+        vim.cmd 'lclose'
+      end
+    end,
+  })
+  :map '<leader>tl'
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et

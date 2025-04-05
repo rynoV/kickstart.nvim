@@ -11,8 +11,6 @@ return {
       mode = '',
       desc = '[F]ormat buffer',
     },
-    { '<leader>to', '<cmd>FormatToggle<cr>', desc = 'Toggle autoformat' },
-    { '<leader>tO', '<cmd>FormatToggle!<cr>', desc = 'Toggle autoformat for buffer' },
   },
   opts = {
     notify_on_error = true,
@@ -55,19 +53,35 @@ return {
   },
   init = function()
     vim.o.formatexpr = "v:lua.require'conform'.formatexpr()"
-    vim.api.nvim_create_user_command('FormatToggle', function(args)
-      if args.bang then
-        vim.b.disable_autoformat = not vim.b.disable_autoformat
-        local status = vim.b.disable_autoformat and 'disabled' or 'enabled'
-        vim.notify('Buffer auto formatting ' .. status)
-      else
-        vim.g.disable_autoformat = not vim.g.disable_autoformat
-        local status = vim.g.disable_autoformat and 'disabled' or 'enabled'
-        vim.notify('Global auto formatting ' .. status)
-      end
-    end, {
-      desc = 'Toggle autoformat-on-save',
-      bang = true,
+    vim.api.nvim_create_autocmd('User', {
+      pattern = 'VeryLazy',
+      callback = function()
+        -- Global autoformat toggle
+        Snacks.toggle
+          .new({
+            name = 'Format on save',
+            get = function()
+              return not vim.g.disable_autoformat
+            end,
+            set = function(v)
+              vim.g.disable_autoformat = not v
+            end,
+          })
+          :map '<leader>to'
+
+        -- Buffer-local autoformat toggle
+        Snacks.toggle
+          .new({
+            name = 'Format on save (buffer)',
+            get = function()
+              return not vim.b.disable_autoformat
+            end,
+            set = function(v)
+              vim.b.disable_autoformat = not v
+            end,
+          })
+          :map '<leader>tO'
+      end,
     })
   end,
 }

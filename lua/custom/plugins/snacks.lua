@@ -404,20 +404,6 @@ return {
       end,
       desc = 'Select Scratch Buffer',
     },
-    {
-      '<leader>z',
-      function()
-        Snacks.zen()
-      end,
-      desc = 'Toggle Zen Mode',
-    },
-    {
-      '<leader>Z',
-      function()
-        Snacks.zen.zoom()
-      end,
-      desc = 'Toggle Zoom',
-    },
   },
   ---@type snacks.Config
   opts = {
@@ -488,6 +474,8 @@ return {
         Snacks.toggle.inlay_hints():map '<leader>uh'
         Snacks.toggle.indent():map '<leader>ug'
         Snacks.toggle.dim():map '<leader>uD'
+        Snacks.toggle.zen():map '<leader>uz'
+        Snacks.toggle.zoom():map '<leader>uZ'
       end,
     })
   end,
