@@ -173,6 +173,8 @@ vim.opt.tabclose = { 'uselast', 'left' }
 
 vim.opt.completeopt:append { 'noinsert', 'popup' }
 
+vim.opt.conceallevel = 2
+
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 
