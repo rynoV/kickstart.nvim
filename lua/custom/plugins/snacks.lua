@@ -435,6 +435,7 @@ return {
         Snacks.toggle.dim():map '<leader>uD'
         Snacks.toggle.zen():map '<leader>uz'
         Snacks.toggle.zoom():map '<leader>uZ'
+        Snacks.toggle.animate():map '<leader>ua'
       end,
     })
   end,
