@@ -6,8 +6,8 @@ return {
   },
   opts = {
     ring = {
-      permanent_wrapper = function()
-        require('yanky.wrappers').remove_carriage_return()
+      permanent_wrapper = function(...)
+        return require('yanky.wrappers').remove_carriage_return(...)
       end,
     },
     -- This is like :help vim.highlight.on_yank(), but also highlights on paste
