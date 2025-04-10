@@ -146,6 +146,13 @@ return {
       desc = '[S]earch [F]iles',
     },
     {
+      '<leader>sP',
+      function()
+        Snacks.picker.grep { cwd = vim.fn.stdpath 'data' .. '/lazy' }
+      end,
+      desc = 'Search plugin code',
+    },
+    {
       '<leader>s.',
       function()
         Snacks.picker.recent()
