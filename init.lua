@@ -181,7 +181,6 @@ vim.opt.conceallevel = 2
 -- Hold over from emacs muscle memory
 vim.keymap.set('c', '<C-g>', '<Esc>')
 
-vim.keymap.set('n', 'gV', '`[v`]', { desc = 'Select last yank/paste' })
 vim.keymap.set('n', '<A-8>', [[m`/\<<C-r><C-w>\><CR>``]], { desc = 'Do `*` but stay on current match and preserve window scroll position' })
 vim.keymap.set('n', '<A-3>', [[m`?\<<C-r><C-w>\><CR>``]], { desc = 'Do `#` but stay on current match and preserve window scroll position' })
 
@@ -222,17 +221,6 @@ vim.keymap.set('n', '<leader>w', '<C-w>')
 
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
-
--- Highlight when yanking (copying) text
---  Try it with `yap` in normal mode
---  See `:help vim.highlight.on_yank()`
-vim.api.nvim_create_autocmd('TextYankPost', {
-  desc = 'Highlight when yanking (copying) text',
-  group = vim.api.nvim_create_augroup('kickstart-highlight-yank', { clear = true }),
-  callback = function()
-    vim.highlight.on_yank()
-  end,
-})
 
 vim.api.nvim_create_autocmd('ColorScheme', {
   desc = 'Color scheme customization',
