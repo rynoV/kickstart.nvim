@@ -12,7 +12,7 @@ return {
     },
     -- This is like :help vim.highlight.on_yank(), but also highlights on paste
     highlight = {
-      timer = 200,
+      timer = 150,
     },
     -- Similar to vim.keymap.set('n', 'gV', '`[v`]', { desc = 'Select last yank/paste' })
     -- but this is a textobject. Mapped to `iy` below
