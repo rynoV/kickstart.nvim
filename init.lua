@@ -229,6 +229,8 @@ vim.api.nvim_create_autocmd('ColorScheme', {
     -- These are mostly based on the fsharp lsp/treesitter defaults
     vim.api.nvim_set_hl(0, '@lsp.type.module', { link = '@lsp.type.class' })
     vim.api.nvim_set_hl(0, '@lsp.type.variable', { link = '@variable' })
+    -- Parameters don't need a different colour from variables
+    vim.api.nvim_set_hl(0, '@variable.parameter', { link = '@variable' })
     vim.api.nvim_set_hl(0, '@keyword.import', { link = '@keyword' })
     local original_diag_unnecessary = vim.api.nvim_get_hl(0, { name = 'DiagnosticUnnecessary' })
     vim.api.nvim_set_hl(0, 'DiagnosticUnnecessary', { underdotted = true })
