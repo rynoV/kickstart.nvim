@@ -4,6 +4,7 @@
   (module_defn)
   (member_defn)
   (type_definition)
+  (type_extension_elements)
   (ce_expression)
   (for_expression)
   (while_expression)
