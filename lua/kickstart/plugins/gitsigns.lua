@@ -66,6 +66,13 @@ return {
         map('n', '<leader>hD', function()
           gitsigns.diffthis '@'
         end, { desc = 'git [D]iff against last commit' })
+        map('n', '<leader>hq', function()
+          gitsigns.setqflist('all', { use_location_list = false })
+        end, { desc = 'Set quickfix list with hunks' })
+        map('n', '<leader>hl', function()
+          -- Current buffer only
+          gitsigns.setqflist(0, { use_location_list = true })
+        end, { desc = 'Set location list with hunks' })
         -- Toggles
         local config = require('gitsigns.config').config
         Snacks.toggle
