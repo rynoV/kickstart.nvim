@@ -164,6 +164,10 @@ vim.opt.scrolloff = 10
 -- outline, or za to fold at the cursor, and zi to toggle folding.
 vim.opt.foldenable = true
 vim.opt.foldlevel = 9999
+-- Use syntax highlighting for showing the first line of a closed fold
+-- https://github.com/neovim/neovim/pull/20750
+vim.opt.foldtext = ''
+vim.opt.fillchars = 'fold: '
 
 -- Show a border for floating windows
 vim.opt.winborder = 'rounded'
