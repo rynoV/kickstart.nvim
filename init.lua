@@ -181,6 +181,12 @@ vim.opt.conceallevel = 2
 -- Hold over from emacs muscle memory
 vim.keymap.set('c', '<C-g>', '<Esc>')
 
+-- See `:help :make_makeprg`, `:help compiler-select`, and the built in
+-- compiler settings:
+-- https://github.com/neovim/neovim/tree/master/runtime/compiler
+vim.keymap.set('n', '<A-b>', [[<cmd>make!<CR>]], { desc = 'Build' })
+vim.keymap.set('n', '<A-S-b>', [[<cmd>make<CR>]], { desc = 'Build and jump to diagnostic' })
+
 vim.keymap.set('n', '<A-8>', [[m`/\<<C-r><C-w>\><CR>``]], { desc = 'Do `*` but stay on current match and preserve window scroll position' })
 vim.keymap.set('n', '<A-3>', [[m`?\<<C-r><C-w>\><CR>``]], { desc = 'Do `#` but stay on current match and preserve window scroll position' })
 
