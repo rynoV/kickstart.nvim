@@ -34,12 +34,19 @@ return {
         lsp_format = lsp_format_opt,
       }
     end,
+    formatters = {
+      hledger_fmt = {
+        command = 'hledger-fmt',
+        args = { '--no-diff', '-' },
+      },
+    },
     formatters_by_ft = {
       lua = { 'stylua' },
       -- Don't set formatter for F# so that the fsautocomplete formatting will be used, which respects project specific fantomas versions and settings
       -- fsharp = { 'fantomas' },
       json = { 'prettier' },
       markdown = { 'prettier' },
+      ledger = { 'hledger_fmt' },
       -- Use the "_" filetype to run formatters on filetypes that don't
       -- have other formatters configured.
       ['_'] = { 'trim_whitespace' },
