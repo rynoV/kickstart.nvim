@@ -584,6 +584,7 @@ require('lazy').setup({
             },
           },
         }
+        servers.csharp_ls = {}
       end
 
       -- Ensure the servers and tools above are installed
