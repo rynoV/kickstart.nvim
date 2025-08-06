@@ -182,6 +182,9 @@ vim.opt.conceallevel = 2
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 
+vim.keymap.set('x', 'iL', '^o$h', { desc = 'Line content' })
+vim.keymap.set('o', 'iL', ':normal viL<CR>', { desc = 'Line content' })
+
 -- Hold over from emacs muscle memory
 vim.keymap.set('c', '<C-g>', '<Esc>')
 
