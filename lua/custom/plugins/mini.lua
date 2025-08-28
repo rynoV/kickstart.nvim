@@ -1,5 +1,5 @@
 return { -- Collection of various small independent plugins/modules
-  'echasnovski/mini.nvim',
+  'nvim-mini/mini.nvim',
   config = function()
     -- Call "write" to start saving a local session, then the session will be auto saved and read
     local mini_sessions = require 'mini.sessions'
@@ -54,8 +54,5 @@ return { -- Collection of various small independent plugins/modules
     statusline.section_location = function()
       return '%2l:%-2v'
     end
-
-    -- ... and there is more!
-    --  Check out: https://github.com/echasnovski/mini.nvim
   end,
 }
