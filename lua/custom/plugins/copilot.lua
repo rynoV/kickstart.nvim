@@ -56,7 +56,7 @@ return {
     keys = {
       { '<leader>tc', '<cmd>CopilotChatToggle<cr>', desc = 'Toggle Copilot Chat' },
       { '<leader>mc', '<cmd>CopilotChatCommit<cr>', desc = 'Commit message for staged changes' },
-      { '<leader>cc', '<cmd>CopilotChatPrompts<cr>', desc = 'Copilot prompt' },
+      { '<leader>mC', '<cmd>CopilotChatPrompts<cr>', mode = { 'n', 'x' }, desc = 'Copilot prompt' },
     },
   },
 }

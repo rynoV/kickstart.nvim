@@ -80,6 +80,7 @@ return {
       -- See :h blink-cmp-config-keymap for defining your own keymap
       keymap = {
         preset = 'enter',
+        -- For this to work on MacOS, need to disable the default OS level shortcut
         ['<C-space>'] = { 'show_documentation', 'hide_documentation' },
         ['<C-n>'] = { 'show', 'select_next', 'fallback_to_mappings' },
         ['<Tab>'] = {

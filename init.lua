@@ -571,7 +571,6 @@ require('lazy').setup({
       local is_macos = vim.fn.has 'mac' == 1
       local is_linux = vim.fn.has 'unix' == 1 and not is_macos
       if is_linux or is_macos then
-        servers.rust_analyzer = {}
       end
 
       if is_linux or is_windows then
@@ -632,13 +631,10 @@ require('lazy').setup({
         handlers = { server_setup },
       }
 
-      server_setup 'rust_analyzer'
-
       -- Servers configured manually in the `lsp` folder
       vim.lsp.enable 'surrealql-lsp-server'
     end,
   },
-
   { -- You can easily change to a different colorscheme.
     -- Change the name of the colorscheme plugin below, and then
     -- change the command in the config to whatever the name of that colorscheme is.
