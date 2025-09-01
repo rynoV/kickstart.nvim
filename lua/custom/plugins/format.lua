@@ -1,5 +1,7 @@
 return {
   'stevearc/conform.nvim',
+  -- Locked here until this is fixed: https://github.com/stevearc/conform.nvim/issues/752
+  commit = 'f9ef25a7ef00267b7d13bfc00b0dea22d78702d5',
   event = { 'BufWritePre' },
   cmd = { 'ConformInfo' },
   keys = {
