@@ -929,6 +929,19 @@ vim.keymap.set('n', '[c', util.prev_change, { desc = 'previous change' })
 vim.keymap.set('n', ']c', util.next_change, { desc = 'next change' })
 vim.keymap.set('n', '<leader>mf', util.open_file_in_last_tab, { desc = 'Open file at cursor in previously accessed tab page' })
 
+Snacks.toggle
+  .new({
+    name = 'Terminal',
+    get = function()
+      return util.term_enabled()
+    end,
+    set = function(v)
+      util.toggle_term()
+    end,
+    notify = false,
+  })
+  :map '<leader>tt'
+
 --- This is used to allow toggling virtual lines completely off or only on the
 --- current line, remembering the previous config when toggling it back on.
 ---@type vim.diagnostic.Opts.VirtualLines

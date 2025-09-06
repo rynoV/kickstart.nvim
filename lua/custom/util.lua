@@ -53,6 +53,50 @@ local function open_file_in_last_tab()
   end
 end
 
+function M.term_enabled()
+  -- Check if the current tab has a terminal window
+  for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
+    local buf = vim.api.nvim_win_get_buf(win)
+    local buf_type = vim.api.nvim_get_option_value('buftype', { buf = buf })
+    if buf_type == 'terminal' then
+      return true
+    end
+  end
+  return false
+end
+
+function M.toggle_term()
+  if M.term_enabled() then
+    -- If current tab has a terminal, switch to last tab if it exists, else next tab
+    if vim.fn.tabpagenr '#' ~= 0 then
+      vim.cmd 'tabnext #'
+    else
+      vim.cmd 'tabnext'
+    end
+  else
+    -- Check if any tab has a terminal window
+    local term_tab_found = false
+    for _, tab in ipairs(vim.api.nvim_list_tabpages()) do
+      for _, win in ipairs(vim.api.nvim_tabpage_list_wins(tab)) do
+        local buf = vim.api.nvim_win_get_buf(win)
+        if vim.api.nvim_get_option_value('buftype', { buf = buf }) == 'terminal' then
+          vim.api.nvim_set_current_tabpage(tab)
+          term_tab_found = true
+          break
+        end
+      end
+      if term_tab_found then
+        break
+      end
+    end
+
+    -- If no terminal tab found, create a new one
+    if not term_tab_found then
+      vim.cmd 'tab term'
+    end
+  end
+end
+
 M.get_loc_at_cursor = get_loc_at_cursor
 M.open_file_in_last_tab = open_file_in_last_tab
 
