@@ -24,7 +24,30 @@ return { -- Collection of various small independent plugins/modules
     --  - va)  - [V]isually select [A]round [)]paren
     --  - yinq - [Y]ank [I]nside [N]ext [Q]uote
     --  - ci'  - [C]hange [I]nside [']quote
-    require('mini.ai').setup { n_lines = 500 }
+    require('mini.ai').setup {
+      n_lines = 500,
+      custom_textobjects = {
+        -- "subword" text object.. snake_case, camelCase, PascalCase, etc; all capitalizations
+        s = {
+          -- Based on https://github.com/nvim-mini/mini.nvim/discussions/1434
+          -- Lua 5.1 character classes and the undocumented frontier pattern:
+          -- https://www.lua.org/manual/5.1/manual.html#5.4.1
+          -- http://lua-users.org/wiki/FrontierPattern
+          {
+            -- PascalCaseWords (or the latter part of camelCaseWords)
+            -- Snake_Case_Words in titlecase
+            -- regular UPPERCASE words
+            { '%f[%u]%u+[%l%d]*%f[^%d%l]', '^().*()$' },
+            -- SNAKE_CASE_WORDS in uppercase
+            { '%f[%u]%u+[%l%d]*%f[^%w]', '^().*()$' },
+            -- start of camelCaseWords (just the `camel`)
+            -- snake_case_words in lowercase
+            -- regular lowercase words
+            { '%f[^%s%p][%l%d]+', '^().*()$' },
+          },
+        },
+      },
+    }
 
     -- Add/delete/replace surroundings (brackets, quotes, etc.)
     --
@@ -32,6 +55,32 @@ return { -- Collection of various small independent plugins/modules
     -- - sd'   - [S]urround [D]elete [']quotes
     -- - sr)'  - [S]urround [R]eplace [)] [']
     require('mini.surround').setup { n_lines = 500 }
+
+    require('mini.bracketed').setup {
+      -- First-level elements are tables describing behavior of a target:
+      --
+      -- - <suffix> - single character suffix. Used after `[` / `]` in mappings.
+      --   For example, with `b` creates `[B`, `[b`, `]b`, `]B` mappings.
+      --   Supply empty string `''` to not create mappings.
+      --
+      -- - <options> - table overriding target options.
+      --
+      -- See `:h MiniBracketed.config` for more info.
+      buffer = { suffix = '', options = {} },
+      comment = { suffix = '', options = {} },
+      conflict = { suffix = '', options = {} },
+      diagnostic = { suffix = '', options = {} },
+      file = { suffix = '', options = {} },
+      indent = { suffix = 'i', options = { change_type = 'diff' } },
+      jump = { suffix = '', options = {} },
+      location = { suffix = '', options = {} },
+      oldfile = { suffix = 'o', options = {} },
+      quickfix = { suffix = '', options = {} },
+      treesitter = { suffix = 't', options = {} },
+      undo = { suffix = 'u', options = {} },
+      window = { suffix = '', options = {} },
+      yank = { suffix = 'y', options = {} },
+    }
 
     require('mini.files').setup {}
 

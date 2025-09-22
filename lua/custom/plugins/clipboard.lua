@@ -1,6 +1,7 @@
 ---@type LazyPluginSpec
 return {
   'gbprod/yanky.nvim',
+  enabled = false, -- too slow on wsl
   dependencies = {
     'folke/snacks.nvim', -- For the snacks picker to self-register
   },
