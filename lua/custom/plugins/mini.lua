@@ -128,5 +128,73 @@ return { -- Collection of various small independent plugins/modules
     statusline.section_location = function()
       return '%2l:%-2v'
     end
+
+    local miniclue = require 'mini.clue'
+    miniclue.setup {
+      window = { delay = 1200, config = { width = 'auto' } },
+      triggers = {
+        -- Leader triggers
+        { mode = 'n', keys = '<Leader>' },
+        { mode = 'x', keys = '<Leader>' },
+
+        -- `[` and `]` keys
+        { mode = 'n', keys = '[' },
+        { mode = 'n', keys = ']' },
+
+        -- Built-in completion
+        { mode = 'i', keys = '<C-x>' },
+
+        -- `g` key
+        { mode = 'n', keys = 'g' },
+        { mode = 'x', keys = 'g' },
+
+        -- Marks
+        { mode = 'n', keys = "'" },
+        { mode = 'n', keys = '`' },
+        { mode = 'x', keys = "'" },
+        { mode = 'x', keys = '`' },
+
+        -- Registers
+        { mode = 'n', keys = '"' },
+        { mode = 'x', keys = '"' },
+        { mode = 'i', keys = '<C-r>' },
+        { mode = 'c', keys = '<C-r>' },
+
+        -- Window commands
+        { mode = 'n', keys = '<C-w>' },
+
+        -- `z` key
+        { mode = 'n', keys = 'z' },
+        { mode = 'x', keys = 'z' },
+      },
+
+      clues = {
+        -- Enhance this by adding descriptions for <Leader> mapping groups
+        miniclue.gen_clues.square_brackets(),
+        miniclue.gen_clues.builtin_completion(),
+        miniclue.gen_clues.g(),
+        miniclue.gen_clues.marks(),
+        miniclue.gen_clues.registers(),
+        miniclue.gen_clues.windows(),
+        miniclue.gen_clues.z(),
+        { mode = 'n', keys = '<Leader>c', desc = '+Code' },
+        { mode = 'n', keys = '<Leader>s', desc = '+Search' },
+        { mode = 'x', keys = '<Leader>s', desc = '+Search (using selection)' },
+        { mode = 'n', keys = '<Leader>t', desc = '+Toggle' },
+        { mode = 'n', keys = '<Leader>td', desc = '+Debug' },
+        { mode = 'n', keys = '<Leader>h', desc = '+Git Hunk' },
+        { mode = 'x', keys = '<Leader>h', desc = '+Git Hunk (using selection)' },
+        { mode = 'n', keys = '<Leader>m', desc = '+Misc' },
+        { mode = 'x', keys = '<Leader>m', desc = '+Misc (using selection)' },
+        { mode = 'n', keys = '<Leader>mg', desc = '+Git' },
+        { mode = 'n', keys = '<Leader>ms', desc = '+Snippets' },
+        { mode = 'n', keys = '<Leader>b', desc = '+Buffers' },
+        { mode = 'n', keys = '<Leader>l', desc = '+Lists' },
+        { mode = 'n', keys = '<Leader>u', desc = '+UI' },
+        { mode = 'n', keys = '<Leader>g', desc = '+Git' },
+      },
+    }
   end,
+
+  -- Try: comment
 }
