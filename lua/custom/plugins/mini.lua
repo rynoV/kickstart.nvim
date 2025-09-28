@@ -72,23 +72,26 @@ return { -- Collection of various small independent plugins/modules
       buffer = { suffix = '', options = {} },
       comment = { suffix = '', options = {} },
       conflict = { suffix = '', options = {} },
-      diagnostic = { suffix = '', options = {} },
+      diagnostic = { suffix = 'd', f = brack.diagnostic, options = {}, name = 'Diagnostic' },
       file = { suffix = '', options = {} },
-      indent = { suffix = 'i', f = brack.indent, options = { change_type = 'diff' } },
-      jump = { suffix = '', options = {} },
-      location = { suffix = '', options = {} },
-      oldfile = { suffix = 'o', f = brack.oldfile, options = {} },
-      quickfix = { suffix = '', options = {} },
-      treesitter = { suffix = 't', f = brack.treesitter, options = {} },
-      undo = { suffix = 'u', f = brack.undo, options = {} },
+      indent = { suffix = 'i', f = brack.indent, options = { change_type = 'diff' }, name = 'Indent' },
+      jump = { suffix = 'j', f = brack.jump, options = {}, name = 'Jump in file' },
+      location = { suffix = 'l', f = brack.location, options = {}, name = 'Location list item' },
+      oldfile = { suffix = 'o', f = brack.oldfile, options = {}, name = 'Visited file' },
+      quickfix = { suffix = 'q', f = brack.quickfix, options = {}, name = 'Quickfix item' },
+      treesitter = { suffix = 't', f = brack.treesitter, options = {}, name = 'Treesitter element' },
+      undo = { suffix = 'u', f = brack.undo, options = {}, name = 'Undo point' },
       window = { suffix = '', options = {} },
-      yank = { suffix = 'y', f = brack.yank, options = {} },
+      yank = { suffix = 'y', f = brack.yank, options = {}, name = 'Yank history item' },
     }
 
     brack.setup(conf)
 
     -- Override the "backward/forward" mappings from bracketed with wrapped
     -- versions to make them repeatable with ; and ,
+    --
+    -- This only overrides the normal mode bindings; operator and visual mode
+    -- bindings will work but won't be repeatable
     local move = require 'nvim-next.move'
     for _, target in pairs(conf) do
       if target.suffix ~= '' then
@@ -99,8 +102,8 @@ return { -- Collection of various small independent plugins/modules
         end, function(_)
           target.f 'forward'
         end)
-        vim.keymap.set('n', '[' .. target.suffix, prev)
-        vim.keymap.set('n', ']' .. target.suffix, next)
+        vim.keymap.set('n', '[' .. target.suffix, prev, { desc = target.name .. ' backward' })
+        vim.keymap.set('n', ']' .. target.suffix, next, { desc = target.name .. ' forward' })
       end
     end
 

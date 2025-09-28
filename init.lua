@@ -882,47 +882,6 @@ require('lazy').setup({
   },
 })
 
--- For some reason these only work when placing them after the plugin spec
-local next_integrations = require 'nvim-next.integrations'
-local nndiag = next_integrations.diagnostic()
-local nqf = next_integrations.quickfix()
-
-local move = require 'nvim-next.move'
--- These are relative to the cursor, and don't work in the loc window
-local prev_loc_item_relative, next_loc_item_relative = move.make_repeatable_pair(function(_)
-  local status, _ = pcall(vim.cmd['lbefore'])
-  if not status then
-    vim.notify('No more items', vim.log.levels.INFO, { title = 'LocList' })
-  end
-end, function(_)
-  local status, _ = pcall(vim.cmd['lafter'])
-  if not status then
-    vim.notify('No more items', vim.log.levels.INFO, { title = 'LocList' })
-  end
-end)
-
--- These are based on the current position in the loc list, and do work in the loc window
-local prev_loc_item_absolute, next_loc_item_absolute = move.make_repeatable_pair(function(_)
-  local status, _ = pcall(vim.cmd['lprevious'])
-  if not status then
-    vim.notify('No more items', vim.log.levels.INFO, { title = 'LocList' })
-  end
-end, function(_)
-  local status, _ = pcall(vim.cmd['lnext'])
-  if not status then
-    vim.notify('No more items', vim.log.levels.INFO, { title = 'LocList' })
-  end
-end)
-
-vim.keymap.set('n', '[q', nqf.cprevious, { desc = 'previous quickfix list item' })
-vim.keymap.set('n', ']q', nqf.cnext, { desc = 'next quickfix list item' })
-vim.keymap.set('n', '[l', prev_loc_item_relative, { desc = 'previous location list item relative to cursor' })
-vim.keymap.set('n', ']l', next_loc_item_relative, { desc = 'next location list item relative to cursor' })
-vim.keymap.set('n', '[L', prev_loc_item_absolute, { desc = 'previous location list item' })
-vim.keymap.set('n', ']L', next_loc_item_absolute, { desc = 'next location list item' })
-vim.keymap.set('n', '[d', nndiag.goto_prev { severity = { min = vim.diagnostic.severity.WARN } }, { desc = 'previous diagnostic' })
-vim.keymap.set('n', ']d', nndiag.goto_next { severity = { min = vim.diagnostic.severity.WARN } }, { desc = 'next diagnostic' })
-
 local util = require 'custom.util'
 
 vim.keymap.set('n', '[c', util.prev_change, { desc = 'previous change' })
