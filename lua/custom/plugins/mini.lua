@@ -1,5 +1,7 @@
+--- @type LazyPluginSpec
 return { -- Collection of various small independent plugins/modules
   'nvim-mini/mini.nvim',
+  dependencies = { 'ghostbuster91/nvim-next' },
   config = function()
     -- Call "write" to start saving a local session, then the session will be auto saved and read
     local mini_sessions = require 'mini.sessions'
@@ -56,7 +58,8 @@ return { -- Collection of various small independent plugins/modules
     -- - sr)'  - [S]urround [R]eplace [)] [']
     require('mini.surround').setup { n_lines = 500 }
 
-    require('mini.bracketed').setup {
+    local brack = require 'mini.bracketed'
+    local conf = {
       -- First-level elements are tables describing behavior of a target:
       --
       -- - <suffix> - single character suffix. Used after `[` / `]` in mappings.
@@ -71,16 +74,35 @@ return { -- Collection of various small independent plugins/modules
       conflict = { suffix = '', options = {} },
       diagnostic = { suffix = '', options = {} },
       file = { suffix = '', options = {} },
-      indent = { suffix = 'i', options = { change_type = 'diff' } },
+      indent = { suffix = 'i', f = brack.indent, options = { change_type = 'diff' } },
       jump = { suffix = '', options = {} },
       location = { suffix = '', options = {} },
-      oldfile = { suffix = 'o', options = {} },
+      oldfile = { suffix = 'o', f = brack.oldfile, options = {} },
       quickfix = { suffix = '', options = {} },
-      treesitter = { suffix = 't', options = {} },
-      undo = { suffix = 'u', options = {} },
+      treesitter = { suffix = 't', f = brack.treesitter, options = {} },
+      undo = { suffix = 'u', f = brack.undo, options = {} },
       window = { suffix = '', options = {} },
-      yank = { suffix = 'y', options = {} },
+      yank = { suffix = 'y', f = brack.yank, options = {} },
     }
+
+    brack.setup(conf)
+
+    -- Override the "backward/forward" mappings from bracketed with wrapped
+    -- versions to make them repeatable with ; and ,
+    local move = require 'nvim-next.move'
+    for _, target in pairs(conf) do
+      if target.suffix ~= '' then
+        -- We don't need to worry about passing the options because the options
+        -- from the config become the defaults
+        local prev, next = move.make_repeatable_pair(function(_)
+          target.f 'backward'
+        end, function(_)
+          target.f 'forward'
+        end)
+        vim.keymap.set('n', '[' .. target.suffix, prev)
+        vim.keymap.set('n', ']' .. target.suffix, next)
+      end
+    end
 
     require('mini.files').setup {}
 
