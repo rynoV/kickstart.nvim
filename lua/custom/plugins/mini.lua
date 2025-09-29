@@ -37,15 +37,33 @@ return { -- Collection of various small independent plugins/modules
           -- http://lua-users.org/wiki/FrontierPattern
           {
             -- PascalCaseWords (or the latter part of camelCaseWords)
-            -- Snake_Case_Words in titlecase
-            -- regular UPPERCASE words
+            -- In english: starting at the transition from anything that's not
+            -- an uppercase letter to an uppercase letter, take one or more
+            -- uppercase letters, then take zero or more lowercase letters,
+            -- ending at the transition to something that's not a lowercase
+            -- letter. This pattern treats an uppercase letter as the end of a
+            -- subword and requires at least one lowercase letter for the end
+            -- transition.
             { '%f[%u]%u+[%l%d]*%f[^%d%l]', '^().*()$' },
             -- SNAKE_CASE_WORDS in uppercase
-            { '%f[%u]%u+[%l%d]*%f[^%w]', '^().*()$' },
+            -- Snake_Case_Words in titlecase
+            -- regular UPPERCASE words
+            -- Kebab-Case
+            -- KEBAB-CASE (note: using %w at the end instead of %d%a breaks this case)
+            -- In english: starting at the transition from anything that's not
+            -- an uppercase letter to an uppercase letter, take one or more
+            -- uppercase letters, then take zero or more lowercase letters,
+            -- ending at the transition to something that's not a letter. This
+            -- pattern treats separator characters like "_" and "-" as the end
+            -- of a subword, and does not require a lowercase letter.
+            { '%f[%u]%u+[%l%d]*%f[^%d%a]', '^().*()$' },
             -- start of camelCaseWords (just the `camel`)
             -- snake_case_words in lowercase
             -- regular lowercase words
-            { '%f[^%s%p][%l%d]+', '^().*()$' },
+            -- kebab-case
+            -- In english: starting at the transition from anything that's not
+            -- a letter to a letter, take one or more lowercase letters
+            { '%f[%a%d][%l%d]+', '^().*()$' },
           },
         },
       },
