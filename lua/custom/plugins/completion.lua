@@ -2,6 +2,7 @@ return {
   'saghen/blink.cmp',
   dependencies = {
     'zbirenbaum/copilot.lua',
+    'folke/sidekick.nvim',
     {
       'L3MON4D3/LuaSnip',
       build = (function()
@@ -94,6 +95,9 @@ return {
             end
           end,
           'snippet_forward',
+          function()
+            return require('sidekick').nes_jump_or_apply()
+          end,
           'fallback',
         },
         ['<A-1>'] = {
