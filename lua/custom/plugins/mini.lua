@@ -132,6 +132,10 @@ return { -- Collection of various small independent plugins/modules
       require('mini.files').open(vim.api.nvim_buf_get_name(0))
     end, { desc = 'File explorer focus current file' })
 
+    require('mini.git').setup {}
+
+    vim.cmd 'au FileType diff,git setlocal foldmethod=expr foldexpr=v:lua.MiniGit.diff_foldexpr()'
+
     -- Simple and easy statusline.
     --  You could remove this setup call if you don't like it,
     --  and try some other statusline plugin
