@@ -1,7 +1,19 @@
 --- @type LazyPluginSpec
 return {
   'folke/sidekick.nvim',
-  opts = {},
+  opts = {
+    cli = {
+      win = {
+        split = {
+          width = 100,
+          height = 20,
+        },
+        keys = {
+          blur = false,
+        },
+      },
+    },
+  },
   keys = {
     {
       '<tab>',
@@ -25,33 +37,9 @@ return {
     {
       '<leader>aa',
       function()
-        require('sidekick.cli').toggle { focus = true }
+        require('sidekick.cli').toggle { name = 'copilot', focus = true }
       end,
-      desc = 'Sidekick Toggle CLI',
-      mode = { 'n', 'v' },
-    },
-    {
-      '<leader>ac',
-      function()
-        require('sidekick.cli').toggle { name = 'claude', focus = true }
-      end,
-      desc = 'Sidekick Claude Toggle',
-      mode = { 'n', 'v' },
-    },
-    {
-      '<leader>ag',
-      function()
-        require('sidekick.cli').toggle { name = 'grok', focus = true }
-      end,
-      desc = 'Sidekick Grok Toggle',
-      mode = { 'n', 'v' },
-    },
-    {
-      '<leader>ap',
-      function()
-        require('sidekick.cli').select_prompt()
-      end,
-      desc = 'Sidekick Ask Prompt',
+      desc = 'Sidekick Copilot Toggle',
       mode = { 'n', 'v' },
     },
   },
