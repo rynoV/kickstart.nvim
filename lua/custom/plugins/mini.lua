@@ -164,9 +164,9 @@ return { -- Collection of various small independent plugins/modules
             '%<', -- Mark general truncate point
             { hl = 'MiniStatuslineFilename', strings = { filename } },
             '%=', -- End left alignment
+            { hl = copilot_hl, strings = { ' ' } },
             { hl = 'MiniStatuslineFileinfo', strings = { fileinfo } },
             { hl = mode_hl, strings = { search, location } },
-            { hl = copilot_hl, strings = { ' ' } },
           }
         end,
       },
