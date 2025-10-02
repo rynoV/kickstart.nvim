@@ -1,15 +1,13 @@
 --- @type LazyPluginSpec
 return {
   'folke/sidekick.nvim',
+  dependencies = { 'folke/snacks.nvim' },
   opts = {
     cli = {
       win = {
         split = {
           width = 100,
           height = 20,
-        },
-        keys = {
-          blur = false,
         },
       },
     },
@@ -41,6 +39,30 @@ return {
       end,
       desc = 'Sidekick Copilot Toggle',
       mode = { 'n', 'v' },
+    },
+    {
+      '<leader>at',
+      function()
+        require('sidekick.cli').send { msg = '{this}' }
+      end,
+      mode = { 'x', 'n' },
+      desc = 'Send This',
+    },
+    {
+      '<leader>as',
+      function()
+        require('sidekick.cli').send { selection = true }
+      end,
+      mode = { 'v' },
+      desc = 'Sidekick Send Visual Selection',
+    },
+    {
+      '<leader>ap',
+      function()
+        require('sidekick.cli').prompt()
+      end,
+      mode = { 'n', 'x' },
+      desc = 'Sidekick Select Prompt',
     },
   },
 }
