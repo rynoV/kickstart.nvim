@@ -159,7 +159,7 @@ return { -- Collection of various small independent plugins/modules
           local copilot_hl = status and (status.kind == 'Error' and 'DiagnosticError' or status.busy and 'DiagnosticWarn' or 'Special') or nil
 
           return MiniStatusline.combine_groups {
-            { hl = mode_hl, string = { mode } },
+            { hl = mode_hl, strings = { mode } },
             { hl = 'MiniStatuslineDevinfo', strings = { git, diff, diagnostics, lsp } },
             '%<', -- Mark general truncate point
             { hl = 'MiniStatuslineFilename', strings = { filename } },
