@@ -228,7 +228,9 @@ vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' }
 
 -- Keybinds to make split navigation easier.
 --  See `:help wincmd` for a list of all window commands
-vim.keymap.set('n', '<leader>w', '<C-w>', { desc = '+Window' })
+vim.keymap.set('n', '<leader>w', function()
+  vim.api.nvim_input '<C-w>'
+end, { desc = '+Window' })
 
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`

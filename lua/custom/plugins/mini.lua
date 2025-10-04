@@ -173,12 +173,6 @@ return { -- Collection of various small independent plugins/modules
     }
 
     local miniclue = require 'mini.clue'
-    local win_clues = miniclue.gen_clues.windows()
-    -- TODO: this doesn't seem to capture any dynamic bindings like C-w d, just whatever is hardcoded into this map.
-    local leader_w_clues = vim.deepcopy(win_clues)
-    vim.tbl_map(function(c)
-      c.keys = c.keys:gsub('^<C%-w>', '<Leader>w')
-    end, leader_w_clues)
     miniclue.setup {
       window = { delay = 1200, config = { width = 'auto' } },
       triggers = {
@@ -211,7 +205,6 @@ return { -- Collection of various small independent plugins/modules
 
         -- Window commands
         { mode = 'n', keys = '<C-w>' },
-        -- { mode = 'n', keys = '<Leader>w' },
 
         -- `z` key
         { mode = 'n', keys = 'z' },
@@ -225,8 +218,7 @@ return { -- Collection of various small independent plugins/modules
         miniclue.gen_clues.g(),
         miniclue.gen_clues.marks(),
         miniclue.gen_clues.registers(),
-        win_clues,
-        leader_w_clues,
+        miniclue.gen_clues.windows(),
         miniclue.gen_clues.z(),
         { mode = 'n', keys = '<Leader>c', desc = '+Code' },
         { mode = 'n', keys = '<Leader>s', desc = '+Search' },
