@@ -239,6 +239,4 @@ return { -- Collection of various small independent plugins/modules
     }
     vim.cmd 'au FileType copilot-chat lua MiniClue.ensure_buf_triggers()'
   end,
-
-  -- Try: comment
 }
