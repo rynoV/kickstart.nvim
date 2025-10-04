@@ -2,16 +2,32 @@
 return {
   'folke/sidekick.nvim',
   dependencies = { 'folke/snacks.nvim' },
-  opts = {
-    cli = {
-      win = {
-        split = {
-          width = 100,
-          height = 20,
+  opts = function()
+    Snacks.toggle
+      .new({
+        name = 'NES',
+        get = function()
+          return require('sidekick.nes').enabled
+        end,
+        set = function(v)
+          require('sidekick.nes').enable(v)
+        end,
+      })
+      :map '<leader>tn'
+    return {
+      cli = {
+        nes = {
+          trigger = { events = {} },
+        },
+        win = {
+          split = {
+            width = 85,
+            height = 20,
+          },
         },
       },
-    },
-  },
+    }
+  end,
   keys = {
     {
       '<tab>',
@@ -31,6 +47,14 @@ return {
       end,
       mode = { 'n', 'x', 'i', 't' },
       desc = 'Sidekick Switch Focus',
+    },
+    {
+      '<m-/>',
+      function()
+        require('sidekick.nes').update()
+      end,
+      desc = 'Suggest Next Edit',
+      mode = { 'n', 'v' },
     },
     {
       '<leader>aa',
