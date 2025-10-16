@@ -43,10 +43,10 @@ return {
     {
       '<c-.>',
       function()
-        require('sidekick.cli').focus()
+        require('sidekick.cli').toggle()
       end,
       mode = { 'n', 'x', 'i', 't' },
-      desc = 'Sidekick Switch Focus',
+      desc = 'Sidekick Toggle',
     },
     {
       '<m-/>',
@@ -73,12 +73,19 @@ return {
       desc = 'Send This',
     },
     {
-      '<leader>as',
+      '<leader>af',
       function()
-        require('sidekick.cli').send { selection = true }
+        require('sidekick.cli').send { msg = '{file}' }
       end,
-      mode = { 'v' },
-      desc = 'Sidekick Send Visual Selection',
+      desc = 'Send File',
+    },
+    {
+      '<leader>av',
+      function()
+        require('sidekick.cli').send { msg = '{selection}' }
+      end,
+      mode = { 'x' },
+      desc = 'Send Visual Selection',
     },
     {
       '<leader>ap',
