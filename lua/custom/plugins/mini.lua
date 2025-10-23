@@ -96,7 +96,7 @@ return { -- Collection of various small independent plugins/modules
       buffer = { suffix = '', options = {} },
       comment = { suffix = '', options = {} },
       conflict = { suffix = '', options = {} },
-      diagnostic = { suffix = 'd', f = brack.diagnostic, options = {}, name = 'Diagnostic' },
+      diagnostic = { suffix = 'd', f = brack.diagnostic, options = { severity = { min = vim.diagnostic.severity.WARN } }, name = 'Diagnostic' },
       file = { suffix = '', options = {} },
       indent = { suffix = 'i', f = brack.indent, options = { change_type = 'diff' }, name = 'Indent' },
       jump = { suffix = 'j', f = brack.jump, options = {}, name = 'Jump in file' },
