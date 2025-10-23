@@ -173,6 +173,29 @@ return {
                 end,
                 highlight = 'BlinkCmpItemIdx', -- optional, only if you want to change its color
               },
+              -- Icons from mini.icon based on https://github.com/Saghen/blink.cmp/blob/87433840b4d8cce053d6b8cd57f3d75a27c8cd8b/doc/recipes.md?plain=1#L474
+              kind_icon = {
+                text = function(ctx)
+                  if ctx.source_name ~= 'Path' or not _G.MiniIcons then
+                    return
+                  end
+
+                  local is_unknown_type = vim.tbl_contains({ 'link', 'socket', 'fifo', 'char', 'block', 'unknown' }, ctx.item.data.type)
+                  local mini_icon, _ = MiniIcons.get(is_unknown_type and 'os' or ctx.item.data.type, is_unknown_type and '' or ctx.label)
+
+                  return (mini_icon or ctx.kind_icon) .. ctx.icon_gap
+                end,
+
+                highlight = function(ctx)
+                  if ctx.source_name ~= 'Path' or not _G.MiniIcons then
+                    return ctx.kind_hl
+                  end
+
+                  local is_unknown_type = vim.tbl_contains({ 'link', 'socket', 'fifo', 'char', 'block', 'unknown' }, ctx.item.data.type)
+                  local mini_icon, mini_hl = MiniIcons.get(is_unknown_type and 'os' or ctx.item.data.type, is_unknown_type and '' or ctx.label)
+                  return mini_icon ~= nil and mini_hl or ctx.kind_hl
+                end,
+              },
             },
           },
         },
