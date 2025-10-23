@@ -22,6 +22,8 @@ return { -- Collection of various small independent plugins/modules
       replace = { prefix = 'cr' },
     }
 
+    require('mini.extra').setup()
+
     -- Better Around/Inside textobjects
     --
     -- Examples:
@@ -31,6 +33,8 @@ return { -- Collection of various small independent plugins/modules
     require('mini.ai').setup {
       n_lines = 500,
       custom_textobjects = {
+        l = MiniExtra.gen_ai_spec.line(),
+        i = MiniExtra.gen_ai_spec.indent(),
         -- "subword" text object.. snake_case, camelCase, PascalCase, etc; all capitalizations
         s = {
           -- Based on https://github.com/nvim-mini/mini.nvim/discussions/1434
@@ -240,5 +244,21 @@ return { -- Collection of various small independent plugins/modules
       },
     }
     vim.cmd 'au FileType copilot-chat lua MiniClue.ensure_buf_triggers()'
+
+    local hipatterns = require 'mini.hipatterns'
+    hipatterns.setup {
+      highlighters = {
+        -- Highlight hex color strings (eg `#8fbcbb`) using that color
+        hex_color = hipatterns.gen_highlighter.hex_color(),
+      },
+    }
+
+    require('mini.cursorword').setup()
+
+    require('mini.misc').setup()
+
+    MiniMisc.setup_restore_cursor()
+    MiniMisc.setup_termbg_sync()
+    MiniMisc.setup_auto_root()
   end,
 }
