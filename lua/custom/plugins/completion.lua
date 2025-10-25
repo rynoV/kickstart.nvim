@@ -177,7 +177,7 @@ return {
               kind_icon = {
                 text = function(ctx)
                   if ctx.source_name ~= 'Path' or not _G.MiniIcons then
-                    return
+                    return ctx.kind_icon .. ctx.icon_gap
                   end
 
                   local is_unknown_type = vim.tbl_contains({ 'link', 'socket', 'fifo', 'char', 'block', 'unknown' }, ctx.item.data.type)
