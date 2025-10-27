@@ -161,8 +161,11 @@ return { -- Collection of various small independent plugins/modules
           local location = MiniStatusline.section_location { trunc_width = 75 }
           local search = MiniStatusline.section_searchcount { trunc_width = 75 }
 
-          local status = require('sidekick.status').get()
-          local copilot_hl = status and (status.kind == 'Error' and 'DiagnosticError' or status.busy and 'DiagnosticWarn' or 'Special') or nil
+          local sidekick_status = require('sidekick.status').get()
+          local sidekick_cli_status = require('sidekick.status').cli()
+          local copilot_hl = sidekick_status
+              and (sidekick_status.kind == 'Error' and 'DiagnosticError' or sidekick_status.busy and 'DiagnosticWarn' or 'Special')
+            or nil
 
           return MiniStatusline.combine_groups {
             { hl = mode_hl, strings = { mode } },
@@ -170,7 +173,7 @@ return { -- Collection of various small independent plugins/modules
             '%<', -- Mark general truncate point
             { hl = 'MiniStatuslineFilename', strings = { filename } },
             '%=', -- End left alignment
-            { hl = copilot_hl, strings = { ' ' } },
+            { hl = copilot_hl, strings = { ' ' .. (#sidekick_cli_status > 0 and '[' .. #sidekick_cli_status .. ']' or '') } },
             { hl = 'MiniStatuslineFileinfo', strings = { fileinfo } },
             { hl = mode_hl, strings = { search, location } },
           }
