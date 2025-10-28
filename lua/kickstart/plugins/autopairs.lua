@@ -29,7 +29,7 @@ return {
             break
           end
 
-          if target:type() == 'types' or target:type() == 'type_arguments' then
+          if target:type() == 'types' or target:type() == 'type_arguments' or target:type() == 'typed_pattern' or target:type() == 'argument_patterns' then
             return false
           end
 
