@@ -83,6 +83,7 @@ local enabled = {
   'mini.move',
   'mini.pairs',
   'mini.surround',
+  'mini.operators',
   'nvim-next',
   'nvim-treesitter',
   'nvim-treesitter-textobjects',
