@@ -4,6 +4,9 @@ if not vim.g.vscode then
   return {}
 end
 
+-- Smaller timeout lengths seems to make it impossible for me to hit some keybindings in time
+vim.opt.timeoutlen = 1000
+
 local vscode = require 'vscode'
 vim.notify = vscode.notify
 
