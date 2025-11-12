@@ -124,6 +124,12 @@ vim.api.nvim_create_autocmd('User', {
     vim.keymap.set('n', '<leader>tt', function()
       vscode.call 'workbench.action.terminal.toggleTerminal'
     end)
+
+    vim.keymap.set({ 'n', 'x' }, '<leader>i', function()
+      vscode.with_insert(function()
+        vscode.call 'inlineChat.start'
+      end)
+    end)
   end,
 })
 
