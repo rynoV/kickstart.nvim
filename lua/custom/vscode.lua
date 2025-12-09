@@ -8,7 +8,13 @@ end
 vim.opt.timeoutlen = 1000
 
 local vscode = require 'vscode'
-vim.notify = vscode.notify
+vim.notify = function(msg, log_level, opts)
+  -- vscode doesn't have a notification lower than info afaict, so we avoid
+  -- noise like this
+  if log_level >= vim.log.levels.INFO then
+    vscode.notify(msg, log_level, opts)
+  end
+end
 
 --- vscode-neovim defines some overrides here:
 --- https://github.com/vscode-neovim/vscode-neovim/blob/a54bbfbe79aeee512a239c8809019b2c9547d3e3/runtime/vscode/overrides/
