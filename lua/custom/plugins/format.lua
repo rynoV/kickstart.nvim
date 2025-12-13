@@ -41,6 +41,17 @@ return {
         command = 'hledger-fmt',
         args = { '--no-diff', '-' },
       },
+      -- This is included in recent versions of conform, so it can be removed
+      -- when we unlock the version
+      tombi = {
+        meta = {
+          url = 'https://github.com/tombi-toml/tombi',
+          description = 'TOML Formatter / Linter.',
+        },
+        command = 'tombi',
+        args = { 'format', '--stdin-filename', '$FILENAME', '-' },
+        stdin = true,
+      },
     },
     formatters_by_ft = {
       lua = { 'stylua' },
@@ -49,6 +60,7 @@ return {
       json = { 'prettier' },
       markdown = { 'prettier' },
       ledger = { 'hledger_fmt' },
+      toml = { 'tombi' },
       -- Use the "_" filetype to run formatters on filetypes that don't
       -- have other formatters configured.
       ['_'] = { 'trim_whitespace' },

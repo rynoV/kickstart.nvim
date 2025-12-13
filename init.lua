@@ -470,6 +470,7 @@ require('lazy').setup({
 
       -- Servers configured manually in the `lsp` folder
       vim.lsp.enable 'surrealql-lsp-server'
+      vim.lsp.enable 'tombi-lsp-server'
     end,
   },
   { -- You can easily change to a different colorscheme.
