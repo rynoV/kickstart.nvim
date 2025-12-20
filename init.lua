@@ -550,10 +550,16 @@ require('lazy').setup({
 
   { -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
+    -- Holding off on switching to the new version on the `main` branch, hopefully more docs will pop up for the migration eventually.
+    -- https://github.com/nvim-treesitter/nvim-treesitter/discussions/7927
+    -- This diff should be helpful when migrating:
+    -- https://github.com/LazyVim/LazyVim/commit/5eac460c092103e5516bec345236853b9f35ec7c
+    branch = 'master',
     dependencies = {
       'nvim-treesitter/nvim-treesitter-textobjects',
       'ghostbuster91/nvim-next',
     },
+    lazy = false,
     build = ':TSUpdate',
     main = 'nvim-treesitter.configs', -- Sets main module to use for opts
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
