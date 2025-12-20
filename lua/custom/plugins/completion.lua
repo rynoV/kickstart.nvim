@@ -67,6 +67,8 @@ return {
     local opts = {
       signature = { enabled = true },
       snippets = { preset = 'luasnip' },
+      -- Trying mini.cmdline, and these don't seem to play well together
+      cmdline = { enabled = false },
       -- 'default' (recommended) for mappings similar to built-in completions (C-y to accept)
       -- 'super-tab' for mappings similar to vscode (tab to accept)
       -- 'enter' for enter to accept

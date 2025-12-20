@@ -319,4 +319,14 @@ return { -- Collection of various small independent plugins/modules
       -- MiniMisc.setup_auto_root()
     end,
   },
+  {
+    'nvim-mini/mini.cmdline',
+    config = function()
+      require('mini.cmdline').setup {
+        autocomplete = {
+          delay = 500,
+        },
+      }
+    end,
+  },
 }
