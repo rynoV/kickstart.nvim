@@ -316,7 +316,7 @@ return { -- Collection of various small independent plugins/modules
 
       MiniMisc.setup_restore_cursor()
       MiniMisc.setup_termbg_sync()
-      MiniMisc.setup_auto_root()
+      -- MiniMisc.setup_auto_root()
     end,
   },
 }
