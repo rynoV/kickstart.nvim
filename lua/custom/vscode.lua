@@ -1,3 +1,9 @@
+-- Lua function to open current file in VS Code at the current line and column
+vim.keymap.set('n', '<leader>v', function()
+  local r, c = unpack(vim.api.nvim_win_get_cursor(0))
+  vim.cmd('!code -g ' .. vim.fn.expand '%' .. ':' .. r .. ':' .. c)
+end, { desc = '[O]pen in [V]S Code' })
+
 -- Based on the LazyVim vscode extra:
 -- https://github.com/LazyVim/LazyVim/blob/064e61058b6bbaef02a6143662628d105695b8e5/lua/lazyvim/plugins/extras/vscode.lua
 if not vim.g.vscode then
