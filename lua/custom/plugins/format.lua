@@ -57,6 +57,10 @@ return {
       lua = { 'stylua' },
       -- Don't set formatter for F# so that the fsautocomplete formatting will be used, which respects project specific fantomas versions and settings
       -- fsharp = { 'fantomas' },
+      typescript = { 'prettier' },
+      typescriptreact = { 'prettier' },
+      javascript = { 'prettier' },
+      javascriptreact = { 'prettier' },
       json = { 'prettier' },
       markdown = { 'prettier' },
       ledger = { 'hledger_fmt' },

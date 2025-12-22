@@ -386,6 +386,7 @@ require('lazy').setup({
         --
         -- But for many setups, the LSP (`ts_ls`) will work just fine
         ts_ls = {},
+        eslint = {},
         --
 
         lua_ls = {
@@ -445,7 +446,7 @@ require('lazy').setup({
       end, vim.tbl_keys(servers or {}))
       vim.list_extend(ensure_installed, {
         'stylua', -- Used to format Lua code
-        'prettier',
+        -- 'prettier',
       })
 
       if is_windows then
