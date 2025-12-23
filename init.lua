@@ -166,6 +166,15 @@ vim.api.nvim_create_autocmd('ColorScheme', {
   end,
 })
 
+-- From :h vim.hl.on_yank()
+vim.api.nvim_create_autocmd('TextYankPost', {
+  desc = 'Highlight on yank',
+  group = vim.api.nvim_create_augroup('calum-highlight-on-yank', { clear = true }),
+  callback = function()
+    vim.highlight.on_yank { higroup = 'Search', timeout = 300 }
+  end,
+})
+
 vim.api.nvim_create_autocmd('TermOpen', {
   desc = 'Terminal specific options',
   group = vim.api.nvim_create_augroup('calum-terminal-settings', { clear = true }),

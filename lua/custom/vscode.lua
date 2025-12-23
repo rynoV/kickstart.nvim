@@ -89,6 +89,7 @@ local enabled = {
   'flit.nvim',
   'lazy.nvim',
   'leap.nvim',
+  'flash.nvim',
   'mini.extra',
   'mini.ai',
   'mini.comment',

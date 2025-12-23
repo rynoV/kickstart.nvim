@@ -41,7 +41,7 @@ return {
         style = 'overlay',
         uppercase = false,
         rainbow = {
-          enabled = true,
+          enabled = false,
         },
       },
     }
@@ -49,10 +49,18 @@ return {
   end,
   -- stylua: ignore
   keys = {
-    { "s", mode = { "n", "x", "o" }, function() require("flash").jump() end, desc = "Flash" },
+    -- A lot of the power here comes from using these shortcuts in operator
+    -- pending mode. For example using them after y, c, d, etc. This also
+    -- allows for dot-repeating these actions.
+    -- In operator pending mode I have these set to work as "remote" operations
+    -- so they restore the cursor after performing the action, which is useful
+    -- for yanking.
+    { "s", mode = { "n", "x" }, function() require("flash").jump() end, desc = "Flash" },
+    { "s", mode = { "o" }, function() require("flash").jump({remote_op = {restore = true, motion = true}}) end, desc = "Flash" },
     { "S", mode = { "n", "x", "o" }, function() require("flash").treesitter() end, desc = "Flash Treesitter" },
-    { "<a-r>", mode = "o", function() require("flash").remote() end, desc = "Remote Flash" },
-    { "R", mode = { "o", "x" }, function() require("flash").treesitter_search() end, desc = "Treesitter Search" },
+    { "r", mode = "o", function() require("flash").remote() end, desc = "Remote Flash" },
+    { "R", mode = { "x" }, function() require("flash").treesitter_search() end, desc = "Treesitter Search" },
+    { "R", mode = { "o" }, function() require("flash").treesitter_search({remote_op = {restore = true, motion = true}}) end, desc = "Treesitter Search" },
     { "<c-s>", mode = { "c" }, function() require("flash").toggle() end, desc = "Toggle Flash Search" },
     { "<a-d>", function () flash_diagnostic() end, desc = "Show diagnostic" },
     { "<esc>", mode = "n", function ()
@@ -61,7 +69,19 @@ return {
       if char.state then
         char.state:hide()
       end
-    end, desc = "Clear search highlights" }
+    end, desc = "Clear search highlights" },
+    { "<c-space>", mode = {"n", "x", "o"}, function()
+      require("flash").treesitter({
+        actions = {
+          -- Note that ; and , also work
+          ["<c-space>"] = "next",
+          ["<BS>"] = "prev"
+        },
+        -- Don't show any labels since treesitter jump by label is covered
+        -- above, and these two actions can be used together
+        labels = "",
+      })
+    end, { desc = "Treesitter incremental selection" }}
   },
   specs = {
     {
