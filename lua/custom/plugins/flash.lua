@@ -5,8 +5,13 @@ local full_labels = labels .. ";z'l!@#$%^&*(){}|_+:"
 return {
   'folke/flash.nvim',
   opts = function()
-    function flash_diagnostic()
-      require('flash').jump {
+    ---@param only_show boolean Whether to jump to the diagnostic or just show it
+    function flash_diagnostic(only_show)
+      ---@type Flash.State.Config|{}
+      local arg = {
+        -- Show the labels immediately
+        pattern = '.*',
+        label = { before = true, after = false },
         matcher = function(win)
           ---@param diag Diagnostic
           return vim.tbl_map(function(diag)
@@ -16,14 +21,17 @@ return {
             }
           end, vim.diagnostic.get(vim.api.nvim_win_get_buf(win)))
         end,
-        action = function(match, state)
+      }
+      if only_show then
+        arg.action = function(match, state)
           vim.api.nvim_win_call(match.win, function()
             vim.api.nvim_win_set_cursor(match.win, match.pos)
             vim.diagnostic.open_float()
           end)
           state:restore()
-        end,
-      }
+        end
+      end
+      require('flash').jump(arg)
     end
     ---@type Flash.Config
     local opts = {
@@ -62,7 +70,8 @@ return {
     { "R", mode = { "x" }, function() require("flash").treesitter_search() end, desc = "Treesitter Search" },
     { "R", mode = { "o" }, function() require("flash").treesitter_search({remote_op = {restore = true, motion = true}}) end, desc = "Treesitter Search" },
     { "<c-s>", mode = { "c" }, function() require("flash").toggle() end, desc = "Toggle Flash Search" },
-    { "<a-d>", function () flash_diagnostic() end, desc = "Show diagnostic" },
+    { "<a-d>", function () flash_diagnostic(true) end, desc = "Show diagnostic" },
+    { "<a-D>", function () flash_diagnostic(false) end, desc = "Jump to diagnostic" },
     { "<esc>", mode = "n", function ()
       vim.cmd("nohlsearch")
       local char = require("flash.plugins.char")
