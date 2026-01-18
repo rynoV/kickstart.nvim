@@ -18,7 +18,8 @@ M.next_change = next_change
 --- https://github.com/neovim/neovim/issues/26128#issuecomment-1820590092
 local function get_loc_at_cursor()
   local elems = vim.fn.getqflist({
-    efm = vim.o.errorformat,
+    -- Make sure some common formats are also recognized, file:line[:col]
+    efm = vim.o.errorformat .. ',%f:%l:%c,%f:%l',
     lines = { vim.api.nvim_get_current_line() },
   }).items
 
