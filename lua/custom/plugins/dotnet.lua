@@ -1,5 +1,7 @@
+local is_macos = vim.fn.has 'mac' == 1
 return {
   'GustavEikaas/easy-dotnet.nvim',
+  enabled = not is_macos,
   dependencies = { 'nvim-lua/plenary.nvim', 'folke/snacks.nvim' },
   config = function()
     require('easy-dotnet').setup()
