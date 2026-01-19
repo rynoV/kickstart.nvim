@@ -1,4 +1,5 @@
 local is_macos = vim.fn.has 'mac' == 1
+--- @type LazyPluginSpec
 return {
   'GustavEikaas/easy-dotnet.nvim',
   enabled = not is_macos,
@@ -10,15 +11,6 @@ return {
       opts = {
         sources = {
           default = { 'easy-dotnet' },
-          providers = {
-            ['easy-dotnet'] = {
-              name = 'easy-dotnet',
-              enabled = true,
-              module = 'easy-dotnet.completion.blink',
-              score_offset = 10000,
-              async = true,
-            },
-          },
         },
       },
     },

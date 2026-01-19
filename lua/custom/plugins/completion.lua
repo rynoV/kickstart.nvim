@@ -1,8 +1,10 @@
+--- @type LazyPluginSpec
 return {
   'saghen/blink.cmp',
   dependencies = {
     'zbirenbaum/copilot.lua',
     'folke/sidekick.nvim',
+    { 'GustavEikaas/easy-dotnet.nvim', optional = true },
     {
       'L3MON4D3/LuaSnip',
       build = (function()
@@ -209,7 +211,17 @@ return {
       -- elsewhere in your config, without redefining it, due to `opts_extend`
       sources = {
         default = { 'lsp', 'path', 'snippets', 'buffer' },
-        providers = {},
+        providers = {
+          ['easy-dotnet'] = {
+            name = 'easy-dotnet',
+            enabled = function()
+              return package.loaded['easy-dotnet'] ~= nil
+            end,
+            module = 'easy-dotnet.completion.blink',
+            score_offset = 10000,
+            async = true,
+          },
+        },
       },
 
       -- (Default) Rust fuzzy matcher for typo resistance and significantly better performance
@@ -221,5 +233,5 @@ return {
     }
     return opts
   end,
-  opts_extend = { 'sources.default', 'sources.providers' },
+  opts_extend = { 'sources.default' },
 }
