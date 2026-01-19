@@ -208,16 +208,8 @@ return {
       -- Default list of enabled providers defined so that you can extend it
       -- elsewhere in your config, without redefining it, due to `opts_extend`
       sources = {
-        default = { 'lsp', 'easy-dotnet', 'path', 'snippets', 'buffer' },
-        providers = {
-          ['easy-dotnet'] = {
-            name = 'easy-dotnet',
-            enabled = true,
-            module = 'easy-dotnet.completion.blink',
-            score_offset = 10000,
-            async = true,
-          },
-        },
+        default = { 'lsp', 'path', 'snippets', 'buffer' },
+        providers = {},
       },
 
       -- (Default) Rust fuzzy matcher for typo resistance and significantly better performance
@@ -229,5 +221,5 @@ return {
     }
     return opts
   end,
-  opts_extend = { 'sources.default' },
+  opts_extend = { 'sources.default', 'sources.providers' },
 }
