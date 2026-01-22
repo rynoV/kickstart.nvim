@@ -486,6 +486,8 @@ return {
         Snacks.toggle.zen():map '<leader>uz'
         Snacks.toggle.zoom():map '<leader>uZ'
         Snacks.toggle.animate():map '<leader>ua'
+
+        Snacks.config.style('notification', { focusable = false })
       end,
     })
   end,
