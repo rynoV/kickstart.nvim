@@ -507,13 +507,13 @@ require('lazy').setup({
           -- The default highlighting for diffs overrides the foreground syntax
           -- highlighting. This changes it to an approach more like tokyo-night
           -- which marks the diff regions using only the background colors
-          -- highlights.DiffAdd = { bg = colors.polar_night.brightest }
+          highlights.DiffAdd = { bg = colors.polar_night.bright }
           -- Deleted text is just the deletion markers and not any content, so
           -- we set the foreground
-          -- highlights.DiffDelete = { fg = colors.aurora.red }
+          highlights.DiffDelete = { fg = colors.aurora.red }
           -- DiffText sits on top of DiffChange, so it should stand out
-          -- highlights.DiffChange = { bg = colors.polar_night.bright }
-          -- highlights.DiffText = { bg = colors.polar_night.brightest }
+          highlights.DiffChange = { bg = colors.polar_night.bright }
+          highlights.DiffText = { bg = colors.polar_night.brightest }
           highlights.FloatBorder = { fg = colors.frost.artic_ocean }
         end,
       }

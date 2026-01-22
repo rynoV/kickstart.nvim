@@ -43,5 +43,12 @@ return {
     'esmuellert/codediff.nvim',
     dependencies = { 'MunifTanjim/nui.nvim' },
     cmd = 'CodeDiff',
+    opts = {
+      -- NOTE: if the colorscheme's DiffAdd color is too light, for some reason
+      -- the text foreground gets locked to black hide syntax highlighting
+      -- highlights = {
+      --   line_insert = '#3B4252',
+      -- },
+    },
   },
 }
