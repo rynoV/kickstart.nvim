@@ -1,7 +1,7 @@
 --- @type LazyPluginSpec
 return {
   'folke/sidekick.nvim',
-  dependencies = { 'folke/snacks.nvim' },
+  dependencies = { 'folke/snacks.nvim', { 'TheNoeTrevino/haunt.nvim', optional = true } },
   opts = function()
     Snacks.toggle
       .new({
@@ -29,6 +29,14 @@ return {
         },
         tools = {
           copilot = { cmd = { 'copilot' } },
+        },
+        prompts = {
+          haunt_all = function()
+            return require('haunt.sidekick').get_locations()
+          end,
+          haunt_buffer = function()
+            return require('haunt.sidekick').get_locations { current_buffer = true }
+          end,
         },
       },
     }
