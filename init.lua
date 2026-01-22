@@ -749,20 +749,13 @@ require('lazy').setup({
 
 local util = require 'custom.util'
 
-vim.keymap.set('n', '[c', util.prev_change, { desc = 'previous change' })
-vim.keymap.set('n', ']c', util.next_change, { desc = 'next change' })
 vim.keymap.set('n', '<leader>mf', util.open_file_in_last_tab, { desc = 'Open file at cursor in previously accessed tab page' })
 
-local next_move = require 'nvim-next.move'
-local prev_note, next_note = next_move.make_repeatable_pair(function(_)
-  require('haunt.api').prev()
-end, function(_)
-  require('haunt.api').next()
-end)
-
 -- Override these actions with repeatable wrappers
-vim.keymap.set('n', require('custom.plugins.notes').haunt_prefix .. 'n', next_note, { desc = 'Next bookmark' })
-vim.keymap.set('n', require('custom.plugins.notes').haunt_prefix .. 'p', prev_note, { desc = 'Previous bookmark' })
+util.make_repeatable_wrappers(require('custom.plugins.notes').haunt_prefix .. 'p', require('custom.plugins.notes').haunt_prefix .. 'n')
+-- Unsure if this actually works or if these binds just get overridden
+util.make_repeatable_wrappers(']c', '[c')
+util.make_repeatable_wrappers(']f', '[f')
 
 Snacks.toggle
   .new({
