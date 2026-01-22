@@ -412,6 +412,8 @@ require('lazy').setup({
             },
           },
         },
+
+        copilot = {},
       }
 
       local is_windows = vim.fn.has 'win64' == 1
@@ -476,6 +478,14 @@ require('lazy').setup({
 
       require('mason-lspconfig').setup {
         handlers = { server_setup },
+        automatic_enable = {
+          exclude = {
+            -- If using copilot-lsp plugin, it installs its own config with a
+            -- different name and settings, so uncomment this to unsure the
+            -- lspconfig copilot lsp settings don't get added and conflict
+            -- 'copilot',
+          },
+        },
       }
 
       -- Servers configured manually in the `lsp` folder

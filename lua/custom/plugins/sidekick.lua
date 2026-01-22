@@ -14,9 +14,11 @@ return {
         end,
       })
       :map '<leader>tn'
-    return {
+    --- @type sidekick.Config
+    local conf = {
       cli = {
         nes = {
+          enabled = true,
           trigger = { events = {} },
         },
         win = {
@@ -25,8 +27,12 @@ return {
             height = 20,
           },
         },
+        tools = {
+          copilot = { cmd = { 'copilot' } },
+        },
       },
     }
+    return conf
   end,
   keys = {
     {
