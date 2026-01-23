@@ -5,6 +5,17 @@ return {
   haunt_prefix = haunt_prefix,
   'TheNoeTrevino/haunt.nvim',
   dependencies = { 'ghostbuster91/nvim-next' },
+  cmd = {
+    'HauntToggle',
+    'HauntAnnotate',
+    'HauntDelete',
+    'HauntNext',
+    'HauntPrev',
+    'HauntList',
+    'HauntClear',
+    'HauntClearAll',
+    'HauntChangeDataDir',
+  },
   keys = {
     {
       haunt_prefix .. 'a',
