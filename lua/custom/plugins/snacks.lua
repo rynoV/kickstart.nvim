@@ -1,3 +1,33 @@
+--- Helper to allow switching between pickers without losing the already-typed
+--- input, for when you used the wrong picker
+--- https://github.com/folke/snacks.nvim/discussions/2003#discussioncomment-13653042
+---@type table<string, snacks.picker.Config>
+local reopen_state = {}
+
+---@param picker snacks.Picker
+---@param source string
+---@param opts? snacks.picker.Config
+local reopen_picker = function(picker, source, opts)
+  local on_close = picker.opts.on_close
+  picker.opts.on_close = function(picker) ---@diagnostic disable-line
+    if not picker.skip_reset then ---@diagnostic disable-line
+      reopen_state = {}
+    end
+    if type(on_close) == 'function' then
+      on_close(picker)
+    end
+  end
+  local from_source = picker.opts.source
+  if from_source then
+    reopen_state[from_source] = picker.opts
+    reopen_state[from_source].pattern = picker:filter().pattern
+    reopen_state[from_source].search = picker:filter().search
+  end
+  picker.skip_reset = true ---@diagnostic disable-line
+  picker:close()
+  Snacks.picker.pick(source, vim.tbl_extend('force', reopen_state[source] or {}, opts or {}))
+end
+
 ---@type LazyPluginSpec
 return {
   'folke/snacks.nvim',
@@ -440,6 +470,69 @@ return {
       formatters = {
         file = {
           filename_first = true,
+        },
+      },
+      sources = {
+        files = {
+          win = {
+            input = {
+              keys = {
+                ['<M-g>'] = { 'switch_smart', mode = { 'i', 'n' } },
+              },
+            },
+          },
+          actions = {
+            switch_smart = function(picker)
+              reopen_picker(picker, 'smart', {
+                pattern = picker:filter().pattern,
+              })
+            end,
+          },
+        },
+        smart = {
+          multi = {
+            'buffers',
+            'recent',
+            {
+              source = 'files',
+              -- Currently we need to define the key here because the same key
+              -- is defined in the files config above, but I'll make a PR so
+              -- the key can be defined like normal below
+              win = {
+                input = {
+                  keys = {
+                    ['<M-g>'] = { 'switch_grep', mode = { 'i', 'n' } },
+                  },
+                },
+              },
+            },
+          },
+          -- win = { input = { keys = {
+          --   ['<M-g>'] = { 'switch_grep', mode = { 'i', 'n' } },
+          -- } } },
+          actions = {
+            switch_grep = function(picker)
+              reopen_picker(picker, 'grep', {
+                search = picker:filter().pattern,
+              })
+            end,
+          },
+        },
+        grep = {
+          win = {
+            input = {
+              keys = {
+                ['<M-g>'] = { 'switch_files', mode = { 'i', 'n' } },
+              },
+            },
+          },
+          actions = {
+            switch_files = function(picker)
+              reopen_picker(picker, 'files', {
+                pattern = picker:filter().search,
+              })
+            end,
+          },
         },
       },
     },
