@@ -498,6 +498,7 @@ return {
               -- Currently we need to define the key here because the same key
               -- is defined in the files config above, but I'll make a PR so
               -- the key can be defined like normal below
+              -- https://github.com/folke/snacks.nvim/pull/2695
               win = {
                 input = {
                   keys = {
