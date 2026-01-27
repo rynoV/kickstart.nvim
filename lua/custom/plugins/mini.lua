@@ -382,6 +382,7 @@ return { -- Collection of various small independent plugins/modules
   },
   {
     'nvim-mini/mini.cmdline',
+    enabled = false,
     config = function()
       require('mini.cmdline').setup {
         autocomplete = {
