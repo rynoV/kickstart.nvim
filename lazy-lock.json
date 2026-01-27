@@ -52,7 +52,7 @@
   "nvim-treesitter-textsubjects": { "branch": "master", "commit": "9e3edd38e44c8f3af5634c5e30a33ebd79227f11" },
   "plenary.nvim": { "branch": "master", "commit": "b9fd5226c2f76c951fc8ed5923d85e4de065e509" },
   "render-markdown.nvim": { "branch": "main", "commit": "e76eb2e4262f0f0a1a7bd7a454dd7d44f1299afd" },
-  "review.nvim": { "branch": "main", "commit": "d50dc2f307d93cfc8672d5ee8aa27487f1b82bd7" },
+  "review.nvim": { "branch": "main", "commit": "999366575bba8abe1b4c3b94262c3dff11a52288" },
   "rustaceanvim": { "branch": "master", "commit": "12504405821c05874d2d1f6b5ec919f9808e2c99" },
   "sidekick.nvim": { "branch": "main", "commit": "bd1f79a506b7447d44873f78ffc0de7ea232bc88" },
   "snacks.nvim": { "branch": "main", "commit": "6f60105302fcae45524a5b6232beb52829e93e3f" },

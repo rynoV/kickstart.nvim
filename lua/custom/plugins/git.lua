@@ -52,7 +52,9 @@ return {
     },
   },
   {
-    'georgeguimaraes/review.nvim',
+    -- Pending https://github.com/georgeguimaraes/review.nvim/pull/13
+    -- 'georgeguimaraes/review.nvim',
+    'rynoV/review.nvim',
     dependencies = {
       'esmuellert/codediff.nvim',
       'MunifTanjim/nui.nvim',
@@ -61,6 +63,26 @@ return {
     keys = {
       { '<leader>ar', '<cmd>Review<cr>', desc = 'Review' },
     },
-    opts = {},
+    opts = {
+      codediff = {
+        readonly = false,
+      },
+      keymaps = {
+        add_note = '<leader>cn',
+        add_suggestion = '<leader>cs',
+        add_issue = '<leader>ci',
+        add_praise = '<leader>cp',
+        delete_comment = '<leader>cd',
+        edit_comment = '<leader>ce',
+        next_comment = ']n',
+        prev_comment = '[n',
+        list_comments = '<leader>cl',
+        comments_to_clipboard = '<leader>cy',
+        comments_to_sidekick = '<leader>cS',
+        clear_comments = '<leader>cccc',
+        close = '<leader>cq',
+        toggle_readonly = '<leader>cR',
+      },
+    },
   },
 }
