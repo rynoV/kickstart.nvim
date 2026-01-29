@@ -52,9 +52,7 @@ return {
     },
   },
   {
-    -- Pending https://github.com/georgeguimaraes/review.nvim/pull/13
-    -- 'georgeguimaraes/review.nvim',
-    'rynoV/review.nvim',
+    'georgeguimaraes/review.nvim',
     dependencies = {
       'esmuellert/codediff.nvim',
       'MunifTanjim/nui.nvim',
@@ -77,8 +75,8 @@ return {
         next_comment = ']n',
         prev_comment = '[n',
         list_comments = '<leader>cl',
-        comments_to_clipboard = '<leader>cy',
-        comments_to_sidekick = '<leader>cS',
+        export_clipboard = '<leader>cy',
+        send_sidekick = '<leader>cS',
         clear_comments = '<leader>cccc',
         close = '<leader>cq',
         toggle_readonly = '<leader>cR',
