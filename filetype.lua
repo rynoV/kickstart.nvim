@@ -3,4 +3,7 @@ vim.filetype.add {
     surql = 'surql',
     hledger = 'ledger',
   },
+  pattern = {
+    ['.*/%.github/workflows/.*%.ya?ml'] = 'yaml.ghactions',
+  },
 }
