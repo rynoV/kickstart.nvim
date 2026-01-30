@@ -462,9 +462,7 @@ require('lazy').setup({
       servers.surrealql_lsp_server = {}
       servers.tombi_lsp_server = {}
       servers.actionsls = {}
-      local capabilities = require('blink.cmp').get_lsp_capabilities()
       for name, server in pairs(servers) do
-        server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
         vim.lsp.config(name, server)
         vim.lsp.enable(name)
       end
