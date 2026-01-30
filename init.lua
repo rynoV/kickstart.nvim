@@ -484,6 +484,7 @@ require('lazy').setup({
             -- different name and settings, so uncomment this to unsure the
             -- lspconfig copilot lsp settings don't get added and conflict
             -- 'copilot',
+            -- 'fsautocomplete',
           },
         },
       }
