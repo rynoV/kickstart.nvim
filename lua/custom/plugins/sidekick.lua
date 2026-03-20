@@ -20,6 +20,9 @@ return {
         nes = {
           enabled = true,
           trigger = { events = {} },
+          diff = {
+            show = 'cursor',
+          },
         },
         win = {
           split = {
