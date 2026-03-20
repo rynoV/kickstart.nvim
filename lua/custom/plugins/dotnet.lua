@@ -16,7 +16,11 @@ return {
     },
   },
   config = function()
-    require('easy-dotnet').setup()
+    require('easy-dotnet').setup {
+      lsp = {
+        auto_refresh_codelens = false,
+      },
+    }
     -- Abbreviation for :Dotnet user command. Note this will expand anywhere in
     -- the command line after pressing space
     vim.cmd 'cnoreabbrev dn Dotnet'
