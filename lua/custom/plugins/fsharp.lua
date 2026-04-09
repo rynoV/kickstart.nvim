@@ -15,6 +15,9 @@ return {
       -- Recommended: Paket files are excluded from the project loader.
       vim.g['fsharp#exclude_project_directories'] = { 'paket-files' }
       vim.g['fsharp#fsi_extra_shared_parameters'] = { '--langversion:preview' }
+      vim.g['fsharp#fsi_keymap'] = 'custom'
+      vim.g['fsharp#fsi_keymap_send'] = '<M-CR>'
+      vim.g['fsharp#fsi_keymap_toggle'] = '<M-2>'
     end,
   },
 }
