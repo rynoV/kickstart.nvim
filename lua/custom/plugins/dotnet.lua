@@ -19,6 +19,7 @@ return {
     require('easy-dotnet').setup {
       lsp = {
         auto_refresh_codelens = false,
+        enabled = false,
       },
     }
     -- Abbreviation for :Dotnet user command. Note this will expand anywhere in
