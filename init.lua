@@ -345,6 +345,8 @@ require('lazy').setup({
       },
     },
     config = function()
+      local custom_util = require 'custom.util'
+
       vim.api.nvim_create_autocmd('LspAttach', {
         group = vim.api.nvim_create_augroup('kickstart-lsp-attach', { clear = true }),
         callback = function(event)
@@ -356,7 +358,6 @@ require('lazy').setup({
             client.server_capabilities.semanticTokensProvider = nil
           end
 
-          -- TODO: this messes with diff mode folding. Should maybe just disable lsp for diff buffers
           if client and client:supports_method(vim.lsp.protocol.Methods.textDocument_foldingRange) then
             local win = vim.api.nvim_get_current_win()
             -- Note: treesitter configuration may also set the foldexpr, but
@@ -378,6 +379,37 @@ require('lazy').setup({
         ts_ls = {},
         eslint = {},
         copilot = {},
+        -- Special Lua Config, as recommended by neovim help docs
+        lua_ls = {
+          on_init = function(client)
+            if client.workspace_folders then
+              local path = client.workspace_folders[1].name
+              if path ~= vim.fn.stdpath 'config' and (vim.uv.fs_stat(path .. '/.luarc.json') or vim.uv.fs_stat(path .. '/.luarc.jsonc')) then
+                return
+              end
+            end
+
+            client.config.settings.Lua = vim.tbl_deep_extend('force', client.config.settings.Lua, {
+              runtime = {
+                version = 'LuaJIT',
+                path = { 'lua/?.lua', 'lua/?/init.lua' },
+              },
+              workspace = {
+                checkThirdParty = false,
+                library = {
+                  vim.env.VIMRUNTIME,
+                },
+              },
+            })
+          end,
+          settings = {
+            Lua = {
+              completion = {
+                callSnippet = 'Replace',
+              },
+            },
+          },
+        },
       }
 
       local is_windows = vim.fn.has 'win64' == 1
@@ -407,7 +439,6 @@ require('lazy').setup({
         return v ~= 'rust_analyzer'
       end, vim.tbl_keys(servers or {}))
       vim.list_extend(ensure_installed, {
-        'lua_ls',
         'stylua', -- Used to format Lua code
         -- 'prettier',
       })
@@ -424,43 +455,14 @@ require('lazy').setup({
       servers.surrealql_lsp_server = {}
       servers.tombi_lsp_server = {}
       servers.actionsls = {}
+
+      -- Allow using neovim for quickly viewing diffs without lsp
       for name, server in pairs(servers) do
         vim.lsp.config(name, server)
-        vim.lsp.enable(name)
+        if not custom_util.started_with_diff_args then
+          vim.lsp.enable(name)
+        end
       end
-
-      -- Special Lua Config, as recommended by neovim help docs
-      vim.lsp.config('lua_ls', {
-        on_init = function(client)
-          if client.workspace_folders then
-            local path = client.workspace_folders[1].name
-            if path ~= vim.fn.stdpath 'config' and (vim.uv.fs_stat(path .. '/.luarc.json') or vim.uv.fs_stat(path .. '/.luarc.jsonc')) then
-              return
-            end
-          end
-
-          client.config.settings.Lua = vim.tbl_deep_extend('force', client.config.settings.Lua, {
-            runtime = {
-              version = 'LuaJIT',
-              path = { 'lua/?.lua', 'lua/?/init.lua' },
-            },
-            workspace = {
-              checkThirdParty = false,
-              library = {
-                vim.env.VIMRUNTIME,
-              },
-            },
-          })
-        end,
-        settings = {
-          Lua = {
-            completion = {
-              callSnippet = 'Replace',
-            },
-          },
-        },
-      })
-      vim.lsp.enable 'lua_ls'
     end,
   },
   {

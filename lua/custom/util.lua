@@ -13,6 +13,13 @@ end)
 M.prev_change = prev_change
 M.next_change = next_change
 
+M.started_with_diff_args = false
+for _, arg in ipairs(vim.v.argv) do
+  if arg == '-d' or arg == '--diff' then
+    M.started_with_diff_args = true
+    break
+  end
+end
 function M.make_repeatable_wrappers(prev_keys, next_keys)
   local normal_keys = vim.api.nvim_get_keymap 'n'
   local function try_find_mapping(key)
