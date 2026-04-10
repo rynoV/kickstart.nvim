@@ -353,6 +353,7 @@ require('lazy').setup({
             client.server_capabilities.semanticTokensProvider = nil
           end
 
+          -- TODO: this messes with diff mode folding. Should maybe just disable lsp for diff buffers
           if client and client:supports_method(vim.lsp.protocol.Methods.textDocument_foldingRange) then
             local win = vim.api.nvim_get_current_win()
             -- Note: treesitter configuration may also set the foldexpr, but
@@ -747,6 +748,8 @@ vim.keymap.set('n', '<leader>u', function()
     command = math.floor(vim.api.nvim_win_get_width(0) / 3) .. 'vnew',
   }
 end, { desc = '[U]ndotree toggle' })
+
+vim.cmd 'packadd! nvim.difftool'
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et

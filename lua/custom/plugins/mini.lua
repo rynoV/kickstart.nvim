@@ -161,7 +161,12 @@ return { -- Collection of various small independent plugins/modules
   {
     'nvim-mini/mini.files',
     config = function()
-      require('mini.files').setup {}
+      require('mini.files').setup {
+        options = {
+          -- For some reason this breaks nvim.difftool
+          use_as_default_explorer = false,
+        },
+      }
 
       vim.keymap.set('n', '<leader>tf', require('mini.files').open, { desc = 'File explorer' })
       vim.keymap.set('n', '<leader>tF', function()
