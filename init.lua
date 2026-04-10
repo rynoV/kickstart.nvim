@@ -170,6 +170,9 @@ vim.api.nvim_create_autocmd('ColorScheme', {
     ---@diagnostic disable-next-line: param-type-mismatch
     vim.api.nvim_set_hl(0, 'SnacksDim', original_diag_unnecessary)
     vim.api.nvim_set_hl(0, 'TabLineFill', {})
+    -- The default highlights aren't very legible with my theme, comment is better
+    vim.api.nvim_set_hl(0, 'ComplHint', { link = 'Comment' }) -- lsp inline completion
+    vim.api.nvim_set_hl(0, 'LspCodeLens', { link = 'Comment' })
   end,
 })
 
@@ -325,6 +328,8 @@ require('lazy').setup({
       vim.api.nvim_create_autocmd('LspAttach', {
         group = vim.api.nvim_create_augroup('kickstart-lsp-attach', { clear = true }),
         callback = function(event)
+          vim.lsp.codelens.enable()
+
           local client = vim.lsp.get_client_by_id(event.data.client_id)
 
           -- FSAutocomplete can currently freeze neovim when semantic tokens are enabled
@@ -333,13 +338,19 @@ require('lazy').setup({
             client.server_capabilities.semanticTokensProvider = nil
           end
 
-          if client and client:supports_method 'textDocument/foldingRange' then
+          if client and client:supports_method(vim.lsp.protocol.Methods.textDocument_foldingRange) then
             local win = vim.api.nvim_get_current_win()
             -- Note: treesitter configuration may also set the foldexpr, but
             -- that should happen before the lsp attaches, so this should
             -- override it
             vim.wo[win][0].foldmethod = 'expr'
             vim.wo[win][0].foldexpr = 'v:lua.vim.lsp.foldexpr()'
+          end
+
+          -- Helps for example in html/jsx/tsx to edit the closing and ending
+          -- tag simultaneously by just changing one
+          if client and client:supports_method(vim.lsp.protocol.Methods.textDocument_linkedEditingRange) then
+            vim.lsp.linked_editing_range.enable()
           end
         end,
       })
@@ -656,6 +667,22 @@ Snacks.toggle
     end,
   })
   :map '<leader>tK'
+
+Snacks.toggle
+  .new({
+    name = 'Codelens show',
+    get = function()
+      return not not vim.lsp.codelens.is_enabled()
+    end,
+    set = function(v)
+      if v then
+        vim.lsp.codelens.enable()
+      else
+        vim.lsp.codelens.disable()
+      end
+    end,
+  })
+  :map '<leader>tX'
 
 Snacks.toggle
   .new({
