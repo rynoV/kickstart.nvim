@@ -96,6 +96,9 @@ vim.opt.tabclose = { 'uselast', 'left' }
 
 vim.opt.completeopt:append { 'noinsert', 'popup' }
 
+-- Ignore leading '-' for numbers when using C-a or C-x
+vim.opt.nrformats:append { 'unsigned' }
+
 vim.opt.conceallevel = 2
 
 -- [[ Basic Keymaps ]]
