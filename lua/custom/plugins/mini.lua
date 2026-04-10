@@ -271,6 +271,12 @@ return { -- Collection of various small independent plugins/modules
               { hl = 'MiniStatuslineFilename', strings = { filename } },
               '%=', -- End left alignment
               sidekick_loaded and sidekick_group() or {},
+              (
+                package.loaded['vim.ui']
+                and vim.api.nvim_get_current_win() == tonumber(vim.g.actual_curwin or -1)
+                and { strings = { vim.ui.progress_status() } }
+              ) or {},
+              { strings = { vim.bo.busy > 0 and '◐ ' or '' } },
               { hl = 'MiniStatuslineFileinfo', strings = { fileinfo } },
               { hl = mode_hl, strings = { search, location } },
             }
