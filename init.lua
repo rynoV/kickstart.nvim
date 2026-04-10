@@ -436,11 +436,6 @@ require('lazy').setup({
             end
           end
 
-          -- https://github.com/neovim/nvim-lspconfig/issues/3189
-          local library = vim.tbl_filter(function(d)
-            return not d:match(vim.fn.stdpath 'config' .. '/?a?f?t?e?r?')
-          end, vim.api.nvim_get_runtime_file('', true))
-
           client.config.settings.Lua = vim.tbl_deep_extend('force', client.config.settings.Lua, {
             runtime = {
               version = 'LuaJIT',
@@ -448,7 +443,9 @@ require('lazy').setup({
             },
             workspace = {
               checkThirdParty = false,
-              library = library,
+              library = {
+                vim.env.VIMRUNTIME,
+              },
             },
           })
         end,

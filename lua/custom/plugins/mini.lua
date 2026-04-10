@@ -12,11 +12,23 @@ return { -- Collection of various small independent plugins/modules
       -- Call "write" to start saving a local session, then the session will be auto saved and read
       local mini_sessions = require 'mini.sessions'
       mini_sessions.setup { autoread = true }
-
-      vim.keymap.set('n', '<leader>mS', function()
-        mini_sessions.write(mini_sessions.config.file)
-      end, { desc = 'Save local session' })
     end,
+    keys = {
+      {
+        '<leader>mS',
+        function()
+          require('mini.sessions').write(require('mini.sessions').config.file)
+        end,
+        desc = 'Save local session',
+      },
+      {
+        '<leader>mR',
+        function()
+          require('mini.sessions').restart()
+        end,
+        desc = 'Restart neovim',
+      },
+    },
   },
   {
     'nvim-mini/mini.operators',
