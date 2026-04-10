@@ -1,3 +1,5 @@
+require('vim._core.ui2').enable()
+
 -- Allow local config files per-directory. :h 'exrc'
 vim.opt.exrc = true
 
