@@ -134,17 +134,21 @@ end, { desc = 'Set diagnostic [L]ocation list' })
 -- or just use <C-\><C-n> to exit terminal mode
 vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
 
--- TIP: Disable arrow keys in normal mode
--- vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!!"<CR>')
--- vim.keymap.set('n', '<right>', '<cmd>echo "Use l to move!!"<CR>')
--- vim.keymap.set('n', '<up>', '<cmd>echo "Use k to move!!"<CR>')
--- vim.keymap.set('n', '<down>', '<cmd>echo "Use j to move!!"<CR>')
-
 -- Keybinds to make split navigation easier.
 --  See `:help wincmd` for a list of all window commands
 vim.keymap.set('n', '<leader>w', function()
   vim.api.nvim_input '<C-w>'
 end, { desc = '+Window' })
+
+vim.keymap.set({ 'v', 'n', 'i' }, '<M-\\>', function()
+  vim.lsp.inline_completion.enable(not vim.lsp.inline_completion.is_enabled())
+  -- Exit and enter insert mode to trigger the inline completion if the
+  -- completion is enabled and we're in insert mode. This is hopefully a
+  -- temporary hack until the completion api is improved
+  if vim.lsp.inline_completion.is_enabled() and vim.api.nvim_get_mode().mode == 'i' then
+    vim.api.nvim_input '<Esc>a'
+  end
+end, { desc = 'Toggle inline completion' })
 
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`

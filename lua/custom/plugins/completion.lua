@@ -2,8 +2,6 @@
 return {
   'saghen/blink.cmp',
   dependencies = {
-    'fang2hou/blink-copilot',
-    -- 'zbirenbaum/copilot.lua',
     -- 'folke/sidekick.nvim',
     { 'GustavEikaas/easy-dotnet.nvim', optional = true },
     {
@@ -90,16 +88,8 @@ return {
         ['<C-space>'] = { 'show_documentation', 'hide_documentation' },
         ['<C-n>'] = { 'show', 'select_next', 'fallback_to_mappings' },
         ['<Tab>'] = {
-          -- function()
-          --   local copilot = require 'copilot.suggestion'
-          --   if copilot.is_visible() then
-          --     copilot.accept()
-          --     return true
-          --   else
-          --     return false
-          --   end
-          -- end,
           'snippet_forward',
+          vim.lsp.inline_completion.get,
           function()
             return require('sidekick').nes_jump_or_apply()
           end,
@@ -211,7 +201,7 @@ return {
       -- Default list of enabled providers defined so that you can extend it
       -- elsewhere in your config, without redefining it, due to `opts_extend`
       sources = {
-        default = { 'lsp', 'copilot', 'path', 'snippets', 'buffer' },
+        default = { 'lsp', 'path', 'snippets', 'buffer' },
         providers = {
           ['easy-dotnet'] = {
             name = 'easy-dotnet',
@@ -220,13 +210,6 @@ return {
             end,
             module = 'easy-dotnet.completion.blink',
             score_offset = 10000,
-            async = true,
-          },
-          copilot = {
-            enabled = true,
-            name = 'copilot',
-            module = 'blink-copilot',
-            score_offset = 100,
             async = true,
           },
         },
