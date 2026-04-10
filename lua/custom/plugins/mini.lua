@@ -345,7 +345,7 @@ return { -- Collection of various small independent plugins/modules
           { mode = 'n', keys = '<Leader>a', desc = '+AI' },
           { mode = 'n', keys = '<Leader>b', desc = '+Buffers' },
           { mode = 'n', keys = '<Leader>l', desc = '+Lists' },
-          { mode = 'n', keys = '<Leader>u', desc = '+UI' },
+          { mode = 'n', keys = '<Leader>U', desc = '+UI' },
           { mode = 'n', keys = '<Leader>g', desc = '+Git' },
         },
       }

@@ -429,7 +429,7 @@ return {
       desc = 'Notification History',
     },
     {
-      '<leader>un',
+      '<leader>Un',
       function()
         Snacks.notifier.hide()
       end,
@@ -565,21 +565,21 @@ return {
         vim.print = _G.dd -- Override print to use snacks for `:=` command
 
         -- Create some toggle mappings
-        Snacks.toggle.option('spell', { name = 'Spelling' }):map '<leader>us'
-        Snacks.toggle.option('wrap', { name = 'Wrap' }):map '<leader>uw'
-        Snacks.toggle.option('relativenumber', { name = 'Relative Number' }):map '<leader>uL'
+        Snacks.toggle.option('spell', { name = 'Spelling' }):map '<leader>Us'
+        Snacks.toggle.option('wrap', { name = 'Wrap' }):map '<leader>Uw'
+        Snacks.toggle.option('relativenumber', { name = 'Relative Number' }):map '<leader>UL'
         Snacks.toggle.option('foldenable', { name = 'Folding' }):map 'zi'
-        Snacks.toggle.diagnostics():map '<leader>ud'
-        Snacks.toggle.line_number():map '<leader>ul'
-        Snacks.toggle.option('conceallevel', { off = 0, on = vim.o.conceallevel > 0 and vim.o.conceallevel or 2 }):map '<leader>uc'
-        Snacks.toggle.treesitter():map '<leader>uT'
-        Snacks.toggle.option('background', { off = 'light', on = 'dark', name = 'Dark Background' }):map '<leader>ub'
-        Snacks.toggle.inlay_hints():map '<leader>uh'
-        Snacks.toggle.indent():map '<leader>ug'
-        Snacks.toggle.dim():map '<leader>uD'
-        Snacks.toggle.zen():map '<leader>uz'
-        Snacks.toggle.zoom():map '<leader>uZ'
-        Snacks.toggle.animate():map '<leader>ua'
+        Snacks.toggle.diagnostics():map '<leader>Ud'
+        Snacks.toggle.line_number():map '<leader>Ul'
+        Snacks.toggle.option('conceallevel', { off = 0, on = vim.o.conceallevel > 0 and vim.o.conceallevel or 2 }):map '<leader>Uc'
+        Snacks.toggle.treesitter():map '<leader>UT'
+        Snacks.toggle.option('background', { off = 'light', on = 'dark', name = 'Dark Background' }):map '<leader>Ub'
+        Snacks.toggle.inlay_hints():map '<leader>Uh'
+        Snacks.toggle.indent():map '<leader>Ug'
+        Snacks.toggle.dim():map '<leader>UD'
+        Snacks.toggle.zen():map '<leader>Uz'
+        Snacks.toggle.zoom():map '<leader>UZ'
+        Snacks.toggle.animate():map '<leader>Ua'
 
         Snacks.config.style('notification', { focusable = false })
       end,

@@ -152,6 +152,22 @@ vim.keymap.set({ 'v', 'n', 'i' }, '<M-\\>', function()
   end
 end, { desc = 'Toggle inline completion' })
 
+vim.keymap.set({ 'n', 'x', 'o' }, '<A-o>', function()
+  if vim.treesitter.get_parser(nil, nil, { error = false }) then
+    require('vim.treesitter._select').select_parent(vim.v.count1)
+  else
+    vim.lsp.buf.selection_range(vim.v.count1)
+  end
+end, { desc = 'Select parent treesitter node or outer incremental lsp selections' })
+
+vim.keymap.set({ 'n', 'x', 'o' }, '<A-i>', function()
+  if vim.treesitter.get_parser(nil, nil, { error = false }) then
+    require('vim.treesitter._select').select_child(vim.v.count1)
+  else
+    vim.lsp.buf.selection_range(-vim.v.count1)
+  end
+end, { desc = 'Select child treesitter node or inner incremental lsp selections' })
+
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
 
@@ -198,10 +214,7 @@ vim.api.nvim_create_autocmd('TermOpen', {
 
 -- From :help terminal-scrollback-pager
 function TermHl()
-  local b = vim.api.nvim_create_buf(false, true)
-  local chan = vim.api.nvim_open_term(b, {})
-  vim.api.nvim_chan_send(chan, table.concat(vim.api.nvim_buf_get_lines(0, 0, -1, false), '\n'))
-  vim.api.nvim_win_set_buf(0, b)
+  vim.api.nvim_open_term(0, {})
 end
 
 vim.api.nvim_create_user_command('TermHl', TermHl, { desc = 'Highlights ANSI termcodes in curbuf' })
@@ -725,6 +738,15 @@ Snacks.toggle
     end,
   })
   :map '<leader>tl'
+
+-- For some reason this packadd needs to come near the end of the file or it
+-- doesn't load the plugin
+vim.cmd 'packadd! nvim.undotree'
+vim.keymap.set('n', '<leader>u', function()
+  require('undotree').open {
+    command = math.floor(vim.api.nvim_win_get_width(0) / 3) .. 'vnew',
+  }
+end, { desc = '[U]ndotree toggle' })
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
