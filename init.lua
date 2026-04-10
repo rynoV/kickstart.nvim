@@ -244,6 +244,8 @@ vim.opt.rtp:prepend(lazypath)
 
 vim.keymap.set('n', '<leader>ml', '<cmd>Lazy<cr>', { desc = 'Plugins' })
 
+vim.lsp.codelens.enable()
+
 -- [[ Configure and install plugins ]]
 --
 --  To check the current status of your plugins, run
@@ -343,8 +345,6 @@ require('lazy').setup({
       vim.api.nvim_create_autocmd('LspAttach', {
         group = vim.api.nvim_create_augroup('kickstart-lsp-attach', { clear = true }),
         callback = function(event)
-          vim.lsp.codelens.enable()
-
           local client = vim.lsp.get_client_by_id(event.data.client_id)
 
           -- FSAutocomplete can currently freeze neovim when semantic tokens are enabled
@@ -683,19 +683,15 @@ Snacks.toggle
 
 Snacks.toggle
   .new({
-    name = 'Codelens show',
+    name = 'Codelens show (buffer)',
     get = function()
-      return not not vim.lsp.codelens.is_enabled()
+      return not not vim.lsp.codelens.is_enabled { bufnr = 0 }
     end,
     set = function(v)
-      if v then
-        vim.lsp.codelens.enable()
-      else
-        vim.lsp.codelens.disable()
-      end
+      vim.lsp.codelens.enable(v, { bufnr = 0 })
     end,
   })
-  :map '<leader>tX'
+  :map '<leader>Ux'
 
 Snacks.toggle
   .new({

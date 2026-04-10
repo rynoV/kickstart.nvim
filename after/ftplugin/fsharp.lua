@@ -10,3 +10,5 @@ vim.wo.foldminlines = 1
 
 -- Uses the settings from here: https://github.com/neovim/neovim/blob/master/runtime/compiler/dotnet.vim
 vim.cmd 'compiler! dotnet'
+
+vim.lsp.codelens.enable(false, { bufnr = 0 })
