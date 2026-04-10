@@ -1,0 +1,20 @@
+{
+  "lspServers": {
+    "lua": {
+      "command": "lua-language-server",
+      "fileExtensions": {
+        ".lua": "lua"
+      },
+      "settings": {
+        "runtime": {
+          "version": "LuaJIT",
+          "path": ["lua/?.lua", "lua/?/init.lua"]
+        },
+        "workspace": {
+          "checkThirdParty": false,
+          "library": ["/usr/share/nvim/runtime"]
+        }
+      }
+    }
+  }
+}
