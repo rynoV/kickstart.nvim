@@ -446,7 +446,9 @@ return {
   ---@type snacks.Config
   opts = {
     bigfile = { enabled = true },
-    quickfile = { enabled = true }, -- When doing `nvim somefile.txt`, render the file as quickly as possible, before loading plugins
+    -- quickfile breaks syntax highlighting for filetypes that need the old
+    -- regex syntax in addition to treesitter
+    quickfile = { enabled = false },
     indent = {
       enabled = true,
       -- Shows only the indent guide for the current scope
