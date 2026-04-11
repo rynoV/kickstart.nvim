@@ -496,11 +496,20 @@ require('lazy').setup({
         'typescriptreact',
       }
 
+      local no_ts_highlight = {
+        -- Treesitter syntax highlighting is inconsistent for fsharp
+        'fsharp',
+      }
+
       vim.api.nvim_create_autocmd('FileType', {
         pattern = { '*' },
         callback = function(args)
           local ft = vim.bo[args.buf].filetype
           local lang = vim.treesitter.language.get_lang(ft)
+
+          if not lang then
+            return
+          end
 
           if
             not vim.treesitter.language.add(lang)
@@ -511,7 +520,9 @@ require('lazy').setup({
           end
 
           if vim.treesitter.language.add(lang) and vim.tbl_contains(auto_filetypes, ft) then
-            vim.treesitter.start(args.buf, lang)
+            if not vim.tbl_contains(no_ts_highlight, ft) then
+              vim.treesitter.start(args.buf, lang)
+            end
             if vim.tbl_contains(legacy_syntax, ft) then
               vim.bo[args.buf].syntax = 'ON'
             end
