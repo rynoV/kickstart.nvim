@@ -1,6 +1,8 @@
 --- @type LazyPluginSpec
 return {
   'saghen/blink.cmp',
+  lazy = true,
+  event = { 'VeryLazy' },
   dependencies = {
     -- 'folke/sidekick.nvim',
     { 'GustavEikaas/easy-dotnet.nvim', optional = true },

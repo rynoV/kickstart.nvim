@@ -1,7 +1,7 @@
 return {
   'saxon1964/neovim-tips',
   version = '*', -- Only update on tagged releases
-  lazy = false, -- Load on startup (recommended for daily tip feature)
+  event = 'VeryLazy',
   dependencies = {
     'MunifTanjim/nui.nvim',
     -- OPTIONAL: Choose your preferred markdown renderer (or omit for raw markdown)

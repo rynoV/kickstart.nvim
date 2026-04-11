@@ -2,7 +2,8 @@ local is_macos = vim.fn.has 'mac' == 1
 --- @type LazyPluginSpec
 return {
   'GustavEikaas/easy-dotnet.nvim',
-  enabled = not is_macos,
+  cond = not is_macos,
+  event = { 'VeryLazy' },
   dependencies = {
     'nvim-lua/plenary.nvim',
     'folke/snacks.nvim',

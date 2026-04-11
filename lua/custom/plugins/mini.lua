@@ -8,6 +8,7 @@ return { -- Collection of various small independent plugins/modules
   },
   {
     'nvim-mini/mini.sessions',
+    lazy = false,
     config = function()
       -- Call "write" to start saving a local session, then the session will be auto saved and read
       local mini_sessions = require 'mini.sessions'
