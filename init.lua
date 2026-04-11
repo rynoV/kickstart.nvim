@@ -560,9 +560,9 @@ require('lazy').setup({
             require('nvim-treesitter').install(lang):wait(30000) -- wait max 5 minutes
           end
 
-          if vim.treesitter.language.add(lang) and vim.tbl_contains(auto_filetypes, lang) then
+          if vim.treesitter.language.add(lang) and vim.tbl_contains(auto_filetypes, ft) then
             vim.treesitter.start(args.buf, lang)
-            if vim.tbl_contains(legacy_syntax, lang) then
+            if vim.tbl_contains(legacy_syntax, ft) then
               vim.bo[args.buf].syntax = 'ON'
             end
             -- this is an experimental feature
