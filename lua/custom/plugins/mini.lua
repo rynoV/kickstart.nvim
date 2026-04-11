@@ -281,11 +281,38 @@ return { -- Collection of various small independent plugins/modules
               return { hl = copilot_hl, strings = { ' ' .. (#sidekick_cli_status > 0 and '[' .. #sidekick_cli_status .. ']' or '') } }
             end
 
+            --- Returns the exit code string for the current buffer, given:
+            --- - Channel is attached to the current buffer
+            --- - Current buffer is a terminal buffer
+            ---
+            --- Copied from https://github.com/neovim/neovim/blob/6f015cdcdf0b617c9b716e833823498ce7c001c8/runtime/lua/vim/_core/util.lua#L117
+            ---
+            --- Requires nvim 0.12 for `nvim_get_chan_info` to provide `exitcode`
+            ---
+            --- Note this is for one-shot terminals that run a single command
+            --- and exit. It won't show the exit codes of commands within a
+            --- shell session.
+            ---
+            --- @return string
+            local function term_exitcode()
+              local chan_id = vim.bo.channel
+              if chan_id == 0 or vim.bo.buftype ~= 'terminal' then
+                return ''
+              end
+
+              local info = vim.api.nvim_get_chan_info(chan_id)
+              if info.exitcode and info.exitcode >= 0 then
+                return string.format('[Exit: %d]', info.exitcode)
+              end
+              return ''
+            end
+
             return MiniStatusline.combine_groups {
               { hl = mode_hl, strings = { mode } },
               { hl = 'MiniStatuslineDevinfo', strings = { git, diff, diagnostics, lsp } },
               '%<', -- Mark general truncate point
               { hl = 'MiniStatuslineFilename', strings = { filename } },
+              { strings = { term_exitcode() } },
               '%=', -- End left alignment
               sidekick_loaded and sidekick_group() or {},
               (

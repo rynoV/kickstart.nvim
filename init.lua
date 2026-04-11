@@ -248,6 +248,10 @@ vim.opt.rtp:prepend(lazypath)
 vim.keymap.set('n', '<leader>ml', '<cmd>Lazy<cr>', { desc = 'Plugins' })
 
 vim.lsp.codelens.enable()
+vim.lsp.on_type_formatting.enable()
+
+-- Lint treesitter queries :help ft-query-plugin
+vim.g.query_lint_on = { 'InsertLeave', 'TextChanged' }
 
 -- [[ Configure and install plugins ]]
 --
