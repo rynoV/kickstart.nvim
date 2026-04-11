@@ -353,6 +353,7 @@ return { -- Collection of various small independent plugins/modules
           miniclue.gen_clues.registers(),
           miniclue.gen_clues.windows(),
           miniclue.gen_clues.z(),
+          { mode = 'n', keys = '<Leader>D', desc = '+Diff' },
           { mode = 'n', keys = '<Leader>c', desc = '+Code' },
           { mode = 'n', keys = '<Leader>s', desc = '+Search' },
           { mode = 'x', keys = '<Leader>s', desc = '+Search (using selection)' },

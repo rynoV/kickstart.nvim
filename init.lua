@@ -747,6 +747,68 @@ vim.keymap.set('n', '<leader>u', function()
   }
 end, { desc = '[U]ndotree toggle' })
 
+-- | Diffing
+-- Tips for using the built-in diff:
+-- If the diff is not doing what you expect, it might be because the buffer has
+-- large contiguous mostly-matching regions and "linematch" is too small to
+-- allow nvim to align them properly.
+-- You can try increasing linematch, or try reducing the differences, for
+-- example by ignoring whitespace-only changes with iwhite or iwhiteall.
+-- You can also try changing from the default myers algorithm with
+-- algorithm:minimal/patience/histogram.
+-- If the above don't work, you can use anchors to manually line up the
+-- regions.
+
+vim.opt.diffopt:remove 'inline:char'
+
+vim.opt.diffopt:append {
+  -- Using the new directory nvim.difftool with anchors breaks things if
+  -- hiddenoff is not set
+  'hiddenoff',
+  'vertical',
+  'inline:word',
+  'anchor',
+}
+
+local function make_diffopt_toggle(opt_name, key)
+  Snacks.toggle
+    .new({
+      name = 'diffopt ' .. opt_name,
+      get = function()
+        return vim.api.nvim_get_option_value('diffopt', {}):find(opt_name) ~= nil
+      end,
+      set = function(v)
+        if v then
+          vim.cmd(':set diffopt+=' .. opt_name)
+        else
+          vim.cmd(':set diffopt-=' .. opt_name)
+        end
+      end,
+    })
+    :map(key)
+end
+
+make_diffopt_toggle('anchor', '<leader>Da')
+make_diffopt_toggle('iwhite', '<leader>Dw')
+make_diffopt_toggle('iwhiteall', '<leader>DW')
+make_diffopt_toggle('algorithm:patience', '<leader>Dp')
+make_diffopt_toggle('algorithm:histogram', '<leader>Dh')
+make_diffopt_toggle('algorithm:minimal', '<leader>Dm')
+make_diffopt_toggle('icase', '<leader>Di')
+make_diffopt_toggle('iwhiteeol', '<leader>De')
+
+-- User command that adds a mark to the diff anchors
+-- This can be used to work around difficult to diff regions by placing marks
+-- in both buffers at the locations where the diff should align, then calling
+-- this command with the mark name.
+vim.api.nvim_create_user_command('DiffAnchor', function(opts)
+  -- It's important that setlocal is used so other diff buffers don't try to
+  -- use the anchors (for example with difftool directory diffing).
+  vim.cmd(":windo setlocal diffanchors+='" .. opts.args)
+end, { nargs = 1, desc = 'Add a diff anchor' })
+
+vim.keymap.set('n', '<leader>DA', ':DiffAnchor ', { desc = 'Add a diff anchor at the mark' })
+
 vim.cmd 'packadd! nvim.difftool'
 
 -- The line beneath this is called `modeline`. See `:help modeline`
