@@ -1,5 +1,6 @@
 return {
   'mfussenegger/nvim-dap',
+  event = 'VeryLazy',
   dependencies = {
     'williamboman/mason.nvim', -- Need to depend on mason so it updates PATH before we load the config
     'nvim-neotest/nvim-nio',

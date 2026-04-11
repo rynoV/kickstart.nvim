@@ -253,55 +253,25 @@ vim.lsp.on_type_formatting.enable()
 -- Lint treesitter queries :help ft-query-plugin
 vim.g.query_lint_on = { 'InsertLeave', 'TextChanged' }
 
--- [[ Configure and install plugins ]]
---
---  To check the current status of your plugins, run
---    :Lazy
---
---  You can press `?` in this menu for help. Use `:q` to close the window
---
---  To update plugins you can run
---    :Lazy update
---
--- NOTE: Here is where you install your plugins.
 require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
   'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
 
-  -- NOTE: Plugins can also be added by using a table,
-  -- with the first argument being the link and the following
-  -- keys can be used to configure plugin behavior/loading/etc.
-  --
-  -- Use `opts = {}` to force a plugin to be loaded.
-  --
-
-  -- NOTE: Plugins can also be configured to run Lua code when they are loaded.
-  --
-  -- This is often very useful to both group configuration, as well as handle
-  -- lazy loading plugins that don't need to be loaded immediately at startup.
-  --
-  -- For example, in the following configuration, we use:
-  --  event = 'VimEnter'
-  --
-  -- which loads which-key before all the UI elements are loaded. Events can be
-  -- normal autocommands events (`:help autocmd-events`).
-  --
-  -- Then, because we use the `opts` key (recommended), the configuration runs
-  -- after the plugin has been loaded as `require(MODULE).setup(opts)`.
-
-  -- NOTE: Plugins can specify dependencies.
-  --
-  -- The dependencies are proper plugin specifications as well - anything
-  -- you do for a plugin at the top level, you can do for a dependency.
-  --
-  -- Use the `dependencies` key to specify the dependencies of a particular plugin
-
-  -- LSP Plugins
   {
     -- `lazydev` configures Lua LSP for your Neovim config, runtime and plugins
     -- used for completion, annotations and signatures of Neovim apis
     'folke/lazydev.nvim',
     ft = 'lua',
+    dependencies = {
+      {
+        'saghen/blink.cmp',
+        opts = {
+          sources = {
+            default = { 'lazydev' },
+          },
+        },
+      },
+    },
     opts = {
       library = {
         -- Load luvit types when the `vim.uv` word is found
@@ -312,6 +282,7 @@ require('lazy').setup({
   {
     -- Main LSP Configuration
     'neovim/nvim-lspconfig',
+    event = 'VeryLazy',
     dependencies = {
       -- Automatically install LSPs and related tools to stdpath for Neovim
       -- Mason must be loaded before its dependents so we need to set it up here.
@@ -383,29 +354,8 @@ require('lazy').setup({
         ts_ls = {},
         eslint = {},
         copilot = {},
-        -- Special Lua Config, as recommended by neovim help docs
+        -- lazydev handles configuration for lua_ls
         lua_ls = {
-          on_init = function(client)
-            if client.workspace_folders then
-              local path = client.workspace_folders[1].name
-              if path ~= vim.fn.stdpath 'config' and (vim.uv.fs_stat(path .. '/.luarc.json') or vim.uv.fs_stat(path .. '/.luarc.jsonc')) then
-                return
-              end
-            end
-
-            client.config.settings.Lua = vim.tbl_deep_extend('force', client.config.settings.Lua, {
-              runtime = {
-                version = 'LuaJIT',
-                path = { 'lua/?.lua', 'lua/?/init.lua' },
-              },
-              workspace = {
-                checkThirdParty = false,
-                library = {
-                  vim.env.VIMRUNTIME,
-                },
-              },
-            })
-          end,
           settings = {
             Lua = {
               completion = {
@@ -494,7 +444,7 @@ require('lazy').setup({
   },
 
   -- Highlight todo, notes, etc in comments
-  { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
+  { 'folke/todo-comments.nvim', event = 'VeryLazy', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
 
   {
     'nvim-treesitter/nvim-treesitter',
@@ -576,6 +526,7 @@ require('lazy').setup({
   },
   {
     'nvim-treesitter/nvim-treesitter-context',
+    event = 'VeryLazy',
     opts = {
       enable = true,
     },

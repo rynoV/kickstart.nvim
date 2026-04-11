@@ -2,6 +2,7 @@
 return { -- Collection of various small independent plugins/modules
   {
     'nvim-mini/mini.icons',
+    event = 'VeryLazy',
     config = function()
       require('mini.icons').setup {}
     end,
@@ -33,6 +34,7 @@ return { -- Collection of various small independent plugins/modules
   },
   {
     'nvim-mini/mini.operators',
+    event = 'VeryLazy',
     config = function()
       -- gs: sort
       -- gx: exchange
@@ -46,12 +48,14 @@ return { -- Collection of various small independent plugins/modules
   },
   {
     'nvim-mini/mini.extra',
+    event = 'VeryLazy',
     config = function()
       require('mini.extra').setup()
     end,
   },
   {
     'nvim-mini/mini.ai',
+    event = 'VeryLazy',
     dependencies = { 'nvim-mini/mini.extra' },
     config = function()
       -- Better Around/Inside textobjects
@@ -108,6 +112,7 @@ return { -- Collection of various small independent plugins/modules
   },
   {
     'nvim-mini/mini.surround',
+    event = 'VeryLazy',
     config = function()
       -- Add/delete/replace surroundings (brackets, quotes, etc.)
       --
@@ -119,6 +124,7 @@ return { -- Collection of various small independent plugins/modules
   },
   {
     'nvim-mini/mini.bracketed',
+    event = 'VeryLazy',
     dependencies = { 'ghostbuster91/nvim-next' },
     config = function()
       local brack = require 'mini.bracketed'
@@ -173,6 +179,7 @@ return { -- Collection of various small independent plugins/modules
   },
   {
     'nvim-mini/mini.files',
+    event = 'VeryLazy',
     config = function()
       require('mini.files').setup {
         options = {
@@ -243,6 +250,7 @@ return { -- Collection of various small independent plugins/modules
   },
   {
     'nvim-mini/mini-git',
+    event = 'VeryLazy',
     config = function()
       require('mini.git').setup {}
 
@@ -332,6 +340,7 @@ return { -- Collection of various small independent plugins/modules
   },
   {
     'nvim-mini/mini.clue',
+    event = 'VeryLazy',
     config = function()
       local miniclue = require 'mini.clue'
       miniclue.setup {
@@ -406,6 +415,7 @@ return { -- Collection of various small independent plugins/modules
   },
   {
     'nvim-mini/mini.hipatterns',
+    event = 'VeryLazy',
     config = function()
       local hipatterns = require 'mini.hipatterns'
       hipatterns.setup {
@@ -418,6 +428,7 @@ return { -- Collection of various small independent plugins/modules
   },
   {
     'nvim-mini/mini.cursorword',
+    event = 'VeryLazy',
     config = function()
       require('mini.cursorword').setup()
     end,

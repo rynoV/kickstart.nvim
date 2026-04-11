@@ -5,7 +5,6 @@ return {
   event = { 'VeryLazy' },
   dependencies = {
     -- 'folke/sidekick.nvim',
-    { 'GustavEikaas/easy-dotnet.nvim', optional = true },
     {
       'L3MON4D3/LuaSnip',
       build = (function()
@@ -213,6 +212,15 @@ return {
             module = 'easy-dotnet.completion.blink',
             score_offset = 10000,
             async = true,
+          },
+          lazydev = {
+            name = 'LazyDev',
+            enabled = function()
+              return package.loaded['lazydev'] ~= nil
+            end,
+            module = 'lazydev.integrations.blink',
+            -- make lazydev completions top priority (see `:h blink.cmp`)
+            score_offset = 100,
           },
         },
       },

@@ -5,6 +5,7 @@
 return {
   {
     'lewis6991/gitsigns.nvim',
+    event = 'VeryLazy',
     dependencies = {
       'ghostbuster91/nvim-next',
     },
