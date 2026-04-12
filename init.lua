@@ -282,6 +282,8 @@ require('lazy').setup({
       library = {
         -- Load luvit types when the `vim.uv` word is found
         { path = '${3rd}/luv/library', words = { 'vim%.uv' } },
+        { path = 'snacks.nvim', words = { 'Snacks' } },
+        { path = 'lazy.nvim', words = { 'LazyPluginSpec' } },
       },
     },
   },
@@ -360,12 +362,31 @@ require('lazy').setup({
         ts_ls = {},
         eslint = {},
         copilot = {},
-        -- lazydev handles configuration for lua_ls
+        -- lazydev handles some configuration for lua_ls but doesn't install or
+        -- enable it. The rest of this config is copied from LazyVim:
+        -- https://github.com/LazyVim/LazyVim/blob/83d90f339defdb109a6ede333865a66ffc7ef6aa/lua/lazyvim/plugins/lsp/init.lua#L123
         lua_ls = {
           settings = {
             Lua = {
+              workspace = {
+                checkThirdParty = false,
+              },
+              codeLens = {
+                enable = true,
+              },
               completion = {
                 callSnippet = 'Replace',
+              },
+              doc = {
+                privateName = { '^_' },
+              },
+              hint = {
+                enable = true,
+                setType = false,
+                paramType = true,
+                paramName = 'Disable',
+                semicolon = 'Disable',
+                arrayIndex = 'Disable',
               },
             },
           },
