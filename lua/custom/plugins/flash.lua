@@ -72,12 +72,16 @@ return {
     { "<c-s>", mode = { "c" }, function() require("flash").toggle() end, desc = "Toggle Flash Search" },
     { "<a-d>", function () flash_diagnostic(true) end, desc = "Show diagnostic" },
     { "<a-D>", function () flash_diagnostic(false) end, desc = "Jump to diagnostic" },
+    -- Overloaded normal mode escape for clearing flash highlighting, regular
+    -- search highlighting, and messages
     { "<esc>", mode = "n", function ()
       vim.cmd("nohlsearch")
       local char = require("flash.plugins.char")
       if char.state then
         char.state:hide()
       end
+      -- Clear any message in bottom left of screen
+      vim.cmd [[echo ""]]
     end, desc = "Clear search highlights" },
     { "<c-space>", mode = {"n", "x", "o"}, function()
       require("flash").treesitter({
