@@ -107,6 +107,12 @@ vim.opt.conceallevel = 2
 -- Hold over from emacs muscle memory
 vim.keymap.set('c', '<C-g>', '<Esc>')
 
+vim.keymap.set('n', '<leader>ay', function()
+  -- Note: uses absolute path (:p), then shortens using the current directory
+  -- if possible (:.). See :h filename-modifiers
+  vim.fn.setreg('+', vim.fn.expand '%:p:.' .. ':' .. vim.fn.line '.' .. ':' .. vim.fn.col '.')
+end, { desc = 'Copy file, line, and column to clipboard' })
+
 -- See `:help :make_makeprg`, `:help compiler-select`, and the built in
 -- compiler settings:
 -- https://github.com/neovim/neovim/tree/master/runtime/compiler
