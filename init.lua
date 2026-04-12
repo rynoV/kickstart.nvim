@@ -511,7 +511,10 @@ require('lazy').setup({
         'javascriptreact',
         'typescript',
         'typescriptreact',
+        'xml',
         'fsharp',
+        'fsharp_project',
+        'c_sharp',
       }
 
       -- Languages that rely on old regex syntax highlighting even though they
@@ -527,6 +530,8 @@ require('lazy').setup({
         -- Treesitter syntax highlighting is inconsistent for fsharp
         'fsharp',
       }
+
+      vim.treesitter.language.register('xml', { 'fsharp_project' })
 
       vim.api.nvim_create_autocmd('FileType', {
         pattern = { '*' },

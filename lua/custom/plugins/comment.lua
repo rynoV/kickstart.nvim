@@ -12,17 +12,14 @@ vim.keymap.set('n', 'gcO', '<Cmd>:normal Oa<C-o>gcc<CR>$cl', { desc = 'Open line
 -- at the end of the line
 vim.keymap.set('n', 'gca', '<Cmd>:normal gco<CR>kJA', { desc = 'Add comment at end of line' })
 
+---@type LazyPluginSpec
 return {
-  'numToStr/Comment.nvim',
-  enabled = false,
-  dependencies = {
-    'JoosepAlviste/nvim-ts-context-commentstring',
-    opts = {
-      enable_autocmd = false,
-    },
-  },
-  opts = function(_, opts)
-    opts.pre_hook = require('ts_context_commentstring.integrations.comment_nvim').create_pre_hook()
-    return opts
-  end,
+  'folke/ts-comments.nvim',
+  -- NOTE: opts.lang is a mapping from *treesitter lang* to comment configs,
+  -- not from filetypes. Specifically, whatever
+  -- vim.treesitter.language.get_lang returns for the filetype is the index
+  -- into opts.lang.
+  opts = {},
+  event = 'VeryLazy',
+  enabled = vim.fn.has 'nvim-0.10.0' == 1,
 }
