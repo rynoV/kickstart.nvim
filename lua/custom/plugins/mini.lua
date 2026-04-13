@@ -54,6 +54,9 @@ return { -- Collection of various small independent plugins/modules
     end,
   },
   {
+    -- Note: these mappings sometimes require waiting for timeoutlen, and it
+    -- depends which character is used for the text object identifier; for
+    -- example lowercase 'l' requires waiting (even with a minimal config)
     'nvim-mini/mini.ai',
     event = 'VeryLazy',
     dependencies = { 'nvim-mini/mini.extra' },
@@ -67,7 +70,8 @@ return { -- Collection of various small independent plugins/modules
       require('mini.ai').setup {
         n_lines = 500,
         custom_textobjects = {
-          l = MiniExtra.gen_ai_spec.line(),
+          -- Using uppercase 'L' avoids the timeoutlen wait
+          L = MiniExtra.gen_ai_spec.line(),
           i = MiniExtra.gen_ai_spec.indent(),
           -- "subword" text object.. snake_case, camelCase, PascalCase, etc; all capitalizations
           s = {
