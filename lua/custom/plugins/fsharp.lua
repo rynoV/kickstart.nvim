@@ -17,7 +17,8 @@ return {
       vim.g['fsharp#fsi_extra_shared_parameters'] = { '--langversion:preview' }
       vim.g['fsharp#fsi_keymap'] = 'custom'
       vim.g['fsharp#fsi_keymap_send'] = '<M-CR>'
-      vim.g['fsharp#fsi_keymap_toggle'] = '<M-2>'
+      -- M-S-2 instead of M-@ works in Kitty
+      vim.g['fsharp#fsi_keymap_toggle'] = '<M-S-2>'
     end,
   },
 }
