@@ -196,6 +196,8 @@ vim.api.nvim_create_autocmd('ColorScheme', {
     -- good so we avoid overriding it for snack dim only
     ---@diagnostic disable-next-line: param-type-mismatch
     vim.api.nvim_set_hl(0, 'SnacksDim', original_diag_unnecessary)
+    -- A little more readable than the default "NonText" link
+    vim.api.nvim_set_hl(0, 'SnacksDebugPrint', { link = 'Comment' })
     vim.api.nvim_set_hl(0, 'TabLineFill', {})
     -- The default highlights aren't very legible with my theme, comment is better
     vim.api.nvim_set_hl(0, 'ComplHint', { link = 'Comment' }) -- lsp inline completion

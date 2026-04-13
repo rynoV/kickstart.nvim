@@ -89,7 +89,16 @@ return {
         ---@diagnostic disable-next-line: missing-fields
         Snacks.scratch { ft = 'markdown' }
       end,
-      desc = '[S]cratch Buffer',
+      desc = '[S]cratch Notes Buffer',
+    },
+    {
+      '<leader>te',
+      function()
+        -- Allows using <CR> to evaluate lua code
+        ---@diagnostic disable-next-line: missing-fields
+        Snacks.scratch { ft = 'lua' }
+      end,
+      desc = '[S]cratch [E]val Buffer',
     },
     {
       '<leader>tS',
