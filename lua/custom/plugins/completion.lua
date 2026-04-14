@@ -69,7 +69,22 @@ return {
     local opts = {
       signature = { enabled = true },
       snippets = { preset = 'luasnip' },
-      cmdline = { enabled = true },
+      cmdline = {
+        enabled = true,
+        keymap = {
+          preset = 'cmdline',
+          -- Sometimes the completion gets into a state where the first item is
+          -- selected but isn't filled in, or where an item is filled in but
+          -- the old menu is still up. In these cases C-y can be used, but my
+          -- muscle memory is to hit enter, and I don't mind hitting enter
+          -- twice to run the command
+          ['<CR>'] = { 'accept', 'fallback' },
+        },
+        completion = {
+          list = { selection = { preselect = false } },
+          ghost_text = { enabled = true },
+        },
+      },
       term = { enabled = false },
       -- 'default' (recommended) for mappings similar to built-in completions (C-y to accept)
       -- 'super-tab' for mappings similar to vscode (tab to accept)
