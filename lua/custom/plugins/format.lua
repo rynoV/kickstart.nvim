@@ -1,7 +1,5 @@
 return {
   'stevearc/conform.nvim',
-  -- Locked here until this is fixed: https://github.com/stevearc/conform.nvim/issues/752
-  commit = 'f9ef25a7ef00267b7d13bfc00b0dea22d78702d5',
   event = { 'BufWritePre' },
   cmd = { 'ConformInfo' },
   keys = {
@@ -16,26 +14,10 @@ return {
   },
   opts = {
     notify_on_error = true,
-    format_on_save = function(bufnr)
-      if vim.g.disable_autoformat or vim.b[bufnr].disable_autoformat then
-        return
-      end
-
-      -- Disable "format_on_save lsp_fallback" for languages that don't
-      -- have a well standardized coding style. You can add additional
-      -- languages here or re-enable it for the disabled ones.
-      local disable_filetypes = { c = true, cpp = true }
-      local lsp_format_opt
-      if disable_filetypes[vim.bo[bufnr].filetype] then
-        lsp_format_opt = 'never'
-      else
-        lsp_format_opt = 'fallback'
-      end
-      return {
-        timeout_ms = 5000,
-        lsp_format = lsp_format_opt,
-      }
-    end,
+    format_on_save = {
+      lsp_format = 'fallback',
+      timeout_ms = 5000,
+    },
     formatters = {
       hledger_fmt = {
         command = 'hledger-fmt',
@@ -55,8 +37,11 @@ return {
     },
     formatters_by_ft = {
       lua = { 'stylua' },
-      -- Don't set formatter for F# so that the fsautocomplete formatting will be used, which respects project specific fantomas versions and settings
-      -- fsharp = { 'fantomas' },
+      -- Ensure F# uses  the fsautocomplete formatting, which respects project
+      -- specific fantomas versions and settings. Unfortunately just having lsp
+      -- as the fallback doesn't seem to work when the '_' key is set
+      -- https://github.com/stevearc/conform.nvim/issues/846
+      fsharp = { lsp_format = 'prefer' },
       typescript = { 'prettier' },
       typescriptreact = { 'prettier' },
       javascript = { 'prettier' },
