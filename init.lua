@@ -578,7 +578,7 @@ require('lazy').setup({
 
           if
             not vim.treesitter.language.add(lang)
-            and vim.tbl_contains(auto_filetypes, lang)
+            and vim.tbl_contains(auto_filetypes, ft)
             and vim.tbl_contains(require('nvim-treesitter').get_available(), lang)
           then
             require('nvim-treesitter').install(lang):wait(30000) -- wait max 5 minutes
