@@ -380,11 +380,13 @@ require('lazy').setup({
 
           if client and client:supports_method(vim.lsp.protocol.Methods.textDocument_foldingRange) then
             local win = vim.api.nvim_get_current_win()
-            -- Note: treesitter configuration may also set the foldexpr, but
-            -- that should happen before the lsp attaches, so this should
-            -- override it
-            vim.wo[win][0].foldmethod = 'expr'
-            vim.wo[win][0].foldexpr = 'v:lua.vim.lsp.foldexpr()'
+            if vim.wo[win][0].foldmethod ~= 'diff' then
+              -- Note: treesitter configuration may also set the foldexpr, but
+              -- that should happen before the lsp attaches, so this should
+              -- override it
+              vim.wo[win][0].foldmethod = 'expr'
+              vim.wo[win][0].foldexpr = 'v:lua.vim.lsp.foldexpr()'
+            end
           end
 
           -- Helps for example in html/jsx/tsx to edit the closing and ending
@@ -595,10 +597,15 @@ require('lazy').setup({
             if vim.tbl_contains(legacy_syntax, ft) then
               vim.bo[args.buf].syntax = 'ON'
             end
+
+            local win = vim.api.nvim_get_current_win()
+            if vim.wo[win][0].foldmethod ~= 'diff' then
+              vim.wo[win][0].foldexpr = 'v:lua.vim.treesitter.foldexpr()'
+              vim.wo[win][0].foldmethod = 'expr'
+            end
+
             -- this is an experimental feature
             -- vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
-            vim.wo[0][0].foldexpr = 'v:lua.vim.treesitter.foldexpr()'
-            vim.wo[0][0].foldmethod = 'expr'
           end
         end,
       })
