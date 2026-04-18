@@ -85,10 +85,10 @@ local function unblock_guest(guest_pipe)
 end
 
 ---@param pipe string
----@param bufnr integer
-local function notify_when_done(pipe, bufnr)
+---@param winid integer
+local function notify_when_done(pipe, winid)
   vim.api.nvim_create_autocmd({ 'WinClosed' }, {
-    buffer = bufnr,
+    pattern = tostring(winid),
     once = true,
     callback = function()
       unblock_guest(pipe)
@@ -133,14 +133,14 @@ function M.host_receive(opts)
     vim.api.nvim_exec2(cmd, {})
   end
 
-  local bufnr = vim.api.nvim_get_current_buf()
+  local winid = vim.api.nvim_get_current_win()
 
   for _, cmd in ipairs(post_cmds) do
     vim.api.nvim_exec2(cmd, {})
   end
 
   if force_block then
-    notify_when_done(response_pipe, bufnr)
+    notify_when_done(response_pipe, winid)
   end
 
   return force_block
