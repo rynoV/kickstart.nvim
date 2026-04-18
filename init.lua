@@ -1,3 +1,7 @@
+if require('flatten').setup() then
+  return
+end
+
 if vim.loader then
   -- Seems to take about 10ms off startup at time of writing
   vim.loader.enable()
