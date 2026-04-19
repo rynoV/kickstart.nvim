@@ -172,6 +172,9 @@ local function forward_to_host(host)
 end
 
 local function guest_init(host_pipe)
+  -- Avoid swapfile errors/warnings
+  vim.g.updatecount = 0
+
   local host
   -- Connect to host process
   if type(host_pipe) == 'number' then
