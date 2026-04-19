@@ -2,11 +2,59 @@
 -- [flatten.nvim](https://github.com/willothy/flatten.nvim) for my use case of
 -- just opening a new tab in the current neovim instance when git diffing from
 -- the neovim terminal.
-
+--
+-- This works by running a different config when the $NVIM environment variable
+-- is set (in the neovim terminal); in this case the neovim instance being
+-- launched within the neovim terminal is called the "guest" instance, and its
+-- config only passes along the command line arguments `vim.v.argv` to the host
+-- (the instance running the terminal) via rpc. It optionally blocks waiting
+-- for an rpc call from the host if the `g:flatten_wait` variable is set.
+--
+-- Assuming the host has also loaded this module, it has the `host_receive`
+-- function to be remotely-called by the guest, and this function executes the
+-- commands from the guest. Currently commands are all it looks at, but it
+-- could be extended like the original flatten.nvim to parse stuff like file
+-- arguments and quickfix.
+--
+-- Example .gitconfig difftool:
+--
+-- ```toml
+-- [difftool "nvim_difftool"]
+-- # --cmd here for setting flatten_wait is important so the variable is set before the flatten module is loaded.
+-- cmd = ~/scripts/nvim-cmd.sh --cmd \"let g:flatten_wait=1\" -c \"packadd nvim.difftool | tabnew | DiffTool $LOCAL $REMOTE\"
+-- ```
+--
+-- Where nvim-cmd.sh looks something like:
+--
+-- ```sh
+-- #!/bin/sh
+--
+-- # For use with a neovim config that forwards command line arguments to a host
+-- # instance when it is run within a host neovim terminal (flattening the neovim
+-- # instances)
+-- if [ -z "$NVIM" ]; then
+--   nvim "$@"
+-- else
+--   nvim --headless "$@"
+-- fi
+-- ```
+--
+-- `--headless` is not strictly necessary, but it avoids confusing terminal clearing.
+--
+-- The last piece is to add this to the top of `init.lua`:
+--
+-- ```lua
+-- if require('flatten').setup() then
+--   return
+-- end
+-- ```
 local M = {}
 
+--- The function argument, must not depend on upvalues, which means it can't
+--- use local values itself; instead it must `require('...')` anything it uses.
+---
 ---@param chan integer
----@param fn fun(...:any): ...:any # must not depend on upvalues
+---@param fn fun(...:any): ...:any
 ---@param args any[]
 ---@param blocking boolean
 ---@return any ...
