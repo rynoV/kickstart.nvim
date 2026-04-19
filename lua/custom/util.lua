@@ -104,14 +104,18 @@ function M.term_enabled()
   return false
 end
 
+function M.last_tab_or_next()
+  if vim.fn.tabpagenr '#' ~= 0 then
+    vim.cmd 'tabnext #'
+  else
+    vim.cmd 'tabnext'
+  end
+end
+
 function M.toggle_term()
+  -- If current tab has a terminal, switch to last tab if it exists, else next tab
   if M.term_enabled() then
-    -- If current tab has a terminal, switch to last tab if it exists, else next tab
-    if vim.fn.tabpagenr '#' ~= 0 then
-      vim.cmd 'tabnext #'
-    else
-      vim.cmd 'tabnext'
-    end
+    M.last_tab_or_next()
   else
     -- Check if any tab has a terminal window
     local term_tab_found = false

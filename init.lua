@@ -673,6 +673,11 @@ require('lazy').setup({
 
 local util = require 'custom.util'
 
+-- Override of the default binding that moves to the next tab if the last
+-- accessed tab page no longer exists. I don't think the original binding is
+-- necessary, but it is still accessible under CTRL-W g<Tab>
+vim.keymap.set('n', 'g<Tab>', util.last_tab_or_next, { desc = 'Open last accessed tab or next tab' })
+
 vim.keymap.set('n', '<leader>mf', util.open_file_in_last_tab, { desc = 'Open file at cursor in previously accessed tab page' })
 
 -- Override these actions with repeatable wrappers
