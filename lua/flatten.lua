@@ -6,15 +6,18 @@
 -- This works by running a different config when the $NVIM environment variable
 -- is set (in the neovim terminal); in this case the neovim instance being
 -- launched within the neovim terminal is called the "guest" instance, and its
--- config only passes along the command line arguments `vim.v.argv` to the host
--- (the instance running the terminal) via rpc. It optionally blocks waiting
--- for an rpc call from the host if the `g:flatten_wait` variable is set.
+-- config only passes along the command line arguments `vim.v.argv` and
+-- `vim.v.argf` to the host (the instance running the terminal) via rpc. It
+-- optionally blocks waiting for an rpc call from the host if the
+-- `g:flatten_wait` variable is set.
 --
 -- Assuming the host has also loaded this module, it has the `host_receive`
 -- function to be remotely-called by the guest, and this function executes the
--- commands from the guest. Currently commands are all it looks at, but it
--- could be extended like the original flatten.nvim to parse stuff like file
--- arguments and quickfix.
+-- commands from the guest. Currently it only runs pre and post commands and
+-- opens buffers for vim.v.argf files with optional splits/tabs based -p/-o/-O,
+-- and open diff splits if -d is provided. It could be extended like the
+-- original flatten.nvim to handle stuff like quickfix and stdin but I don't
+-- use these.
 --
 -- Example .gitconfig difftool:
 --
@@ -167,11 +170,12 @@ function M.host_receive(opts)
   local response_pipe = opts.response_pipe
   local force_block = opts.force_block
   local argv = opts.argv
+  local argf = opts.argf
 
   -- commands passed through with +<cmd>, to be executed after opening files
   local pre_cmds, post_cmds = parse_argv(argv)
 
-  if #pre_cmds == 0 and #post_cmds == 0 then
+  if #pre_cmds == 0 and #post_cmds == 0 and #argf == 0 then
     -- If there are no commands, don't open anything and tell the guest not to
     -- block
     return false
@@ -179,6 +183,23 @@ function M.host_receive(opts)
 
   for _, cmd in ipairs(pre_cmds) do
     vim.api.nvim_exec2(cmd, {})
+  end
+
+  local is_diff = vim.tbl_contains(argv, '-d')
+  local horizontal = vim.tbl_contains(argv, '-o')
+  local vertical = vim.tbl_contains(argv, '-O')
+  local tabs = vim.tbl_contains(argv, '-p')
+
+  vim.cmd.tabnew()
+  local split = horizontal and 'split' or 'vsplit'
+  local edit_after_first = (is_diff or horizontal or vertical) and split or tabs and 'tabedit' or 'edit'
+  local edit_command_opts = is_diff and '+diffthis' or ''
+  for i, f in ipairs(argf) do
+    if i == 1 then
+      vim.cmd(vim.fn.join({ 'edit', edit_command_opts, f }, ' '))
+    else
+      vim.cmd(vim.fn.join({ edit_after_first, edit_command_opts, f }, ' '))
+    end
   end
 
   local winid = vim.api.nvim_get_current_win()
@@ -205,6 +226,7 @@ local function forward_to_host(host)
   local args = {
     response_pipe = server,
     argv = vim.v.argv,
+    argf = vim.v.argf,
     force_block = force_block,
   }
 
