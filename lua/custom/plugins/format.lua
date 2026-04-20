@@ -1,4 +1,5 @@
-return {
+---@type LazySpec
+local conform = {
   'stevearc/conform.nvim',
   event = { 'BufWritePre' },
   cmd = { 'ConformInfo' },
@@ -94,4 +95,9 @@ return {
       end,
     })
   end,
+}
+
+return {
+  'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
+  conform,
 }
