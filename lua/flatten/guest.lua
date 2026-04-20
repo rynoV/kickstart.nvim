@@ -43,7 +43,7 @@ local function maybe_block(host, block)
   end
 end
 
-function M.forward_to_host(host)
+function M.forward_to_host(host, stdin)
   local force_block = vim.g.flatten_wait ~= nil
 
   local server = vim.fn.fnameescape(vim.v.servername)
@@ -55,6 +55,7 @@ function M.forward_to_host(host)
     response_pipe = server,
     argv = vim.v.argv,
     argf = vim.v.argf,
+    stdin = stdin,
     force_block = force_block,
   }
 

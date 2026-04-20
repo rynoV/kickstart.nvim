@@ -1,7 +1,6 @@
 -- A pared-down version of
--- [flatten.nvim](https://github.com/willothy/flatten.nvim) for my use case of
--- just opening a new tab in the current neovim instance when git diffing from
--- the neovim terminal.
+-- [flatten.nvim](https://github.com/willothy/flatten.nvim) for my use case
+-- where the terminal is in its own tab.
 --
 -- This works by running a different config when the $NVIM environment variable
 -- is set (in the neovim terminal); in this case the neovim instance being
@@ -15,9 +14,11 @@
 -- function to be remotely-called by the guest, and this function executes the
 -- commands from the guest. Currently it only runs pre and post commands and
 -- opens buffers for vim.v.argf files with optional splits/tabs based -p/-o/-O,
--- and open diff splits if -d is provided. It could be extended like the
--- original flatten.nvim to handle stuff like quickfix and stdin but I don't
--- use these.
+-- and open diff splits if -d is provided.
+--
+-- It also has basic support for stdin, just tested for use as `MANPAGER="nvim +Man!"`
+-- (opens stdin as a scratch buffer, probably won't work well if pairing stdin
+-- with other files on the command line).
 --
 -- Example .gitconfig difftool:
 --
@@ -52,6 +53,10 @@
 --   return
 -- end
 -- ```
+--
+-- You can set `VISUAL="~/scripts/nvim-cmd.sh --cmd 'let g:flatten_wait=1'"`,
+-- and some programs which respect the VISUAL environment variable (e.g.
+-- chezmoi) will end up integrating nicely with the running neovim instance.
 local M = {}
 
 local function guest_init(host_pipe)
@@ -69,6 +74,14 @@ local function guest_init(host_pipe)
     end
     host = chan
   end
+
+  vim.api.nvim_create_autocmd('StdinReadPost', {
+    pattern = '*',
+    callback = function()
+      local readlines = vim.api.nvim_buf_get_lines(0, 0, -1, true)
+      require('flatten.guest').forward_to_host(host, readlines)
+    end,
+  })
 
   vim.api.nvim_create_autocmd('BufEnter', {
     pattern = '*',

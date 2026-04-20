@@ -36,11 +36,12 @@ function M.host_receive(opts)
   local force_block = opts.force_block
   local argv = opts.argv
   local argf = opts.argf
+  local stdin = opts.stdin or {}
 
   -- commands passed through with +<cmd>, to be executed after opening files
   local pre_cmds, post_cmds = parse_argv(argv)
 
-  if #pre_cmds == 0 and #post_cmds == 0 and #argf == 0 then
+  if #pre_cmds == 0 and #post_cmds == 0 and #argf == 0 and #stdin == 0 then
     -- If there are no commands, don't open anything and tell the guest not to
     -- block
     return false
@@ -50,12 +51,19 @@ function M.host_receive(opts)
     vim.api.nvim_exec2(cmd, {})
   end
 
+  vim.cmd.tabnew()
+
+  if #stdin > 0 then
+    local bufnr = vim.api.nvim_create_buf(true, true)
+    vim.api.nvim_buf_set_lines(bufnr, 0, 0, true, stdin)
+    vim.api.nvim_set_current_buf(bufnr)
+  end
+
   local is_diff = vim.tbl_contains(argv, '-d')
   local horizontal = vim.tbl_contains(argv, '-o')
   local vertical = vim.tbl_contains(argv, '-O')
   local tabs = vim.tbl_contains(argv, '-p')
 
-  vim.cmd.tabnew()
   local split = horizontal and 'split' or 'vsplit'
   local edit_after_first = (is_diff or horizontal or vertical) and split or tabs and 'tabedit' or 'edit'
   local edit_command_opts = is_diff and '+diffthis' or ''
