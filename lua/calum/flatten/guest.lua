@@ -12,7 +12,7 @@ end
 
 ---@param guest_pipe string
 function M.unblock_guest(guest_pipe)
-  local ok, response_sock = require('flatten.rpc').connect(guest_pipe)
+  local ok, response_sock = require('calum.flatten.rpc').connect(guest_pipe)
   if not ok then
     vim.notify(string.format("Failed to connect to rpc host on '%s'.", guest_pipe), vim.log.levels.WARN, {
       title = 'flatten',
@@ -20,8 +20,8 @@ function M.unblock_guest(guest_pipe)
     return
   end
 
-  require('flatten.rpc').exec_on_host(response_sock, function()
-    require('flatten.guest').unblock()
+  require('calum.flatten.rpc').exec_on_host(response_sock, function()
+    require('calum.flatten.guest').unblock()
   end, {}, false)
   if vim.api.nvim_get_chan_info(response_sock).id ~= nil then
     vim.fn.chanclose(response_sock)
@@ -63,8 +63,8 @@ function M.forward_to_host(host, stdin)
     vim.api.nvim_buf_delete(buf, { force = true })
   end
 
-  local block = require('flatten.rpc').exec_on_host(host, function(opts)
-    return require('flatten.host').host_receive(opts)
+  local block = require('calum.flatten.rpc').exec_on_host(host, function(opts)
+    return require('calum.flatten.host').host_receive(opts)
   end, { args }, true) or force_block
 
   maybe_block(host, block)

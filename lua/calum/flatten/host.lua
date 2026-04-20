@@ -7,7 +7,7 @@ local function notify_when_done(pipe, winid)
     pattern = tostring(winid),
     once = true,
     callback = function()
-      require('flatten.guest').unblock_guest(pipe)
+      require('calum.flatten.guest').unblock_guest(pipe)
     end,
   })
 end

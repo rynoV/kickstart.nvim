@@ -29,7 +29,7 @@ return {
         end
         local nngs = next_integrations.gitsigns(gitsigns)
 
-        local util = require 'custom.util'
+        local util = require 'calum.util'
         -- Navigation
         map('n', ']c', function()
           if vim.wo.diff then

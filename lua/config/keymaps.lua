@@ -93,7 +93,7 @@ vim.api.nvim_create_user_command('DiffOrig', diff_orig, {
 
 vim.keymap.set('n', '<leader>ml', '<cmd>Lazy<cr>', { desc = 'Plugins' })
 
-local util = require 'custom.util'
+local util = require 'calum.util'
 
 -- Override of the default binding that moves to the next tab if the last
 -- accessed tab page no longer exists. I don't think the original binding is
@@ -104,7 +104,7 @@ vim.keymap.set('n', '<C-w>Q', ':tabclose<CR>', { desc = 'Tab close' })
 vim.keymap.set('n', '<leader>mf', util.open_file_in_last_tab, { desc = 'Open file at cursor in previously accessed tab page' })
 
 -- Override these actions with repeatable wrappers
-util.make_repeatable_wrappers(require('custom.plugins.notes').haunt_prefix .. 'p', require('custom.plugins.notes').haunt_prefix .. 'n')
+util.make_repeatable_wrappers(require('plugins.notes').haunt_prefix .. 'p', require('plugins.notes').haunt_prefix .. 'n')
 -- Unsure if this actually works or if these binds just get overridden
 util.make_repeatable_wrappers(']c', '[c')
 util.make_repeatable_wrappers(']f', '[f')

@@ -1,4 +1,4 @@
-if require('flatten').setup() then
+if require('calum.flatten').setup() then
   return
 end
 
@@ -58,13 +58,8 @@ end ---@diagnostic disable-next-line: undefined-field
 vim.opt.rtp:prepend(lazypath)
 
 require('lazy').setup({
-  require 'kickstart.plugins.lint',
-  require 'kickstart.plugins.autopairs',
-  require 'kickstart.plugins.gitsigns',
-
-  -- NOTE: Automatically add plugins, configuration, etc from `lua/custom/plugins/*.lua`
-  { import = 'custom.plugins' },
-  { import = 'custom.vscode' },
+  -- NOTE: Automatically add plugins, configuration, etc from `lua/plugins/*.lua`
+  { import = 'plugins' },
 }, {
   ui = {
     -- If you are using a Nerd Font: set icons to an empty table which will use the

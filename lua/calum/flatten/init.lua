@@ -68,7 +68,7 @@ local function guest_init(host_pipe)
   if type(host_pipe) == 'number' then
     host = host_pipe
   else
-    local ok, chan = require('flatten.rpc').connect(host_pipe)
+    local ok, chan = require('calum.flatten.rpc').connect(host_pipe)
     if not ok then
       return
     end
@@ -79,7 +79,7 @@ local function guest_init(host_pipe)
     pattern = '*',
     callback = function()
       local readlines = vim.api.nvim_buf_get_lines(0, 0, -1, true)
-      require('flatten.guest').forward_to_host(host, readlines)
+      require('calum.flatten.guest').forward_to_host(host, readlines)
     end,
   })
 
@@ -87,7 +87,7 @@ local function guest_init(host_pipe)
     pattern = '*',
     once = true,
     callback = function()
-      require('flatten.guest').forward_to_host(host)
+      require('calum.flatten.guest').forward_to_host(host)
     end,
   })
 end

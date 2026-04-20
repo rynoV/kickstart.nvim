@@ -65,7 +65,7 @@ return {
       },
     },
     config = function()
-      local custom_util = require 'custom.util'
+      local custom_util = require 'calum.util'
 
       vim.api.nvim_create_autocmd('LspAttach', {
         group = vim.api.nvim_create_augroup('kickstart-lsp-attach', { clear = true }),

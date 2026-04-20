@@ -52,7 +52,7 @@ return {
         },
       },
     }
-    require('custom.dap_dotnet').setup {}
+    require('calum.dap_dotnet').setup {}
 
     dap.defaults.fallback.switchbuf = 'usevisible,uselast'
 
