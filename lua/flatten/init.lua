@@ -24,7 +24,8 @@
 -- ```toml
 -- [difftool "nvim_difftool"]
 -- # --cmd here for setting flatten_wait is important so the variable is set before the flatten module is loaded.
--- cmd = ~/scripts/nvim-cmd.sh --cmd \"let g:flatten_wait=1\" -c \"packadd nvim.difftool | tabnew | DiffTool $LOCAL $REMOTE\"
+-- # "+" is important so the diff command runs after the new tab page is opened
+-- cmd = ~/scripts/nvim-cmd.sh --cmd \"let g:flatten_wait=1\" +\"packadd nvim.difftool | DiffTool $LOCAL $REMOTE\"
 -- ```
 --
 -- Where nvim-cmd.sh looks something like:
