@@ -1,3 +1,5 @@
+-- Early exit if we're launching within an existing host neovim instance, after
+-- forwarding via rpc to the host
 if require('calum.flatten').setup() then
   return
 end
@@ -35,6 +37,7 @@ if vim.env.PROF then
   }
 end
 
+-- Config organization and loading pattern based on LazyVim
 require 'config.options'
 
 vim.api.nvim_create_autocmd('User', {
