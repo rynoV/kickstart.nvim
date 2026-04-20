@@ -78,8 +78,10 @@ vim.opt.foldenable = true
 vim.opt.foldlevel = 9999
 -- Use syntax highlighting for showing the first line of a closed fold
 -- https://github.com/neovim/neovim/pull/20750
-vim.opt.foldtext = ''
-vim.opt.fillchars = 'fold: '
+-- Decided against this for now because it makes diffs harder to read (can't
+-- differentiate folded lines from added/changed lines)
+-- vim.opt.foldtext = ''
+-- vim.opt.fillchars = 'fold: '
 
 -- Show a border for floating windows
 vim.opt.winborder = 'rounded'
