@@ -112,10 +112,10 @@ function M.last_tab_or_next()
   end
 end
 
-function M.toggle_term()
-  -- If current tab has a terminal, switch to last tab if it exists, else next tab
+function M.new_term()
+  -- If current tab has a terminal, open a new one
   if M.term_enabled() then
-    M.last_tab_or_next()
+    vim.cmd 'term'
   else
     -- Check if any tab has a terminal window
     local term_tab_found = false

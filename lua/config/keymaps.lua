@@ -109,18 +109,8 @@ util.make_repeatable_wrappers(require('plugins.notes').haunt_prefix .. 'p', requ
 util.make_repeatable_wrappers(']c', '[c')
 util.make_repeatable_wrappers(']f', '[f')
 
-Snacks.toggle
-  .new({
-    name = 'Terminal',
-    get = function()
-      return util.term_enabled()
-    end,
-    set = function(v)
-      util.toggle_term()
-    end,
-    notify = false,
-  })
-  :map '<leader>tt'
+-- Open a new terminal in the current tab if one exists, otherwise open a new tab with a terminal
+vim.keymap.set('n', '<leader>tt', util.new_term, { desc = 'Open new terminal' })
 
 --- This is used to allow toggling virtual lines completely off or only on the
 --- current line, remembering the previous config when toggling it back on.
