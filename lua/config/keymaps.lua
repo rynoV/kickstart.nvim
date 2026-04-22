@@ -265,4 +265,4 @@ vim.keymap.set('n', 'gco', '<Cmd>:normal oa<C-o>gcc<CR>$cl', { desc = 'Open line
 vim.keymap.set('n', 'gcO', '<Cmd>:normal Oa<C-o>gcc<CR>$cl', { desc = 'Open line above with comment' })
 -- Open comment below, go back up to current line, join the lines, and insert
 -- at the end of the line
-vim.keymap.set('n', 'gca', '<Cmd>:normal gco<CR>kJA', { desc = 'Add comment at end of line' })
+vim.keymap.set('n', 'gcA', '<Cmd>:normal gco<CR>kJA', { desc = 'Add comment at end of line' })
