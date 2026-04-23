@@ -4,7 +4,7 @@
 --- dependencies.
 return {
   'mrcjkb/rustaceanvim',
-  version = '^6', -- Recommended
+  version = '^9', -- Recommended
   lazy = false, -- This plugin is already lazy
   keys = {
     { 'J', '<cmd>RustLsp joinLines<cr>', ft = 'rust', desc = 'Rust join lines', mode = 'n' },
@@ -31,7 +31,7 @@ return {
   },
   init = function()
     vim.g.rustaceanvim = {
-      tools = { test_executor = 'background', crate_test_executor = 'background' },
+      tools = { crate_test_executor = 'background' },
       server = {
         default_settings = {
           -- https://rust-analyzer.github.io/book/configuration

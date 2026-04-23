@@ -9,3 +9,6 @@ parser_config.surrealql = {
   filetype = 'surql',
   maintainers = { '@Ce11an' },
 }
+
+vim.opt_local.formatoptions = 'croqljn'
+vim.opt_local.commentstring = '-- %s'
