@@ -28,6 +28,35 @@ local reopen_picker = function(picker, source, opts)
   Snacks.picker.pick(source, vim.tbl_extend('force', reopen_state[source] or {}, opts or {}))
 end
 
+-- The smart picker with custom filtering based on the context it was opened
+-- from. When opened from a terminal buffer, I move the other terminal buffers
+-- to the top of the list, because I keep terminals in a separate tab and
+-- rarely want to open anything except other terminals in that tab.
+local function smart_from_context()
+  if vim.bo.buftype == 'terminal' then
+    local current_buf = vim.api.nvim_get_current_buf()
+    Snacks.picker.smart {
+      multi = {
+        {
+          source = 'buffers',
+          filter = {
+            filter = function(item)
+              if item.buftype == 'terminal' and item.buf ~= current_buf then
+                item.score_add = (item.score_add or 0) + 1000
+              end
+              return true
+            end,
+          },
+        },
+        'recent',
+        'files',
+      },
+    }
+  else
+    Snacks.picker.smart()
+  end
+end
+
 ---@type LazyPluginSpec
 return {
   'folke/snacks.nvim',
@@ -173,7 +202,7 @@ return {
     {
       '<leader><leader>',
       function()
-        Snacks.picker.smart()
+        smart_from_context()
       end,
       desc = '[ ] Smart open',
     },
@@ -183,6 +212,13 @@ return {
         Snacks.picker.lines()
       end,
       desc = '[/] Fuzzily search in current buffer',
+    },
+    {
+      '<leader>sm',
+      function()
+        Snacks.picker.marks()
+      end,
+      desc = '[M]arks',
     },
     {
       '<leader>/',
