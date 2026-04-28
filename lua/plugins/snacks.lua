@@ -483,6 +483,16 @@ return {
           filename_first = true,
         },
       },
+      previewers = {
+        diff = {
+          -- Fancy seems to be the best option. There is the "syntax" option to
+          -- use neovim built-in, but that is for the "diff" filetype, not the
+          -- regular diff view, so syntax highlighting doesn't seem to work
+          -- (although installing the "diff" treesitter parser adds some
+          -- highlighting for the "diff" parts of the syntax)
+          style = 'fancy',
+        },
+      },
       sources = {
         files = {
           win = {
