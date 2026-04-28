@@ -15,10 +15,15 @@ local conform = {
   },
   opts = {
     notify_on_error = true,
-    format_on_save = {
-      lsp_format = 'fallback',
-      timeout_ms = 5000,
-    },
+    format_on_save = function(bufnr)
+      if vim.g.disable_autoformat or vim.b[bufnr].disable_autoformat then
+        return
+      end
+      return {
+        lsp_format = 'fallback',
+        timeout_ms = 5000,
+      }
+    end,
     formatters = {
       hledger_fmt = {
         command = 'hledger-fmt',
