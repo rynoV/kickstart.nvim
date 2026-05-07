@@ -1,4 +1,5 @@
 local is_macos = vim.fn.has 'mac' == 1
+local is_windows = vim.fn.has 'win64' == 1
 --- @type LazyPluginSpec
 return {
   'GustavEikaas/easy-dotnet.nvim',
@@ -25,6 +26,10 @@ return {
       lsp = {
         auto_refresh_codelens = false,
         enabled = false,
+      },
+      server = {
+        -- .NET Framework support https://github.com/GustavEikaas/easy-dotnet.nvim#net-framework
+        use_visual_studio = is_windows,
       },
     }
     -- Abbreviation for :Dotnet user command. Note this will expand anywhere in
