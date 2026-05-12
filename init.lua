@@ -1,3 +1,12 @@
+-- TODO: Gate for windows, and maybe for msys2 specifically
+vim.cmd [[
+let &shell = 'C:\git-sdk-64\msys2_shell.cmd -defterm -here -no-start -mingw64 -use-full-path -shell fish'
+let &shellcmdflag = '-c'
+set shellquote=
+set shellxquote=
+set shellslash
+]]
+
 -- Early exit if we're launching within an existing host neovim instance, after
 -- forwarding via rpc to the host
 if require('calum.flatten').setup() then
