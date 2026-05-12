@@ -1,6 +1,6 @@
 -- TODO: Gate for windows, and maybe for msys2 specifically
 vim.cmd [[
-let &shell = 'C:\git-sdk-64\msys2_shell.cmd -defterm -here -no-start -mingw64 -use-full-path -shell fish'
+" let &shell = 'fish'
 let &shellcmdflag = '-c'
 set shellquote=
 set shellxquote=
