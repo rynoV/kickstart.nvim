@@ -8,7 +8,7 @@ return {
   -- startup time, but it is at the very end of the load sequence so it is not
   -- noticeable, and using filetype based lazy loading instead of VeryLazy
   -- avoids loading this when it is not needed.
-  ft = { 'fsharp', 'fsharp_project', 'csharp', 'csharp_project' },
+  ft = { 'fsharp', 'fsharp_project', 'csharp', 'cs', 'csharp_project' },
   dependencies = {
     'nvim-lua/plenary.nvim',
     'folke/snacks.nvim',
@@ -25,7 +25,7 @@ return {
     require('easy-dotnet').setup {
       lsp = {
         auto_refresh_codelens = false,
-        enabled = false,
+        enabled = true,
       },
       server = {
         -- .NET Framework support https://github.com/GustavEikaas/easy-dotnet.nvim#net-framework

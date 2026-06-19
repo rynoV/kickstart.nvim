@@ -151,7 +151,7 @@ return {
             },
           },
         }
-        servers.csharp_ls = {}
+        -- servers.csharp_ls = {}
       end
 
       local ensure_installed = vim.tbl_filter(function(v)
