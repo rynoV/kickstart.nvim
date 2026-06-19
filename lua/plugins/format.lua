@@ -16,7 +16,16 @@ local conform = {
   opts = {
     notify_on_error = true,
     format_on_save = function(bufnr)
-      if vim.g.disable_autoformat or vim.b[bufnr].disable_autoformat then
+      if
+        vim.g.disable_autoformat
+        or vim.b[bufnr].disable_autoformat
+        -- Buffers in diff windows should also not be auto formatted, to avoid messing up a merge.
+        -- We use win_getid with bufwinnr to handle the common case of the
+        -- buffer being open in a diff window in one tab and a non-diff window
+        -- in another tab, so auto-formatting works when editing the buffer
+        -- outside the diff window
+        or vim.wo[vim.fn.win_getid(vim.fn.bufwinnr(bufnr))].diff
+      then
         return
       end
       return {
