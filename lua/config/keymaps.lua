@@ -266,3 +266,103 @@ vim.keymap.set('n', 'gcO', '<Cmd>:normal Oa<C-o>gcc<CR>$cl', { desc = 'Open line
 -- Open comment below, go back up to current line, join the lines, and insert
 -- at the end of the line
 vim.keymap.set('n', 'gcA', '<Cmd>:normal gco<CR>kJA', { desc = 'Add comment at end of line' })
+
+--- I usually review diffs in their own tab, with files populated by git
+--- difftool. So these files are either symlinks to the actual worktree file,
+--- or they're copies of a previous state at paths like
+--- `/tmp/git-difftool.abc123/(left|right)/<path-from-project-root>`.
+---
+--- This function:
+---
+--- 1. Tries to resolve the path relative to the current working directory for
+--- the current buffer. For symlinks, the path is already in the CWD so no work
+--- is required. For difftool temp files, we look for a subpath of pattern
+--- `git-difftool*/(left|right)/`, then we check if the rest of the path is a
+--- valid relative path from the CWD.
+---
+--- 2. If the path could be resolved, it looks for a different tab with a
+--- window open to a file in the cwd (to filter my terminal tabs and
+--- miscellaneous buffer tabs), and opens the resolved path at the same line
+--- and column (or tries to at least). If such a tab can't be found, it opens a
+--- new tab instead.
+local function jump_to_source_from_diff()
+  local cwd = vim.fs.abspath '.'
+  local current_name = vim.api.nvim_buf_get_name(0)
+
+  if current_name == '' then
+    vim.notify('Current buffer has no file path', vim.log.levels.ERROR)
+    return
+  end
+
+  local current_path = vim.fs.normalize(vim.fs.abspath(current_name))
+
+  local function path_valid_in_cwd(path)
+    path = vim.fs.abspath(path)
+    return (path == cwd or vim.startswith(path, cwd .. '/')) and vim.uv.fs_stat(path)
+  end
+
+  local function resolve_path()
+    if path_valid_in_cwd(current_path) then
+      return current_path
+    end
+
+    local relative_path = current_path:match '/git%-difftool[^/]*/left/(.+)$' or current_path:match '/git%-difftool[^/]*/right/(.+)$'
+    if not relative_path then
+      return nil
+    end
+
+    local resolved_path = vim.fs.normalize(vim.fs.abspath(relative_path))
+    if path_valid_in_cwd(resolved_path) then
+      return resolved_path
+    end
+  end
+
+  local resolved_path = resolve_path()
+  if not resolved_path then
+    vim.notify('Could not resolve source path from diff buffer', vim.log.levels.ERROR)
+    return
+  end
+
+  local cursor = vim.api.nvim_win_get_cursor(0)
+  local current_tab = vim.api.nvim_get_current_tabpage()
+  local target_win
+
+  for _, tabpage in ipairs(vim.api.nvim_list_tabpages()) do
+    if tabpage ~= current_tab then
+      for _, win in ipairs(vim.api.nvim_tabpage_list_wins(tabpage)) do
+        if vim.api.nvim_win_get_config(win).relative == '' then
+          local buf_path = vim.api.nvim_buf_get_name(vim.api.nvim_win_get_buf(win))
+          if buf_path ~= '' and path_valid_in_cwd(buf_path) then
+            vim.api.nvim_set_current_tabpage(tabpage)
+            target_win = win
+            break
+          end
+        end
+      end
+    end
+
+    if target_win then
+      break
+    end
+  end
+
+  if target_win then
+    vim.api.nvim_set_current_win(target_win)
+  else
+    vim.cmd.tabnew()
+  end
+
+  vim.cmd('edit ' .. vim.fn.fnameescape(resolved_path))
+
+  local line = math.min(cursor[1], vim.api.nvim_buf_line_count(0))
+  local line_text = vim.api.nvim_buf_get_lines(0, line - 1, line, false)[1] or ''
+  local col = math.min(cursor[2], #line_text)
+  vim.api.nvim_win_set_cursor(0, { line, col })
+  vim.cmd.normal { 'zz', bang = true }
+end
+
+vim.api.nvim_create_user_command('DiffSource', jump_to_source_from_diff, {
+  desc = 'Jump to the source file for the current diff buffer',
+})
+
+vim.keymap.set('n', '<leader>Ds', jump_to_source_from_diff, { desc = 'Jump to source from diff' })
