@@ -1,5 +1,3 @@
-vim.g.disable_autoformat = true
-
 ---@type LazySpec
 local conform = {
   'stevearc/conform.nvim',
@@ -70,6 +68,7 @@ local conform = {
     },
   },
   init = function()
+    vim.g.disable_autoformat = true
     vim.o.formatexpr = "v:lua.require'conform'.formatexpr()"
     vim.api.nvim_create_autocmd('User', {
       pattern = 'VeryLazy',
