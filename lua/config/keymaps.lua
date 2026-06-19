@@ -93,6 +93,15 @@ vim.api.nvim_create_user_command('DiffOrig', diff_orig, {
 
 vim.keymap.set('n', '<leader>ml', '<cmd>Lazy<cr>', { desc = 'Plugins' })
 
+-- vim.api.nvim_create_user_command('DiffTool', function(opts)
+--   if #opts.fargs == 2 then
+--     dd 'difftool with rename detect'
+--     require('difftool').open(opts.fargs[1], opts.fargs[2], { rename = { detect = true, chunk_size = 2 ^ 7, similarity = 0.99 } })
+--   else
+--     vim.notify('Usage: DiffTool <left> <right>', vim.log.levels.ERROR)
+--   end
+-- end, { nargs = '*', complete = 'file' })
+
 local util = require 'calum.util'
 
 -- Override of the default binding that moves to the next tab if the last
