@@ -1,3 +1,5 @@
+vim.g.disable_autoformat = true
+
 ---@type LazySpec
 local conform = {
   'stevearc/conform.nvim',

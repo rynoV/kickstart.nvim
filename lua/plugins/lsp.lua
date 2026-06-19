@@ -72,6 +72,21 @@ return {
         callback = function(event)
           local client = vim.lsp.get_client_by_id(event.data.client_id)
 
+          -- If the file being attached to is in the temp directory, detach the
+          -- lsp. This is so the lsp is less annoying in git directory diff's
+          -- temporary files
+          local buf_path = vim.fs.normalize(vim.api.nvim_buf_get_name(event.buf))
+          local temp_dir = vim.fs.normalize(vim.env.TMP or '/tmp')
+          if client and vim.startswith(buf_path, temp_dir) then
+            -- defer_fn is based on
+            -- https://github.com/neovim/nvim-lspconfig/issues/2626#issuecomment-2117022664
+            vim.defer_fn(function()
+              -- dd('Detaching LSP client from temp file:', client.name, buf_path)
+              vim.lsp.buf_detach_client(event.buf, client.id)
+            end, 10)
+            return
+          end
+
           -- FSAutocomplete can currently freeze neovim when semantic tokens are enabled
           -- https://github.com/neovim/neovim/issues/36257
           if client and (client.name == 'fsautocomplete' or client.name == 'ionide') and client.server_capabilities then

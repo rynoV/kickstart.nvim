@@ -92,13 +92,19 @@ local function open_file_in_last_tab()
   end
 end
 
-function M.term_enabled()
-  -- Check if the current tab has a terminal window
-  for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
-    local buf = vim.api.nvim_win_get_buf(win)
-    local buf_type = vim.api.nvim_get_option_value('buftype', { buf = buf })
-    if buf_type == 'terminal' then
-      return true
+--- Check if the tab has exactly one non-floating window that is a terminal
+function M.term_enabled(tabpage)
+  tabpage = tabpage or 0
+  local wins = vim.api.nvim_tabpage_list_wins(tabpage)
+  local regular_wins = vim.tbl_filter(function(win)
+    return vim.api.nvim_win_get_config(win).relative == ''
+  end, wins)
+  if #regular_wins == 1 then
+    for _, win in ipairs(regular_wins) do
+      local buf = vim.api.nvim_win_get_buf(win)
+      if vim.api.nvim_get_option_value('buftype', { buf = buf }) == 'terminal' then
+        return true
+      end
     end
   end
   return false
@@ -114,21 +120,14 @@ end
 
 function M.new_term()
   -- If current tab has a terminal, open a new one
-  if M.term_enabled() then
+  if M.term_enabled(0) then
     vim.cmd 'term'
   else
-    -- Check if any tab has a terminal window
     local term_tab_found = false
     for _, tab in ipairs(vim.api.nvim_list_tabpages()) do
-      for _, win in ipairs(vim.api.nvim_tabpage_list_wins(tab)) do
-        local buf = vim.api.nvim_win_get_buf(win)
-        if vim.api.nvim_get_option_value('buftype', { buf = buf }) == 'terminal' then
-          vim.api.nvim_set_current_tabpage(tab)
-          term_tab_found = true
-          break
-        end
-      end
-      if term_tab_found then
+      if M.term_enabled(tab) then
+        vim.api.nvim_set_current_tabpage(tab)
+        term_tab_found = true
         break
       end
     end

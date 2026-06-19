@@ -15,6 +15,19 @@ return {
         pattern = 'TSUpdate',
         callback = function()
           require('nvim-treesitter.parsers').fsharp.install_info.path = vim.fs.joinpath(vim.fn.stdpath 'config', 'tree-sitter-fsharp')
+
+          vim.treesitter.language.register('surrealql', { 'surql' })
+          ---@diagnostic disable-next-line: inject-field, missing-fields
+          require('nvim-treesitter.parsers').surrealql = {
+            ---@diagnostic disable-next-line: missing-fields
+            install_info = {
+              url = 'https://github.com/Ce11an/tree-sitter-surrealql',
+              -- files = { 'src/parser.c' },
+              branch = 'main',
+            },
+            filetype = 'surql',
+            maintainers = { '@Ce11an' },
+          }
         end,
       })
 
