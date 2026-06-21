@@ -142,4 +142,10 @@ end
 M.get_loc_at_cursor = get_loc_at_cursor
 M.open_file_in_last_tab = open_file_in_last_tab
 
+function M.path_in_temp_dir(path)
+  path = vim.fs.normalize(vim.fs.abspath(path))
+  local temp_dir = vim.fs.normalize(vim.env.TMP or vim.env.TMPDIR or '/tmp')
+  return vim.startswith(path, temp_dir)
+end
+
 return M

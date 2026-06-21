@@ -76,8 +76,7 @@ return {
           -- lsp. This is so the lsp is less annoying in git directory diff's
           -- temporary files
           local buf_path = vim.fs.normalize(vim.api.nvim_buf_get_name(event.buf))
-          local temp_dir = vim.fs.normalize(vim.env.TMP or '/tmp')
-          if client and vim.startswith(buf_path, temp_dir) then
+          if client and (custom_util.path_in_temp_dir(buf_path) or custom_util.git_difftool_path(buf_path) ~= nil) then
             -- defer_fn is based on
             -- https://github.com/neovim/nvim-lspconfig/issues/2626#issuecomment-2117022664
             vim.defer_fn(function()
