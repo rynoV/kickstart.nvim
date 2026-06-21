@@ -33,6 +33,12 @@ return {
     vim.g.rustaceanvim = {
       tools = { crate_test_executor = 'background' },
       server = {
+        auto_attach = function(bufnr)
+          -- Don't attach to git difftool temp copies
+          local bufname = vim.api.nvim_buf_get_name(bufnr)
+          local is_tmp = require('calum.util').path_in_temp_dir(bufname) or require('calum.util').git_difftool_path(bufname) ~= nil
+          return not is_tmp
+        end,
         default_settings = {
           -- https://rust-analyzer.github.io/book/configuration
           ['rust-analyzer'] = {

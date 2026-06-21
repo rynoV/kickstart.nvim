@@ -315,7 +315,7 @@ local function jump_to_source_from_diff()
       return current_path
     end
 
-    local relative_path = current_path:match '/git%-difftool[^/]*/left/(.+)$' or current_path:match '/git%-difftool[^/]*/right/(.+)$'
+    local relative_path = require('calum.util').git_difftool_path(current_path)
     if not relative_path then
       return nil
     end

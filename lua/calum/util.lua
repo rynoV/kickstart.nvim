@@ -148,4 +148,12 @@ function M.path_in_temp_dir(path)
   return vim.startswith(path, temp_dir)
 end
 
+---@return string p relative normalized path following a git-difftool root
+---folder (git-difftool.../left|right), or nil if the path is not in a
+---git-difftool root
+function M.git_difftool_path(path)
+  path = vim.fs.normalize(vim.fs.abspath(path))
+  return path:match '/git%-difftool[^/]*/left/(.+)$' or path:match '/git%-difftool[^/]*/right/(.+)$'
+end
+
 return M
