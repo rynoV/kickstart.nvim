@@ -29,6 +29,9 @@ return {
             width = 85,
             height = 20,
           },
+          keys = {
+            stopinsert = false,
+          },
         },
         tools = {
           copilot = { cmd = { 'copilot' } },
