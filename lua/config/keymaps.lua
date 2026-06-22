@@ -375,3 +375,33 @@ vim.api.nvim_create_user_command('DiffSource', jump_to_source_from_diff, {
 })
 
 vim.keymap.set('n', '<leader>Ds', jump_to_source_from_diff, { desc = 'Jump to source from diff' })
+
+local function toggle_wrap_in_diff_windows()
+  local diff_wins = {}
+
+  for _, win in ipairs(vim.api.nvim_list_wins()) do
+    if vim.api.nvim_get_option_value('diff', { win = win }) then
+      table.insert(diff_wins, win)
+    end
+  end
+
+  if #diff_wins == 0 then
+    vim.notify('No diff windows are open', vim.log.levels.WARN)
+    return
+  end
+
+  local wrap_enabled = true
+  for _, win in ipairs(diff_wins) do
+    if not vim.api.nvim_get_option_value('wrap', { win = win }) then
+      wrap_enabled = false
+      break
+    end
+  end
+
+  vim.notify('Diff windows wrap: ' .. (wrap_enabled and 'off' or 'on'))
+  for _, win in ipairs(diff_wins) do
+    vim.api.nvim_set_option_value('wrap', not wrap_enabled, { win = win })
+  end
+end
+
+vim.keymap.set('n', '<leader>Dt', toggle_wrap_in_diff_windows, { desc = 'Toggle wrap in diff windows' })
