@@ -102,7 +102,12 @@ function M.term_enabled(tabpage)
   if #regular_wins == 1 then
     for _, win in ipairs(regular_wins) do
       local buf = vim.api.nvim_win_get_buf(win)
-      if vim.api.nvim_get_option_value('buftype', { buf = buf }) == 'terminal' then
+      if
+        vim.api.nvim_get_option_value('buftype', { buf = buf }) == 'terminal'
+        -- We use this to filter out buffers that only have terminal
+        -- highlighting from `vim.api.nvim_open_term`
+        and vim.startswith(vim.api.nvim_buf_get_name(buf), 'term:')
+      then
         return true
       end
     end
