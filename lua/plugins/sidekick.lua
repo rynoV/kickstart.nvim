@@ -16,14 +16,14 @@ return {
       :map '<leader>tn'
     --- @type sidekick.Config
     local conf = {
-      cli = {
-        nes = {
-          enabled = true,
-          trigger = { events = {} },
-          diff = {
-            show = 'cursor',
-          },
+      nes = {
+        enabled = true,
+        trigger = { events = {} },
+        diff = {
+          show = 'cursor',
         },
+      },
+      cli = {
         win = {
           split = {
             width = 85,
