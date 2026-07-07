@@ -153,18 +153,6 @@ return {
       end
 
       if is_linux or is_windows then
-        servers.fsautocomplete = {
-          settings = {
-            FSharp = {
-              -- This is false by default, but useful for importing from other modules/namespaces
-              ExternalAutocomplete = true,
-              -- Default is "this"
-              InterfaceStubGenerationObjectIdentifier = 'x',
-              -- Default is true, but often I use longer names for clarity
-              SimplifyNameAnalyzer = false,
-            },
-          },
-        }
         servers.csharp_ls = {}
       end
 
