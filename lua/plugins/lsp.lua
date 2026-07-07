@@ -153,6 +153,8 @@ return {
       end
 
       if is_linux or is_windows then
+        -- Config defined in `after/lsp`
+        servers.fsautocomplete = {}
         servers.csharp_ls = {}
       end
 
