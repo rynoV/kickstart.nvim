@@ -405,3 +405,43 @@ local function toggle_wrap_in_diff_windows()
 end
 
 vim.keymap.set('n', '<leader>Dt', toggle_wrap_in_diff_windows, { desc = 'Toggle wrap in diff windows' })
+
+--- For reviewing difftool diffs, with the changed files in the quickfix. Will
+--- try to jump to the next/previous change, and if that doesn't move the
+--- cursor, jump to the next/previous file, moving to the first/last change in
+--- that file, and centering the cursor.
+local function jump_to_next_change_or_quickfix(next)
+  local initial_pos = vim.api.nvim_win_get_cursor(0)
+  if next then
+    vim.cmd 'normal! ]c'
+  else
+    vim.cmd 'normal! [c'
+  end
+  local new_pos = vim.api.nvim_win_get_cursor(0)
+  if new_pos[1] == initial_pos[1] and new_pos[2] == initial_pos[2] then
+    if next then
+      vim.cmd 'cnext'
+      vim.cmd 'normal! gg'
+      vim.defer_fn(function()
+        vim.cmd 'normal! ]czz'
+      end, 100)
+    else
+      vim.cmd 'cprevious'
+      vim.cmd 'normal! G'
+      vim.defer_fn(function()
+        vim.cmd 'normal! [czz'
+      end, 100)
+    end
+  end
+end
+
+local next_move = require 'nvim-next.move'
+local prev_change_or_qf, next_change_or_qf = next_move.make_repeatable_pair(function(_)
+  jump_to_next_change_or_quickfix(false)
+end, function(_)
+  jump_to_next_change_or_quickfix(true)
+end)
+
+vim.keymap.set('n', ']n', next_change_or_qf, { desc = 'Jump to next change or quickfix' })
+
+vim.keymap.set('n', '[n', prev_change_or_qf, { desc = 'Jump to previous change or quickfix' })
