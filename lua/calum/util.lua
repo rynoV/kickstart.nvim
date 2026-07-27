@@ -102,7 +102,12 @@ function M.term_enabled(tabpage)
   if #regular_wins == 1 then
     for _, win in ipairs(regular_wins) do
       local buf = vim.api.nvim_win_get_buf(win)
-      if vim.api.nvim_get_option_value('buftype', { buf = buf }) == 'terminal' then
+      if
+        vim.api.nvim_get_option_value('buftype', { buf = buf }) == 'terminal'
+        -- We use this to filter out buffers that only have terminal
+        -- highlighting from `vim.api.nvim_open_term`
+        and vim.startswith(vim.api.nvim_buf_get_name(buf), 'term:')
+      then
         return true
       end
     end
@@ -141,5 +146,19 @@ end
 
 M.get_loc_at_cursor = get_loc_at_cursor
 M.open_file_in_last_tab = open_file_in_last_tab
+
+function M.path_in_temp_dir(path)
+  path = vim.fs.normalize(vim.fs.abspath(path))
+  local temp_dir = vim.fs.normalize(vim.env.TMP or vim.env.TMPDIR or '/tmp')
+  return vim.startswith(path, temp_dir)
+end
+
+---@return string p relative normalized path following a git-difftool root
+---folder (git-difftool.../left|right), or nil if the path is not in a
+---git-difftool root
+function M.git_difftool_path(path)
+  path = vim.fs.normalize(vim.fs.abspath(path))
+  return path:match '/git%-difftool[^/]*/left/(.+)$' or path:match '/git%-difftool[^/]*/right/(.+)$'
+end
 
 return M

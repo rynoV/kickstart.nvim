@@ -93,6 +93,15 @@ vim.api.nvim_create_user_command('DiffOrig', diff_orig, {
 
 vim.keymap.set('n', '<leader>ml', '<cmd>Lazy<cr>', { desc = 'Plugins' })
 
+-- vim.api.nvim_create_user_command('DiffTool', function(opts)
+--   if #opts.fargs == 2 then
+--     dd 'difftool with rename detect'
+--     require('difftool').open(opts.fargs[1], opts.fargs[2], { rename = { detect = true, chunk_size = 2 ^ 7, similarity = 0.99 } })
+--   else
+--     vim.notify('Usage: DiffTool <left> <right>', vim.log.levels.ERROR)
+--   end
+-- end, { nargs = '*', complete = 'file' })
+
 local util = require 'calum.util'
 
 -- Override of the default binding that moves to the next tab if the last
@@ -266,3 +275,173 @@ vim.keymap.set('n', 'gcO', '<Cmd>:normal Oa<C-o>gcc<CR>$cl', { desc = 'Open line
 -- Open comment below, go back up to current line, join the lines, and insert
 -- at the end of the line
 vim.keymap.set('n', 'gcA', '<Cmd>:normal gco<CR>kJA', { desc = 'Add comment at end of line' })
+
+--- I usually review diffs in their own tab, with files populated by git
+--- difftool. So these files are either symlinks to the actual worktree file,
+--- or they're copies of a previous state at paths like
+--- `/tmp/git-difftool.abc123/(left|right)/<path-from-project-root>`.
+---
+--- This function:
+---
+--- 1. Tries to resolve the path relative to the current working directory for
+--- the current buffer. For symlinks, the path is already in the CWD so no work
+--- is required. For difftool temp files, we look for a subpath of pattern
+--- `git-difftool*/(left|right)/`, then we check if the rest of the path is a
+--- valid relative path from the CWD.
+---
+--- 2. If the path could be resolved, it looks for a different tab with a
+--- window open to a file in the cwd (to filter my terminal tabs and
+--- miscellaneous buffer tabs), and opens the resolved path at the same line
+--- and column (or tries to at least). If such a tab can't be found, it opens a
+--- new tab instead.
+local function jump_to_source_from_diff()
+  local cwd = vim.fs.abspath '.'
+  local current_name = vim.api.nvim_buf_get_name(0)
+
+  if current_name == '' then
+    vim.notify('Current buffer has no file path', vim.log.levels.ERROR)
+    return
+  end
+
+  local current_path = vim.fs.normalize(vim.fs.abspath(current_name))
+
+  local function path_valid_in_cwd(path)
+    path = vim.fs.abspath(path)
+    return (path == cwd or vim.startswith(path, cwd .. '/')) and vim.uv.fs_stat(path)
+  end
+
+  local function resolve_path()
+    if path_valid_in_cwd(current_path) then
+      return current_path
+    end
+
+    local relative_path = require('calum.util').git_difftool_path(current_path)
+    if not relative_path then
+      return nil
+    end
+
+    local resolved_path = vim.fs.normalize(vim.fs.abspath(relative_path))
+    if path_valid_in_cwd(resolved_path) then
+      return resolved_path
+    end
+  end
+
+  local resolved_path = resolve_path()
+  if not resolved_path then
+    vim.notify('Could not resolve source path from diff buffer', vim.log.levels.ERROR)
+    return
+  end
+
+  local cursor = vim.api.nvim_win_get_cursor(0)
+  local current_tab = vim.api.nvim_get_current_tabpage()
+  local target_win
+
+  for _, tabpage in ipairs(vim.api.nvim_list_tabpages()) do
+    if tabpage ~= current_tab then
+      for _, win in ipairs(vim.api.nvim_tabpage_list_wins(tabpage)) do
+        if vim.api.nvim_win_get_config(win).relative == '' then
+          local buf_path = vim.api.nvim_buf_get_name(vim.api.nvim_win_get_buf(win))
+          if buf_path ~= '' and path_valid_in_cwd(buf_path) then
+            vim.api.nvim_set_current_tabpage(tabpage)
+            target_win = win
+            break
+          end
+        end
+      end
+    end
+
+    if target_win then
+      break
+    end
+  end
+
+  if target_win then
+    vim.api.nvim_set_current_win(target_win)
+  else
+    vim.cmd.tabnew()
+  end
+
+  vim.cmd('edit ' .. vim.fn.fnameescape(resolved_path))
+
+  local line = math.min(cursor[1], vim.api.nvim_buf_line_count(0))
+  local line_text = vim.api.nvim_buf_get_lines(0, line - 1, line, false)[1] or ''
+  local col = math.min(cursor[2], #line_text)
+  vim.api.nvim_win_set_cursor(0, { line, col })
+  vim.cmd.normal { 'zz', bang = true }
+end
+
+vim.api.nvim_create_user_command('DiffSource', jump_to_source_from_diff, {
+  desc = 'Jump to the source file for the current diff buffer',
+})
+
+vim.keymap.set('n', '<leader>Ds', jump_to_source_from_diff, { desc = 'Jump to source from diff' })
+
+local function toggle_wrap_in_diff_windows()
+  local diff_wins = {}
+
+  for _, win in ipairs(vim.api.nvim_list_wins()) do
+    if vim.api.nvim_get_option_value('diff', { win = win }) then
+      table.insert(diff_wins, win)
+    end
+  end
+
+  if #diff_wins == 0 then
+    vim.notify('No diff windows are open', vim.log.levels.WARN)
+    return
+  end
+
+  local wrap_enabled = true
+  for _, win in ipairs(diff_wins) do
+    if not vim.api.nvim_get_option_value('wrap', { win = win }) then
+      wrap_enabled = false
+      break
+    end
+  end
+
+  vim.notify('Diff windows wrap: ' .. (wrap_enabled and 'off' or 'on'))
+  for _, win in ipairs(diff_wins) do
+    vim.api.nvim_set_option_value('wrap', not wrap_enabled, { win = win })
+  end
+end
+
+vim.keymap.set('n', '<leader>Dt', toggle_wrap_in_diff_windows, { desc = 'Toggle wrap in diff windows' })
+
+--- For reviewing difftool diffs, with the changed files in the quickfix. Will
+--- try to jump to the next/previous change, and if that doesn't move the
+--- cursor, jump to the next/previous file, moving to the first/last change in
+--- that file, and centering the cursor.
+local function jump_to_next_change_or_quickfix(next)
+  local initial_pos = vim.api.nvim_win_get_cursor(0)
+  if next then
+    vim.cmd 'normal! ]c'
+  else
+    vim.cmd 'normal! [c'
+  end
+  local new_pos = vim.api.nvim_win_get_cursor(0)
+  if new_pos[1] == initial_pos[1] and new_pos[2] == initial_pos[2] then
+    if next then
+      vim.cmd 'cnext'
+      vim.cmd 'normal! gg'
+      vim.defer_fn(function()
+        vim.cmd 'normal! ]czz'
+      end, 100)
+    else
+      vim.cmd 'cprevious'
+      vim.cmd 'normal! G'
+      vim.defer_fn(function()
+        vim.cmd 'normal! [czz'
+      end, 100)
+    end
+  end
+end
+
+local next_move = require 'nvim-next.move'
+local prev_change_or_qf, next_change_or_qf = next_move.make_repeatable_pair(function(_)
+  jump_to_next_change_or_quickfix(false)
+end, function(_)
+  jump_to_next_change_or_quickfix(true)
+end)
+
+vim.keymap.set('n', ']n', next_change_or_qf, { desc = 'Jump to next change or quickfix' })
+
+vim.keymap.set('n', '[n', prev_change_or_qf, { desc = 'Jump to previous change or quickfix' })

@@ -76,8 +76,7 @@ return {
           -- lsp. This is so the lsp is less annoying in git directory diff's
           -- temporary files
           local buf_path = vim.fs.normalize(vim.api.nvim_buf_get_name(event.buf))
-          local temp_dir = vim.fs.normalize(vim.env.TMP or '/tmp')
-          if client and vim.startswith(buf_path, temp_dir) then
+          if client and (custom_util.path_in_temp_dir(buf_path) or custom_util.git_difftool_path(buf_path) ~= nil) then
             -- defer_fn is based on
             -- https://github.com/neovim/nvim-lspconfig/issues/2626#issuecomment-2117022664
             vim.defer_fn(function()
@@ -154,18 +153,8 @@ return {
       end
 
       if is_linux or is_windows then
-        servers.fsautocomplete = {
-          settings = {
-            FSharp = {
-              -- This is false by default, but useful for importing from other modules/namespaces
-              ExternalAutocomplete = true,
-              -- Default is "this"
-              InterfaceStubGenerationObjectIdentifier = 'x',
-              -- Default is true, but often I use longer names for clarity
-              SimplifyNameAnalyzer = false,
-            },
-          },
-        }
+        -- Config defined in `after/lsp`
+        servers.fsautocomplete = {}
         -- servers.csharp_ls = {}
       end
 

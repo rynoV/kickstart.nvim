@@ -16,18 +16,21 @@ return {
       :map '<leader>tn'
     --- @type sidekick.Config
     local conf = {
-      cli = {
-        nes = {
-          enabled = true,
-          trigger = { events = {} },
-          diff = {
-            show = 'cursor',
-          },
+      nes = {
+        enabled = true,
+        trigger = { events = {} },
+        diff = {
+          show = 'cursor',
         },
+      },
+      cli = {
         win = {
           split = {
             width = 85,
             height = 20,
+          },
+          keys = {
+            stopinsert = false,
           },
         },
         tools = {
@@ -60,10 +63,10 @@ return {
     {
       '<c-.>',
       function()
-        require('sidekick.cli').toggle()
+        require('sidekick.cli').toggle { name = 'copilot', focus = true }
       end,
       mode = { 'n', 'x', 'i', 't' },
-      desc = 'Sidekick Toggle',
+      desc = 'Sidekick Copilot Toggle',
     },
     {
       '<m-/>',
@@ -76,9 +79,9 @@ return {
     {
       '<leader>aa',
       function()
-        require('sidekick.cli').toggle { name = 'copilot', focus = true }
+        require('sidekick.cli').toggle()
       end,
-      desc = 'Sidekick Copilot Toggle',
+      desc = 'Sidekick Toggle',
       mode = { 'n', 'v' },
     },
     {
