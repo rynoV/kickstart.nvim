@@ -83,13 +83,15 @@ local function guest_init(host_pipe)
     end,
   })
 
-  vim.api.nvim_create_autocmd('BufEnter', {
-    pattern = '*',
-    once = true,
-    callback = function()
-      require('calum.flatten.guest').forward_to_host(host)
-    end,
-  })
+  if not vim.tbl_contains(vim.v.argv, '-') then
+    vim.api.nvim_create_autocmd('BufEnter', {
+      pattern = '*',
+      once = true,
+      callback = function()
+        require('calum.flatten.guest').forward_to_host(host)
+      end,
+    })
+  end
 end
 
 ---@return string | nil
