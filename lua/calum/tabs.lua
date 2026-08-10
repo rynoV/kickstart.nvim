@@ -117,6 +117,13 @@ function M.is_emacs(tabpage)
   return predicates.emacs(tabpage or 0)
 end
 
+function M.is_emacs_window(win)
+  win = win or 0
+  return vim.api.nvim_win_is_valid(win)
+    and vim.api.nvim_win_get_config(win).relative == ''
+    and buffer_is_emacs(vim.api.nvim_win_get_buf(win))
+end
+
 function M.is_other(tabpage)
   return predicates.other(tabpage or 0)
 end

@@ -273,6 +273,14 @@ return { -- Collection of various small independent plugins/modules
         use_icons = vim.g.have_nerd_font,
         content = {
           active = function()
+            local current_win = tonumber(vim.g.actual_curwin) or vim.api.nvim_get_current_win()
+            if vim.api.nvim_win_is_valid(current_win) then
+              local tabs = require 'calum.tabs'
+              if tabs.is_emacs_window(current_win) and vim.fn.mode() == 't' then
+                return ''
+              end
+            end
+
             local mode, mode_hl = MiniStatusline.section_mode { trunc_width = 120 }
             local git = MiniStatusline.section_git { trunc_width = 40 }
             local diff = MiniStatusline.section_diff { trunc_width = 75 }
