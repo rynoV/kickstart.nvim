@@ -32,7 +32,7 @@ local function buffer_is_emacs(buf)
 
   local command = terminal_command(buf)
   local executable = command and command:match '^%s*([^%s]+)'
-  return executable ~= nil and vim.fs.basename(executable:gsub('^[\'"]', ''):gsub('[\'"]$', '')) == 'emacsclient'
+  return executable ~= nil and vim.fs.basename(executable:gsub('^[\'"]', ''):gsub('[\'"]$', '')) == 'emacs-nvim.sh'
 end
 
 local function source_window(tabpage)
@@ -156,7 +156,9 @@ function M.new_emacs()
   end
 
   if not M.select 'emacs' then
-    vim.cmd 'tab term emacsclient -a \'\' -c -nw -F "((calum-nvim . \\"$NVIM\\") (calum-magit-mode . t))" --eval "(magit-status)"'
+    -- Note: I think using a script here instead of an inline commandline fixes
+    -- neovim session restarts by reevaluating the $NVIM env variable
+    vim.cmd 'tab term ~/scripts/emacs-nvim.sh'
   end
 end
 
