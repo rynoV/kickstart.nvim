@@ -55,11 +55,23 @@ function M.host_receive(opts)
   require('calum.tabs').open_for_file(argf[1], is_diff)
 
   if #stdin > 0 then
-    -- Allow callers to manually differentiate stdin buffers using
+    -- Callers can differentiate stdin buffers with a name and provide either
+    -- an explicit filetype or a source filename for built-in detection.
     -- `--cmd "let g:flatten_stdin_name = '...'"`
+    -- `--cmd "let g:flatten_stdin_filetype = '...'"`
+    -- `--cmd "let g:flatten_stdin_filename = '...'"`
     -- This avoids multiple stdin buffers trying to use a buffer with the same
     -- name and running into errors
     local stdin_name = vim.g.flatten_stdin_name
+    local stdin_filetype = vim.g.flatten_stdin_filetype
+    local stdin_filename = vim.g.flatten_stdin_filename
+    if type(stdin_filetype) ~= 'string' or stdin_filetype == '' then
+      stdin_filetype = nil
+    end
+    if not stdin_filetype and type(stdin_filename) == 'string' and stdin_filename ~= '' then
+      stdin_filetype = vim.filetype.match { filename = stdin_filename }
+    end
+
     local bufnr = stdin_name and vim.fn.bufnr(stdin_name) or -1
     if bufnr == -1 then
       bufnr = vim.api.nvim_create_buf(true, true)
@@ -69,7 +81,12 @@ function M.host_receive(opts)
     end
     vim.api.nvim_buf_set_lines(bufnr, 0, -1, true, stdin)
     vim.api.nvim_set_current_buf(bufnr)
+    if stdin_filetype then
+      vim.api.nvim_set_option_value('filetype', stdin_filetype, { buf = bufnr })
+    end
     vim.g.flatten_stdin_name = nil
+    vim.g.flatten_stdin_filetype = nil
+    vim.g.flatten_stdin_filename = nil
   end
 
   local horizontal = vim.tbl_contains(argv, '-o')
