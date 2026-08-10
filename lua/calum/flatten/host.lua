@@ -51,7 +51,8 @@ function M.host_receive(opts)
     vim.api.nvim_exec2(cmd, {})
   end
 
-  vim.cmd.tabnew()
+  local is_diff = vim.tbl_contains(argv, '-d') or vim.tbl_contains(argv, '--diff')
+  require('calum.tabs').open_for_file(argf[1], is_diff)
 
   if #stdin > 0 then
     -- Allow callers to manually differentiate stdin buffers using
@@ -71,7 +72,6 @@ function M.host_receive(opts)
     vim.g.flatten_stdin_name = nil
   end
 
-  local is_diff = vim.tbl_contains(argv, '-d')
   local horizontal = vim.tbl_contains(argv, '-o')
   local vertical = vim.tbl_contains(argv, '-O')
   local tabs = vim.tbl_contains(argv, '-p')

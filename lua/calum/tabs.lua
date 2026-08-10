@@ -161,4 +161,20 @@ function M.open(kind)
   end
 end
 
+function M.open_for_file(path, is_diff)
+  if is_diff then
+    vim.cmd 'tabnew'
+    return
+  end
+
+  local absolute_path = vim.fs.normalize(vim.fs.abspath(path or ''))
+  local cwd = vim.fs.normalize(vim.fs.abspath '.')
+  local stat = vim.uv.fs_stat(absolute_path)
+  local is_cwd_file = stat
+    and stat.type == 'file'
+    and (absolute_path == cwd or vim.startswith(absolute_path, cwd .. '/'))
+
+  M.open(is_cwd_file and 'source' or 'other')
+end
+
 return M
