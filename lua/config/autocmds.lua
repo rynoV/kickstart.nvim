@@ -8,6 +8,7 @@
 local emacs_focus_group = vim.api.nvim_create_augroup('calum-emacs-focus', { clear = true })
 
 local tabs = require 'calum.tabs'
+local emacs = require 'calum.emacs'
 local emacs_window_options = {}
 local pending_new_window_options
 
@@ -91,6 +92,16 @@ vim.api.nvim_create_autocmd('WinClosed', {
   group = emacs_focus_group,
   callback = function(event)
     emacs_window_options[tonumber(event.match)] = nil
+  end,
+})
+
+vim.api.nvim_create_autocmd('TabEnter', {
+  desc = 'Refresh Magit when entering the Emacs tab',
+  group = emacs_focus_group,
+  callback = function()
+    if tabs.is_emacs() then
+      emacs.refresh_magit_status()
+    end
   end,
 })
 

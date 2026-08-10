@@ -115,6 +115,7 @@ vim.keymap.set('n', '<leader>ml', '<cmd>Lazy<cr>', { desc = 'Plugins' })
 
 local util = require 'calum.util'
 local tabs = require 'calum.tabs'
+local emacs = require 'calum.emacs'
 
 -- Override of the default binding that moves to the next tab if the last
 -- accessed tab page no longer exists. I don't think the original binding is
@@ -139,9 +140,23 @@ vim.keymap.set('n', '<Tab>d', function()
 end, { desc = 'Diff tab' })
 vim.keymap.set('n', '<Tab>t', tabs.new_terminal, { desc = 'Open new terminal' })
 vim.keymap.set('n', '<Tab>e', tabs.new_emacs, { desc = 'Open Emacs terminal' })
+-- TODO: these shortcuts are hard to type quickly enough
+vim.keymap.set('n', '<Tab>mf', emacs.goto_magit_file_position, { desc = 'Magit file position' })
+vim.keymap.set('n', '<Tab>mg', emacs.magit_status, { desc = 'Magit status' })
+vim.keymap.set('n', '<Tab>mr', emacs.refresh_magit_status, { desc = 'Refresh Magit status' })
 vim.keymap.set('n', '<Tab>o', function()
   tabs.open 'other'
 end, { desc = 'Other tab' })
+
+vim.api.nvim_create_user_command('EmacsMagitFilePosition', emacs.goto_magit_file_position, {
+  desc = 'Go to the current file position in Magit',
+})
+vim.api.nvim_create_user_command('EmacsMagitStatus', emacs.magit_status, {
+  desc = 'Show Magit status for the Neovim cwd',
+})
+vim.api.nvim_create_user_command('EmacsMagitRefresh', emacs.refresh_magit_status, {
+  desc = 'Refresh the Emacs Magit status buffer',
+})
 
 --- This is used to allow toggling virtual lines completely off or only on the
 --- current line, remembering the previous config when toggling it back on.
