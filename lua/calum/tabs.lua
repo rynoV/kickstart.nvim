@@ -119,9 +119,7 @@ end
 
 function M.is_emacs_window(win)
   win = win or 0
-  return vim.api.nvim_win_is_valid(win)
-    and vim.api.nvim_win_get_config(win).relative == ''
-    and buffer_is_emacs(vim.api.nvim_win_get_buf(win))
+  return vim.api.nvim_win_is_valid(win) and vim.api.nvim_win_get_config(win).relative == '' and buffer_is_emacs(vim.api.nvim_win_get_buf(win))
 end
 
 function M.is_other(tabpage)
@@ -179,9 +177,7 @@ function M.open_for_file(path, is_diff)
   local absolute_path = vim.fs.normalize(vim.fs.abspath(path or ''))
   local cwd = vim.fs.normalize(vim.fs.abspath '.')
   local stat = vim.uv.fs_stat(absolute_path)
-  local is_cwd_file = stat
-    and stat.type == 'file'
-    and (absolute_path == cwd or vim.startswith(absolute_path, cwd .. '/'))
+  local is_cwd_file = stat and stat.type == 'file' and (absolute_path == cwd or vim.startswith(absolute_path, cwd .. '/'))
 
   M.open(is_cwd_file and 'source' or 'other')
 end
