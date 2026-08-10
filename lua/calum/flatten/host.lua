@@ -54,9 +54,21 @@ function M.host_receive(opts)
   vim.cmd.tabnew()
 
   if #stdin > 0 then
-    local bufnr = vim.api.nvim_create_buf(true, true)
-    vim.api.nvim_buf_set_lines(bufnr, 0, 0, true, stdin)
+    -- Allow callers to manually differentiate stdin buffers using
+    -- `--cmd "let g:flatten_stdin_name = '...'"`
+    -- This avoids multiple stdin buffers trying to use a buffer with the same
+    -- name and running into errors
+    local stdin_name = vim.g.flatten_stdin_name
+    local bufnr = stdin_name and vim.fn.bufnr(stdin_name) or -1
+    if bufnr == -1 then
+      bufnr = vim.api.nvim_create_buf(true, true)
+      if stdin_name then
+        vim.api.nvim_buf_set_name(bufnr, stdin_name)
+      end
+    end
+    vim.api.nvim_buf_set_lines(bufnr, 0, -1, true, stdin)
     vim.api.nvim_set_current_buf(bufnr)
+    vim.g.flatten_stdin_name = nil
   end
 
   local is_diff = vim.tbl_contains(argv, '-d')
