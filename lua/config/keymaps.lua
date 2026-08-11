@@ -39,7 +39,18 @@ end, { desc = 'Set diagnostic [L]ocation list' })
 --
 -- NOTE: This won't work in all terminal emulators/tmux/etc. Try your own mapping
 -- or just use <C-\><C-n> to exit terminal mode
-vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
+vim.api.nvim_create_autocmd('TermOpen', {
+  callback = function(args)
+    if require('calum.tabs').is_emacs_window() then
+      return
+    end
+
+    vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', {
+      buffer = args.buf,
+      desc = 'Exit terminal mode',
+    })
+  end,
+})
 
 -- Keybinds to make split navigation easier.
 --  See `:help wincmd` for a list of all window commands
@@ -103,6 +114,8 @@ vim.keymap.set('n', '<leader>ml', '<cmd>Lazy<cr>', { desc = 'Plugins' })
 -- end, { nargs = '*', complete = 'file' })
 
 local util = require 'calum.util'
+local tabs = require 'calum.tabs'
+local emacs = require 'calum.emacs'
 
 -- Override of the default binding that moves to the next tab if the last
 -- accessed tab page no longer exists. I don't think the original binding is
@@ -119,7 +132,29 @@ util.make_repeatable_wrappers(']c', '[c')
 util.make_repeatable_wrappers(']f', '[f')
 
 -- Open a new terminal in the current tab if one exists, otherwise open a new tab with a terminal
-vim.keymap.set('n', '<leader>tt', util.new_term, { desc = 'Open new terminal' })
+vim.keymap.set('n', '<Tab>s', function()
+  tabs.open 'source'
+end, { desc = 'Source tab' })
+vim.keymap.set('n', '<Tab>d', function()
+  tabs.open 'diff'
+end, { desc = 'Diff tab' })
+vim.keymap.set('n', '<Tab>t', tabs.new_terminal, { desc = 'Open new terminal' })
+vim.keymap.set('n', '<Tab>e', tabs.new_emacs, { desc = 'Open Emacs terminal' })
+vim.keymap.set('n', '<Tab>m', emacs.magit_status, { desc = 'Magit status' })
+vim.keymap.set('n', '<leader>gm', emacs.goto_magit_file_position, { desc = 'Magit file position' })
+vim.keymap.set('n', '<Tab>o', function()
+  tabs.open 'other'
+end, { desc = 'Other tab' })
+
+vim.api.nvim_create_user_command('EmacsMagitFilePosition', emacs.goto_magit_file_position, {
+  desc = 'Go to the current file position in Magit',
+})
+vim.api.nvim_create_user_command('EmacsMagitStatus', emacs.magit_status, {
+  desc = 'Show Magit status for the Neovim cwd',
+})
+vim.api.nvim_create_user_command('EmacsMagitRefresh', emacs.refresh_magit_status, {
+  desc = 'Refresh the Emacs Magit status buffer',
+})
 
 --- This is used to allow toggling virtual lines completely off or only on the
 --- current line, remembering the previous config when toggling it back on.
@@ -334,28 +369,10 @@ local function jump_to_source_from_diff()
 
   local cursor = vim.api.nvim_win_get_cursor(0)
   local current_tab = vim.api.nvim_get_current_tabpage()
-  local target_win
+  local target_tab, target_win = tabs.find('source', { exclude = current_tab })
 
-  for _, tabpage in ipairs(vim.api.nvim_list_tabpages()) do
-    if tabpage ~= current_tab then
-      for _, win in ipairs(vim.api.nvim_tabpage_list_wins(tabpage)) do
-        if vim.api.nvim_win_get_config(win).relative == '' then
-          local buf_path = vim.api.nvim_buf_get_name(vim.api.nvim_win_get_buf(win))
-          if buf_path ~= '' and path_valid_in_cwd(buf_path) then
-            vim.api.nvim_set_current_tabpage(tabpage)
-            target_win = win
-            break
-          end
-        end
-      end
-    end
-
-    if target_win then
-      break
-    end
-  end
-
-  if target_win then
+  if target_tab and target_win then
+    vim.api.nvim_set_current_tabpage(target_tab)
     vim.api.nvim_set_current_win(target_win)
   else
     vim.cmd.tabnew()

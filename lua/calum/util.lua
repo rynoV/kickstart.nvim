@@ -92,55 +92,11 @@ local function open_file_in_last_tab()
   end
 end
 
---- Check if the tab has exactly one non-floating window that is a terminal
-function M.term_enabled(tabpage)
-  tabpage = tabpage or 0
-  local wins = vim.api.nvim_tabpage_list_wins(tabpage)
-  local regular_wins = vim.tbl_filter(function(win)
-    return vim.api.nvim_win_get_config(win).relative == ''
-  end, wins)
-  if #regular_wins == 1 then
-    for _, win in ipairs(regular_wins) do
-      local buf = vim.api.nvim_win_get_buf(win)
-      if
-        vim.api.nvim_get_option_value('buftype', { buf = buf }) == 'terminal'
-        -- We use this to filter out buffers that only have terminal
-        -- highlighting from `vim.api.nvim_open_term`
-        and vim.startswith(vim.api.nvim_buf_get_name(buf), 'term:')
-      then
-        return true
-      end
-    end
-  end
-  return false
-end
-
 function M.last_tab_or_next()
   if vim.fn.tabpagenr '#' ~= 0 then
     vim.cmd 'tabnext #'
   else
     vim.cmd 'tabnext'
-  end
-end
-
-function M.new_term()
-  -- If current tab has a terminal, open a new one
-  if M.term_enabled(0) then
-    vim.cmd 'term'
-  else
-    local term_tab_found = false
-    for _, tab in ipairs(vim.api.nvim_list_tabpages()) do
-      if M.term_enabled(tab) then
-        vim.api.nvim_set_current_tabpage(tab)
-        term_tab_found = true
-        break
-      end
-    end
-
-    -- If no terminal tab found, create a new one
-    if not term_tab_found then
-      vim.cmd 'tab term'
-    end
   end
 end
 

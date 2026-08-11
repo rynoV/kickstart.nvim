@@ -18,7 +18,9 @@
 --
 -- It also has basic support for stdin, just tested for use as `MANPAGER="nvim +Man!"`
 -- (opens stdin as a scratch buffer, probably won't work well if pairing stdin
--- with other files on the command line).
+-- with other files on the command line). Stdin callers can set
+-- `g:flatten_stdin_name`, `g:flatten_stdin_filetype`, and
+-- `g:flatten_stdin_filename` with `--cmd` before forwarding the input.
 --
 -- Example .gitconfig difftool:
 --
@@ -83,13 +85,15 @@ local function guest_init(host_pipe)
     end,
   })
 
-  vim.api.nvim_create_autocmd('BufEnter', {
-    pattern = '*',
-    once = true,
-    callback = function()
-      require('calum.flatten.guest').forward_to_host(host)
-    end,
-  })
+  if not vim.tbl_contains(vim.v.argv, '-') then
+    vim.api.nvim_create_autocmd('BufEnter', {
+      pattern = '*',
+      once = true,
+      callback = function()
+        require('calum.flatten.guest').forward_to_host(host)
+      end,
+    })
+  end
 end
 
 ---@return string | nil

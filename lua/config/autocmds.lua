@@ -1,5 +1,110 @@
 --  See `:help lua-guide-autocommands`
 
+-- We set up a group of auto-commands that makes working with emacs within
+-- neovim a bit nicer. Whenever the emacs terminal buffer is focused, we switch
+-- to terminal mode automatically, and we disable line numbers. There is a
+-- related customization in the mini.statusline config that clears the
+-- statusline for the emacs window
+local emacs_focus_group = vim.api.nvim_create_augroup('calum-emacs-focus', { clear = true })
+
+local tabs = require 'calum.tabs'
+local emacs = require 'calum.emacs'
+local emacs_window_options = {}
+local pending_new_window_options
+
+local function is_emacs_window(win)
+  return tabs.is_emacs_window(win)
+end
+
+local function enter_emacs_window(win)
+  if not is_emacs_window(win) then
+    return
+  end
+
+  if not emacs_window_options[win] then
+    emacs_window_options[win] = {
+      number = vim.wo[win].number,
+      relativenumber = vim.wo[win].relativenumber,
+    }
+  end
+
+  vim.wo[win].number = false
+  vim.wo[win].relativenumber = false
+
+  vim.schedule(function()
+    if vim.api.nvim_win_is_valid(win) and vim.api.nvim_get_current_win() == win and is_emacs_window(win) and vim.fn.mode() ~= 't' then
+      vim.cmd.startinsert()
+    end
+  end)
+end
+
+local function leave_emacs_window(win)
+  local options = emacs_window_options[win]
+  if not options then
+    return
+  end
+
+  pending_new_window_options = options
+  if vim.api.nvim_win_is_valid(win) then
+    vim.wo[win].number = options.number
+    vim.wo[win].relativenumber = options.relativenumber
+  end
+  emacs_window_options[win] = nil
+end
+
+vim.api.nvim_create_autocmd('WinEnter', {
+  desc = 'Configure focused Emacs terminal',
+  group = emacs_focus_group,
+  callback = function()
+    pending_new_window_options = nil
+    local win = vim.api.nvim_get_current_win()
+    vim.schedule(function()
+      if vim.api.nvim_win_is_valid(win) and vim.api.nvim_get_current_win() == win then
+        enter_emacs_window(win)
+      end
+    end)
+  end,
+})
+
+vim.api.nvim_create_autocmd('WinLeave', {
+  desc = 'Restore window options after leaving Emacs terminal',
+  group = emacs_focus_group,
+  callback = function()
+    leave_emacs_window(vim.api.nvim_get_current_win())
+  end,
+})
+
+vim.api.nvim_create_autocmd('WinNew', {
+  desc = 'Restore inherited options in new windows after Emacs',
+  group = emacs_focus_group,
+  callback = function()
+    if pending_new_window_options then
+      local win = vim.api.nvim_get_current_win()
+      vim.wo[win].number = pending_new_window_options.number
+      vim.wo[win].relativenumber = pending_new_window_options.relativenumber
+      pending_new_window_options = nil
+    end
+  end,
+})
+
+vim.api.nvim_create_autocmd('WinClosed', {
+  desc = 'Discard closed Emacs window state',
+  group = emacs_focus_group,
+  callback = function(event)
+    emacs_window_options[tonumber(event.match)] = nil
+  end,
+})
+
+vim.api.nvim_create_autocmd('TabEnter', {
+  desc = 'Refresh Magit when entering the Emacs tab',
+  group = emacs_focus_group,
+  callback = function()
+    if tabs.is_emacs() then
+      emacs.refresh_magit_status()
+    end
+  end,
+})
+
 vim.api.nvim_create_autocmd('ColorScheme', {
   desc = 'Color scheme customization',
   group = vim.api.nvim_create_augroup('calum-color-scheme', { clear = true }),
@@ -40,5 +145,6 @@ vim.api.nvim_create_autocmd('TermOpen', {
   callback = function()
     vim.opt_local.relativenumber = true
     vim.opt_local.scrollback = 100000
+    enter_emacs_window(vim.api.nvim_get_current_win())
   end,
 })

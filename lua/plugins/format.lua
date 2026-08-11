@@ -57,6 +57,7 @@ local conform = {
       -- as the fallback doesn't seem to work when the '_' key is set
       -- https://github.com/stevearc/conform.nvim/issues/846
       fsharp = { lsp_format = 'prefer' },
+      rust = { lsp_format = 'prefer' },
       typescript = { 'prettier' },
       typescriptreact = { 'prettier' },
       javascript = { 'prettier' },
