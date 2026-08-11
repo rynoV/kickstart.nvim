@@ -81,6 +81,7 @@ function M.host_receive(opts)
     end
     vim.api.nvim_buf_set_lines(bufnr, 0, -1, true, stdin)
     vim.api.nvim_set_current_buf(bufnr)
+    vim.api.nvim_set_option_value('buftype', 'nofile', { buf = bufnr })
     if stdin_filetype then
       vim.api.nvim_set_option_value('filetype', stdin_filetype, { buf = bufnr })
     end
