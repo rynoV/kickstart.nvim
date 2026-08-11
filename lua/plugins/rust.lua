@@ -26,7 +26,7 @@ return {
     { '<leader>cO', '<cmd>RustLsp openCargo<cr>', ft = 'rust', desc = 'Rust open Cargo.toml', mode = 'n' },
     { '<leader>co', '<cmd>RustLsp openDocs<cr>', ft = 'rust', desc = 'Rust open docs.rs', mode = 'n' },
     { '<leader>cP', '<cmd>RustLsp parentModule<cr>', ft = 'rust', desc = 'Rust parent module', mode = 'n' },
-    { '<leader>cF', '<cmd>RustLsp flyCheck run<cr>', ft = 'rust', desc = 'Rust fly check', mode = 'n' },
+    { '<leader>cc', '<cmd>RustLsp flyCheck run<cr>', ft = 'rust', desc = 'Rust fly check', mode = 'n' },
     { '<leader>cL', '<cmd>RustLsp logFile<cr>', ft = 'rust', desc = 'Rust log file', mode = 'n' },
   },
   init = function()
@@ -50,6 +50,7 @@ return {
               extraArgs = { '--no-deps' },
               ignore = nil,
             },
+            checkOnSave = false,
             completion = {
               fullFunctionSignatures = {
                 enable = true,
