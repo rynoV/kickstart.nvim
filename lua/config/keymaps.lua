@@ -140,10 +140,8 @@ vim.keymap.set('n', '<Tab>d', function()
 end, { desc = 'Diff tab' })
 vim.keymap.set('n', '<Tab>t', tabs.new_terminal, { desc = 'Open new terminal' })
 vim.keymap.set('n', '<Tab>e', tabs.new_emacs, { desc = 'Open Emacs terminal' })
--- TODO: these shortcuts are hard to type quickly enough
-vim.keymap.set('n', '<Tab>mf', emacs.goto_magit_file_position, { desc = 'Magit file position' })
-vim.keymap.set('n', '<Tab>mg', emacs.magit_status, { desc = 'Magit status' })
-vim.keymap.set('n', '<Tab>mr', emacs.refresh_magit_status, { desc = 'Refresh Magit status' })
+vim.keymap.set('n', '<Tab>m', emacs.magit_status, { desc = 'Magit status' })
+vim.keymap.set('n', '<leader>gm', emacs.goto_magit_file_position, { desc = 'Magit file position' })
 vim.keymap.set('n', '<Tab>o', function()
   tabs.open 'other'
 end, { desc = 'Other tab' })
