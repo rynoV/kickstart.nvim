@@ -112,7 +112,7 @@ return {
       })
 
       local servers = {
-        tsgo = {},
+        tsc = {},
         eslint = {},
         copilot = {},
         -- lazydev handles some configuration for lua_ls but doesn't install or
@@ -160,8 +160,8 @@ return {
 
       local ensure_installed = vim.tbl_filter(function(v)
         -- We don't want rust_analyzer to be automatically installed
-        -- For tsgo, it should be automatically found in the project node_modules/.bin
-        return v ~= 'rust_analyzer' and v ~= 'tsgo'
+        -- For tsc, it should be automatically found in the project node_modules/.bin
+        return v ~= 'rust_analyzer' and v ~= 'tsc'
       end, vim.tbl_keys(servers or {}))
       vim.list_extend(ensure_installed, {
         'stylua', -- Used to format Lua code
