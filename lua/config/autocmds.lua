@@ -148,3 +148,47 @@ vim.api.nvim_create_autocmd('TermOpen', {
     enter_emacs_window(vim.api.nvim_get_current_win())
   end,
 })
+
+-- See :help terminal-osc7
+--
+-- Implement extraction and tracking of the current working directory from osc7
+-- sequences from terminals. Each terminal has its cwd saved in the buffer
+-- local variable calum_terminal_cwd, which is automatically updated as long as
+-- the terminal's process emits osc7 sequences (like fish shell)
+local function terminal_cwd_from_osc7(sequence)
+  local host, path = sequence:match '^\027%]7;file://([^/]*)(/.*)$'
+  if not path then
+    return nil
+  end
+
+  host = vim.uri_decode(host):lower()
+  local hostname = vim.uri_decode(vim.uv.os_gethostname()):lower()
+  if host ~= '' and host ~= 'localhost' and host ~= hostname then
+    return nil
+  end
+
+  path = vim.uri_decode(path)
+  local stat = vim.uv.fs_stat(path)
+  if not stat or stat.type ~= 'directory' then
+    return nil
+  end
+
+  return vim.fs.normalize(vim.fs.abspath(path))
+end
+
+if vim.fn.exists '##TermRequest' == 1 then
+  vim.api.nvim_create_autocmd('TermRequest', {
+    group = vim.api.nvim_create_augroup('calum-terminal-cwd', { clear = true }),
+    callback = function(event)
+      local sequence = event.data.sequence
+      if vim.bo[event.buf].buftype ~= 'terminal' or not vim.startswith(sequence, '\027]7;') then
+        return
+      end
+
+      local cwd = terminal_cwd_from_osc7(sequence)
+      if cwd then
+        vim.b[event.buf].calum_terminal_cwd = cwd
+      end
+    end,
+  })
+end

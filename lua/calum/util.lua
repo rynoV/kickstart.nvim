@@ -68,15 +68,40 @@ local function get_loc_at_cursor()
   end
 end
 
+local function resolve_path_from_terminal(path)
+  if vim.fn.isabsolutepath(path) == 1 then
+    return path
+  end
+
+  local current_path = vim.fs.normalize(vim.fs.abspath(path))
+  if vim.uv.fs_stat(current_path) then
+    return current_path
+  end
+
+  local terminal_cwd = vim.b.calum_terminal_cwd
+  if not terminal_cwd then
+    return path
+  end
+
+  local terminal_path = vim.fs.normalize(vim.fs.joinpath(terminal_cwd, path))
+  if vim.uv.fs_stat(terminal_path) then
+    return terminal_path
+  end
+
+  return path
+end
+
 local function open_file_in_tab()
   -- Get the filename under cursor and prepare for processing
   local cfile = vim.fn.expand '<cfile>'
+  -- The path might be relative to the shell's cwd in a terminal buffer
+  local path = resolve_path_from_terminal(cfile)
   local valid, lnum, col = get_loc_at_cursor()
 
-  require('calum.tabs').open_for_file(cfile)
+  require('calum.tabs').open_for_file(path)
 
   -- Open the file
-  vim.cmd('edit ' .. vim.fn.fnameescape(cfile))
+  vim.cmd('edit ' .. vim.fn.fnameescape(path))
 
   if valid then
     local line = math.max(1, math.min(lnum, vim.api.nvim_buf_line_count(0)))
