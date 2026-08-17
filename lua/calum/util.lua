@@ -68,26 +68,21 @@ local function get_loc_at_cursor()
   end
 end
 
-local function open_file_in_last_tab()
+local function open_file_in_tab()
   -- Get the filename under cursor and prepare for processing
   local cfile = vim.fn.expand '<cfile>'
   local valid, lnum, col = get_loc_at_cursor()
 
-  -- Check if last tab exists
-  local last_tab = vim.fn.tabpagenr '#'
-  if last_tab == 0 then
-    vim.api.nvim_echo({ { 'No last accessed tab available', 'ErrorMsg' } }, true, {})
-    return
-  end
-
-  -- Go to last tab
-  vim.cmd('tabnext ' .. last_tab)
+  require('calum.tabs').open_for_file(cfile)
 
   -- Open the file
-  vim.cmd('edit ' .. cfile)
+  vim.cmd('edit ' .. vim.fn.fnameescape(cfile))
 
   if valid then
-    vim.api.nvim_win_set_cursor(0, { lnum, col })
+    local line = math.max(1, math.min(lnum, vim.api.nvim_buf_line_count(0)))
+    local line_text = vim.api.nvim_buf_get_lines(0, line - 1, line, false)[1] or ''
+    local column = math.min(math.max(col - 1, 0), #line_text)
+    vim.api.nvim_win_set_cursor(0, { line, column })
     vim.cmd 'normal! zz' -- Center the view
   end
 end
@@ -101,7 +96,7 @@ function M.last_tab_or_next()
 end
 
 M.get_loc_at_cursor = get_loc_at_cursor
-M.open_file_in_last_tab = open_file_in_last_tab
+M.open_file_in_tab = open_file_in_tab
 
 function M.path_in_temp_dir(path)
   path = vim.fs.normalize(vim.fs.abspath(path))

@@ -123,7 +123,7 @@ local emacs = require 'calum.emacs'
 vim.keymap.set('n', 'g<Tab>', util.last_tab_or_next, { desc = 'Open last accessed tab or next tab', silent = true })
 vim.keymap.set('n', '<C-w>Q', ':tabclose<CR>', { desc = 'Tab close', silent = true })
 
-vim.keymap.set('n', '<leader>mf', util.open_file_in_last_tab, { desc = 'Open file at cursor in previously accessed tab page' })
+vim.keymap.set('n', '<leader>mf', util.open_file_in_tab, { desc = 'Open file at cursor in the source tab' })
 
 -- Override these actions with repeatable wrappers
 util.make_repeatable_wrappers(require('plugins.notes').haunt_prefix .. 'p', require('plugins.notes').haunt_prefix .. 'n')

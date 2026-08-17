@@ -84,7 +84,9 @@ end
 ---@param kind 'source'|'diff'|'terminal'|'emacs'|'other'
 ---@param opts? { exclude?: integer }
 ---@return integer? tabpage
----@return integer? window
+---@return integer? window for the source tab this will be a window with a
+---buffer editing a source file, to avoiding switching into the source tab and
+---focusing another window like a terminal or scratch
 function M.find(kind, opts)
   local predicate = predicates[kind]
   assert(predicate, 'Unknown tab type: ' .. tostring(kind))
@@ -179,7 +181,17 @@ function M.open_for_file(path, is_diff)
   local stat = vim.uv.fs_stat(absolute_path)
   local is_cwd_file = stat and stat.type == 'file' and (absolute_path == cwd or vim.startswith(absolute_path, cwd .. '/'))
 
-  M.open(is_cwd_file and 'source' or 'other')
+  local kind = is_cwd_file and 'source' or 'other'
+  M.open(kind)
+
+  -- Switch to the window containing the source files, since the source tab may
+  -- contain other windows like a terminal or scratch
+  if kind == 'source' then
+    local _, source_win = M.find 'source'
+    if source_win then
+      vim.api.nvim_set_current_win(source_win)
+    end
+  end
 end
 
 return M
