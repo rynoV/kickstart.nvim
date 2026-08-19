@@ -256,6 +256,20 @@ return {
       desc = 'Search plugin code',
     },
     {
+      '<leader>sq',
+      function()
+        Snacks.picker.qflist()
+      end,
+      desc = '[S]earch [Q]uickfix list',
+    },
+    {
+      '<leader>sl',
+      function()
+        Snacks.picker.loclist()
+      end,
+      desc = '[S]earch [L]ocation list',
+    },
+    {
       '<leader>s.',
       function()
         Snacks.picker.recent()

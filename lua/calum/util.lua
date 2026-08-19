@@ -68,26 +68,46 @@ local function get_loc_at_cursor()
   end
 end
 
-local function open_file_in_last_tab()
-  -- Get the filename under cursor and prepare for processing
-  local cfile = vim.fn.expand '<cfile>'
-  local valid, lnum, col = get_loc_at_cursor()
-
-  -- Check if last tab exists
-  local last_tab = vim.fn.tabpagenr '#'
-  if last_tab == 0 then
-    vim.api.nvim_echo({ { 'No last accessed tab available', 'ErrorMsg' } }, true, {})
-    return
+local function resolve_path_from_terminal(path)
+  if vim.fn.isabsolutepath(path) == 1 then
+    return path
   end
 
-  -- Go to last tab
-  vim.cmd('tabnext ' .. last_tab)
+  local current_path = vim.fs.normalize(vim.fs.abspath(path))
+  if vim.uv.fs_stat(current_path) then
+    return current_path
+  end
+
+  local terminal_cwd = vim.b.calum_terminal_cwd
+  if not terminal_cwd then
+    return path
+  end
+
+  local terminal_path = vim.fs.normalize(vim.fs.joinpath(terminal_cwd, path))
+  if vim.uv.fs_stat(terminal_path) then
+    return terminal_path
+  end
+
+  return path
+end
+
+local function open_file_in_tab()
+  -- Get the filename under cursor and prepare for processing
+  local cfile = vim.fn.expand '<cfile>'
+  -- The path might be relative to the shell's cwd in a terminal buffer
+  local path = resolve_path_from_terminal(cfile)
+  local valid, lnum, col = get_loc_at_cursor()
+
+  require('calum.tabs').open_for_file(path)
 
   -- Open the file
-  vim.cmd('edit ' .. cfile)
+  vim.cmd('edit ' .. vim.fn.fnameescape(path))
 
   if valid then
-    vim.api.nvim_win_set_cursor(0, { lnum, col })
+    local line = math.max(1, math.min(lnum, vim.api.nvim_buf_line_count(0)))
+    local line_text = vim.api.nvim_buf_get_lines(0, line - 1, line, false)[1] or ''
+    local column = math.min(math.max(col - 1, 0), #line_text)
+    vim.api.nvim_win_set_cursor(0, { line, column })
     vim.cmd 'normal! zz' -- Center the view
   end
 end
@@ -101,7 +121,7 @@ function M.last_tab_or_next()
 end
 
 M.get_loc_at_cursor = get_loc_at_cursor
-M.open_file_in_last_tab = open_file_in_last_tab
+M.open_file_in_tab = open_file_in_tab
 
 function M.path_in_temp_dir(path)
   path = vim.fs.normalize(vim.fs.abspath(path))

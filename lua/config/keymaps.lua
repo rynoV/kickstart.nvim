@@ -123,7 +123,7 @@ local emacs = require 'calum.emacs'
 vim.keymap.set('n', 'g<Tab>', util.last_tab_or_next, { desc = 'Open last accessed tab or next tab', silent = true })
 vim.keymap.set('n', '<C-w>Q', ':tabclose<CR>', { desc = 'Tab close', silent = true })
 
-vim.keymap.set('n', '<leader>mf', util.open_file_in_last_tab, { desc = 'Open file at cursor in previously accessed tab page' })
+vim.keymap.set('n', '<leader>mf', util.open_file_in_tab, { desc = 'Open file at cursor in the source tab' })
 
 -- Override these actions with repeatable wrappers
 util.make_repeatable_wrappers(require('plugins.notes').haunt_prefix .. 'p', require('plugins.notes').haunt_prefix .. 'n')
@@ -132,17 +132,17 @@ util.make_repeatable_wrappers(']c', '[c')
 util.make_repeatable_wrappers(']f', '[f')
 
 -- Open a new terminal in the current tab if one exists, otherwise open a new tab with a terminal
-vim.keymap.set('n', '<Tab>s', function()
+vim.keymap.set('n', '<enter>s', function()
   tabs.open 'source'
 end, { desc = 'Source tab' })
-vim.keymap.set('n', '<Tab>d', function()
+vim.keymap.set('n', '<enter>d', function()
   tabs.open 'diff'
 end, { desc = 'Diff tab' })
-vim.keymap.set('n', '<Tab>t', tabs.new_terminal, { desc = 'Open new terminal' })
-vim.keymap.set('n', '<Tab>e', tabs.new_emacs, { desc = 'Open Emacs terminal' })
-vim.keymap.set('n', '<Tab>m', emacs.magit_status, { desc = 'Magit status' })
+vim.keymap.set('n', '<enter>t', tabs.new_terminal, { desc = 'Open new terminal' })
+vim.keymap.set('n', '<enter>e', tabs.new_emacs, { desc = 'Open Emacs terminal' })
+vim.keymap.set('n', '<enter>m', emacs.magit_status, { desc = 'Magit status' })
 vim.keymap.set('n', '<leader>gm', emacs.goto_magit_file_position, { desc = 'Magit file position' })
-vim.keymap.set('n', '<Tab>o', function()
+vim.keymap.set('n', '<enter>o', function()
   tabs.open 'other'
 end, { desc = 'Other tab' })
 
