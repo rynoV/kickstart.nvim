@@ -139,10 +139,16 @@ vim.keymap.set('n', '<enter>d', function()
   tabs.open 'diff'
 end, { desc = 'Diff tab' })
 vim.keymap.set('n', '<enter>t', tabs.new_terminal, { desc = 'Open new terminal' })
-vim.keymap.set('n', '<enter>e', tabs.new_emacs, { desc = 'Open Emacs terminal' })
+-- 'g' for 'git', because I only really use emacs for git, and I want all these
+-- keys on my right hand (with dvorak) because the enter key is on the left hand.
+vim.keymap.set('n', '<enter>g', tabs.new_emacs, { desc = 'Open Emacs terminal' })
+-- This is also jumps to the emacs tab but it opens the magit status buffer.
+-- The above key is useful when different magit buffers are open and I don't
+-- want to lose them, like log or diff buffers.
 vim.keymap.set('n', '<enter>m', emacs.magit_status, { desc = 'Magit status' })
 vim.keymap.set('n', '<leader>gm', emacs.goto_magit_file_position, { desc = 'Magit file position' })
-vim.keymap.set('n', '<enter>o', function()
+-- 'z' for 'other', because z is on my right hand and o is not
+vim.keymap.set('n', '<enter>z', function()
   tabs.open 'other'
 end, { desc = 'Other tab' })
 
