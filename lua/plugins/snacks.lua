@@ -57,6 +57,8 @@ local function smart_from_context()
   end
 end
 
+local scratch_folder = vim.fn.stdpath 'data' .. '/scratch'
+
 ---@type LazyPluginSpec
 return {
   'folke/snacks.nvim',
@@ -254,6 +256,13 @@ return {
         Snacks.picker.grep { cwd = vim.fn.stdpath 'data' .. '/lazy' }
       end,
       desc = 'Search plugin code',
+    },
+    {
+      '<leader>sX',
+      function()
+        Snacks.picker.grep { cwd = scratch_folder }
+      end,
+      desc = 'Grep scratch files',
     },
     {
       '<leader>sq',
@@ -521,6 +530,9 @@ return {
     words = {},
     dashboard = { example = 'files' },
     input = {},
+    scratch = {
+      root = scratch_folder,
+    },
     picker = {
       layout = {
         -- reverse = true,
