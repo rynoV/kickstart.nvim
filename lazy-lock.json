@@ -30,6 +30,7 @@
   "mini.misc": { "branch": "main", "commit": "c72c90e083bcf24bfb2827d63b4752e414023f3e" },
   "mini.operators": { "branch": "main", "commit": "fccb5e3ef0cc319b217ed9c7db1a4672dd6b766c" },
   "mini.sessions": { "branch": "main", "commit": "2e419949f6846871b3b87bcd7c418b0d1f0ad68a" },
+  "mini.statuscolumn": { "branch": "main", "commit": "a9cad1a7f954f81742541ad95e804b2217afd721" },
   "mini.statusline": { "branch": "main", "commit": "b456bfe845e475e9cec065b7a9a1ef657ad2f41b" },
   "mini.surround": { "branch": "main", "commit": "2715e04bea3ec9244f15b421dc5b18c0fe326210" },
   "neogit": { "branch": "master", "commit": "e06745228600a585b88726fc9fba44a373c15a47" },

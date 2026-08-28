@@ -262,6 +262,10 @@ return { -- Collection of various small independent plugins/modules
     end,
   },
   {
+    'nvim-mini/mini.statuscolumn',
+    opts = {},
+  },
+  {
     'nvim-mini/mini.statusline',
     config = function()
       -- Simple and easy statusline.
