@@ -119,7 +119,7 @@ return {
       '<leader>ts',
       function()
         ---@diagnostic disable-next-line: missing-fields
-        require('calum.scratch') { ft = 'markdown' }
+        require('calum.scratch') { ft = 'org' }
       end,
       desc = '[S]cratch Notes Buffer',
     },

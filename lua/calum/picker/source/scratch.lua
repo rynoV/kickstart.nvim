@@ -19,7 +19,7 @@ M.actions = {
   scratch_delete = function(picker, item)
     local current = item.file
     os.remove(current)
-    os.remove(current .. '.meta')
+    os.remove(require('calum.scratch')._meta_path(current))
     picker:refresh()
   end,
   scratch_new = function(picker)

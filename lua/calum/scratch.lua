@@ -13,8 +13,63 @@ M.meta = {
   desc = 'Scratch buffers with a persistent file',
 }
 
-M.version = 1
+M.version = 'calum.2'
 M.version_checked = false
+
+local meta_suffix = '.meta.org'
+
+local function strip_extension(path)
+  return path:gsub('%.[^./]+$', '')
+end
+
+local function read_lines(path)
+  local ok, lines = pcall(vim.fn.readfile, path)
+  return ok and lines or nil
+end
+
+local function decode_json(lines, start, finish)
+  local ok, decoded = pcall(vim.json.decode, table.concat(lines, '\n', start, finish))
+  return ok and type(decoded) == 'table' and decoded or nil
+end
+
+local function read_meta(path)
+  local lines = read_lines(path)
+  if not lines then
+    return
+  end
+
+  local begin
+  for i, line in ipairs(lines) do
+    if line:lower():match '^%s*#%+begin_src%s+json%s*$' then
+      begin = i
+      break
+    end
+  end
+  if not begin then
+    return
+  end
+
+  local finish
+  for i = begin + 1, #lines do
+    if lines[i]:lower():match '^%s*#%+end_src%s*$' then
+      finish = i
+      break
+    end
+  end
+  if not finish then
+    return
+  end
+
+  return decode_json(lines, begin + 1, finish - 1)
+end
+
+local function write_meta(path, scratch)
+  vim.fn.writefile({
+    '#+begin_src json',
+    vim.json.encode(scratch),
+    '#+end_src',
+  }, path)
+end
 
 ---@class snacks.scratch.File
 ---@field file string full path to the scratch buffer
@@ -38,7 +93,7 @@ local defaults = {
     if vim.bo.buftype == '' and vim.bo.filetype ~= '' then
       return vim.bo.filetype
     end
-    return 'markdown'
+    return 'org'
   end,
   ---@type string|string[]?
   icon = nil, -- `icon|{icon, icon_hl}`. defaults to the filetype icon
@@ -100,8 +155,9 @@ function M.list()
   ---@type (snacks.scratch.File|{stat:uv.fs_stat.result})[]
   local ret = {}
   for file, t in vim.fs.dir(root) do
-    if t == 'file' and file:sub(-5) == '.meta' then
-      local path = svim.fs.normalize(root .. '/' .. file:sub(1, -6))
+    if t == 'file' and file:sub(-#meta_suffix) == meta_suffix then
+      local name = file:sub(1, #file - #meta_suffix)
+      local path = svim.fs.normalize(root .. '/' .. name)
       local stat = uv.fs_stat(path)
       if stat then
         ret[#ret + 1] = M.get { file = path }
@@ -124,13 +180,20 @@ function M.migrate()
   M.version_checked = true
   local root = Snacks.config.get('scratch', defaults).root
   local ok, version = pcall(vim.fn.readfile, root .. '/.version')
-  if ok and tonumber(version[1]) == M.version then
+  if ok and version[1] == M.version then
     return
   end
   vim.fn.mkdir(root .. '/bak', 'p')
 
+  local files = {}
   for file, t in vim.fs.dir(root) do
-    if t == 'file' then
+    files[#files + 1] = { file = file, type = t }
+  end
+
+  -- Convert legacy encoded scratch filenames into the current metadata format.
+  for _, entry in ipairs(files) do
+    local file = entry.file
+    if entry.type == 'file' then
       -- old format. Keep for backward compatibility
       local decoded = Snacks.util.file_decode(file)
       local count, icon, name, cwd, branch, ft = decoded:match '^(%d*)|([^|]*)|([^|]*)|([^|]*)|([^|]*)%.([^|]*)$'
@@ -144,7 +207,7 @@ function M.migrate()
           name = name,
           cwd = cwd ~= '' and cwd or nil,
           branch = branch ~= '' and branch or nil,
-          ft = ft,
+          ft = ft == 'markdown' and 'org' or ft,
         }
         -- backup file
         vim.fn.filecopy(path, root .. '/bak/' .. file)
@@ -152,7 +215,55 @@ function M.migrate()
       end
     end
   end
-  vim.fn.writefile({ tostring(M.version) }, root .. '/.version')
+
+  -- Convert raw JSON metadata sidecars into Org source blocks.
+  for _, entry in ipairs(files) do
+    local file = entry.file
+    if entry.type == 'file' and file:sub(-5) == '.meta' then
+      local old_meta = svim.fs.normalize(root .. '/' .. file)
+      local scratch = decode_json(read_lines(old_meta) or {})
+      local content_name = file:sub(1, -6)
+      local content_path = svim.fs.normalize(root .. '/' .. content_name)
+      local ft = scratch and scratch.ft
+      if type(ft) ~= 'string' or ft == '' then
+        ft = content_name:match '%.([^./]+)$'
+      end
+      if scratch and type(ft) == 'string' and ft ~= '' then
+        scratch.ft = ft
+        if content_name:match '%.markdown$' or scratch.ft == 'markdown' then
+          content_path = svim.fs.normalize(root .. '/' .. strip_extension(content_name) .. '.org')
+          scratch.ft = 'org'
+        end
+
+        local old_content = svim.fs.normalize(root .. '/' .. content_name)
+        if old_content ~= content_path and uv.fs_stat(old_content) and not uv.fs_stat(content_path) then
+          vim.fn.rename(old_content, content_path)
+        end
+
+        local backup = root .. '/bak/' .. file
+        if not uv.fs_stat(backup) then
+          vim.fn.rename(old_meta, backup)
+        else
+          vim.fn.delete(old_meta)
+        end
+        write_meta(M._meta_path(content_path), scratch)
+      end
+    end
+  end
+
+  -- Rename remaining Markdown scratch files to the new Org extension.
+  for _, entry in ipairs(files) do
+    local file = entry.file
+    if entry.type == 'file' and file:match '%.markdown$' then
+      local old_content = svim.fs.normalize(root .. '/' .. file)
+      local new_content = svim.fs.normalize(root .. '/' .. strip_extension(file) .. '.org')
+      if not uv.fs_stat(new_content) then
+        vim.fn.rename(old_content, new_content)
+      end
+    end
+  end
+
+  vim.fn.writefile({ M.version }, root .. '/.version')
 end
 
 --- Select a scratch buffer from a list of scratch buffers.
@@ -235,7 +346,7 @@ function M.get(opts)
   opts = Snacks.config.get('scratch', defaults, opts)
 
   -- File type
-  local ft = 'markdown' ---@type string
+  local ft = 'org' ---@type string
   if opts.file then
     ft = vim.filetype.match { filename = opts.file } or ft
   elseif type(opts.ft) == 'function' then
@@ -266,10 +377,10 @@ function M.get(opts)
   -- File
   if opts.file then
     ret.file = svim.fs.normalize(opts.file)
-    local meta = ret.file .. '.meta'
+    local meta = M._meta_path(ret.file)
     if uv.fs_stat(meta) then
-      local ok, decoded = pcall(vim.json.decode, table.concat(vim.fn.readfile(meta), '\n'))
-      if ok and type(decoded) == 'table' then
+      local decoded = read_meta(meta)
+      if decoded then
         ret = Snacks.config.merge(ret, decoded, { file = ret.file })
       end
     end
@@ -296,8 +407,14 @@ function M._write_meta(root, scratch)
   vim.fn.mkdir(root, 'p')
   local hash = vim.fn.sha256(table.concat(key, '|')):sub(1, 8)
   local file = svim.fs.normalize(('%s/%s.%s'):format(root, hash, scratch.ft))
-  vim.fn.writefile(vim.split(vim.json.encode(scratch), '\n'), file .. '.meta')
+  write_meta(M._meta_path(file), scratch)
   return file
+end
+
+---@param file string
+---@return string
+function M._meta_path(file)
+  return svim.fs.normalize(file .. meta_suffix)
 end
 
 return M
