@@ -58,6 +58,7 @@ local function smart_from_context()
 end
 
 local scratch_folder = vim.fn.stdpath 'data' .. '/scratch'
+local scratch_source = require 'calum.picker.source.scratch'
 
 ---@type LazyPluginSpec
 return {
@@ -118,7 +119,7 @@ return {
       '<leader>ts',
       function()
         ---@diagnostic disable-next-line: missing-fields
-        Snacks.scratch { ft = 'markdown' }
+        require('calum.scratch') { ft = 'markdown' }
       end,
       desc = '[S]cratch Notes Buffer',
     },
@@ -127,14 +128,14 @@ return {
       function()
         -- Allows using <CR> to evaluate lua code
         ---@diagnostic disable-next-line: missing-fields
-        Snacks.scratch { ft = 'lua' }
+        require('calum.scratch') { ft = 'lua' }
       end,
       desc = '[S]cratch [E]val Buffer',
     },
     {
       '<leader>tS',
       function()
-        Snacks.scratch.select()
+        require('calum.scratch').select()
       end,
       desc = '[S]elect [S]cratch Buffer',
     },
@@ -506,7 +507,7 @@ return {
     {
       '<leader>sx',
       function()
-        Snacks.picker.scratch()
+        require('calum.scratch').select()
       end,
       desc = 'Select Scratch Buffer',
     },
@@ -556,6 +557,11 @@ return {
         },
       },
       sources = {
+        scratch = {
+          finder = scratch_source.scratch,
+          format = scratch_source.format,
+          actions = scratch_source.actions,
+        },
         files = {
           win = {
             input = {
