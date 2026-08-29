@@ -13,13 +13,49 @@ M.meta = {
   desc = 'Scratch buffers with a persistent file',
 }
 
-M.version = 'calum.2'
+M.version = 'calum.3'
 M.version_checked = false
 
 local meta_suffix = '.meta.org'
 
 local function strip_extension(path)
   return path:gsub('%.[^./]+$', '')
+end
+
+local function cwd_key(path)
+  path = svim.fs.normalize(path)
+  local stat = uv.fs_stat(path)
+  if stat and stat.type == 'directory' then
+    -- The common Git directory points to the main worktree from linked worktrees.
+    local common_dir = vim.fn.systemlist({
+      'git',
+      '-C',
+      path,
+      'rev-parse',
+      '--path-format=absolute',
+      '--git-common-dir',
+    })[1]
+    if vim.v.shell_error == 0 and common_dir and common_dir ~= '' then
+      local root = svim.fs.normalize(vim.fs.dirname(common_dir))
+      local name = vim.fs.basename(root)
+      if name ~= '' then
+        return name
+      end
+    end
+
+    local root = vim.fn.systemlist({ 'git', '-C', path, 'rev-parse', '--show-toplevel' })[1]
+    if vim.v.shell_error == 0 and root and root ~= '' then
+      return vim.fs.basename(svim.fs.normalize(root))
+    end
+  end
+  return path
+end
+
+local function normalize_cwd(path)
+  if type(path) == 'string' and path ~= '' and vim.fn.isabsolutepath(path) == 1 then
+    return cwd_key(path)
+  end
+  return path
 end
 
 local function read_lines(path)
@@ -77,7 +113,7 @@ end
 ---@field ft string file type
 ---@field icon? string icon for the file type
 ---@field icon_hl? string highlight group for the icon
----@field cwd? string current working directory
+---@field cwd? string Git repository root folder name or absolute working directory
 ---@field branch? string Git branch
 ---@field count? number vim.v.count1 used to open the buffer
 ---@field id? string unique id used instead of name for the filename hash
@@ -103,11 +139,11 @@ local defaults = {
   -- * name
   -- * ft
   -- * vim.v.count1 (useful for keymaps)
-  -- * cwd (optional)
+  -- * Git repository root folder name or cwd (optional)
   -- * branch (optional)
   filekey = {
     id = nil, ---@type string? unique id used instead of name for the filename hash
-    cwd = true, -- use current working directory
+    cwd = true, -- use the Git repository root folder name, or current working directory
     branch = true, -- use current branch name
     count = true, -- use vim.v.count1
   },
@@ -172,6 +208,7 @@ function M.list()
 end
 
 --- Migrate old scratch files to the new format.
+--- TODO: can be simplified once all my machines are migrated
 ---@private
 function M.migrate()
   if M.version_checked then
@@ -205,7 +242,7 @@ function M.migrate()
           count = count ~= '' and tonumber(count) or nil,
           icon = icon ~= '' and icon or nil,
           name = name,
-          cwd = cwd ~= '' and cwd or nil,
+          cwd = normalize_cwd(cwd ~= '' and cwd or nil),
           branch = branch ~= '' and branch or nil,
           ft = ft == 'markdown' and 'org' or ft,
         }
@@ -230,6 +267,7 @@ function M.migrate()
       end
       if scratch and type(ft) == 'string' and ft ~= '' then
         scratch.ft = ft
+        scratch.cwd = normalize_cwd(scratch.cwd)
         if content_name:match '%.markdown$' or scratch.ft == 'markdown' then
           content_path = svim.fs.normalize(root .. '/' .. strip_extension(content_name) .. '.org')
           scratch.ft = 'org'
@@ -247,6 +285,35 @@ function M.migrate()
           vim.fn.delete(old_meta)
         end
         write_meta(M._meta_path(content_path), scratch)
+      end
+    end
+  end
+
+  -- Rehash current Org metadata that still uses an absolute cwd.
+  for _, entry in ipairs(files) do
+    local file = entry.file
+    if entry.type == 'file' and file:sub(-#meta_suffix) == meta_suffix then
+      local old_meta = svim.fs.normalize(root .. '/' .. file)
+      local old_content = svim.fs.normalize(root .. '/' .. file:sub(1, #file - #meta_suffix))
+      local scratch = read_meta(old_meta)
+      local old_cwd = scratch and scratch.cwd
+      local new_cwd = normalize_cwd(old_cwd)
+      if scratch and new_cwd ~= old_cwd then
+        scratch.cwd = new_cwd
+        local new_content = M._scratch_path(root, scratch)
+        if old_content ~= new_content and uv.fs_stat(old_content) and not uv.fs_stat(new_content) then
+          vim.fn.rename(old_content, new_content)
+        end
+        local new_meta = M._meta_path(new_content)
+        if new_meta ~= old_meta then
+          local backup = root .. '/bak/' .. file
+          if not uv.fs_stat(backup) then
+            vim.fn.rename(old_meta, backup)
+          else
+            vim.fn.delete(old_meta)
+          end
+        end
+        write_meta(new_meta, scratch)
       end
     end
   end
@@ -386,7 +453,7 @@ function M.get(opts)
     end
   else
     ret.count = opts.filekey.count and vim.v.count1 or nil
-    ret.cwd = opts.filekey.cwd and svim.fs.normalize(assert(uv.cwd())) or nil
+    ret.cwd = opts.filekey.cwd and cwd_key(assert(uv.cwd())) or nil
     if opts.filekey.branch and uv.fs_stat '.git' then
       local out = vim.trim(vim.fn.systemlist('git branch --show-current')[1] or '')
       ret.branch = vim.v.shell_error == 0 and out ~= '' and out or nil
@@ -400,15 +467,22 @@ end
 ---@param scratch snacks.scratch.File
 ---@private
 function M._write_meta(root, scratch)
+  local file = M._scratch_path(root, scratch)
+  vim.fn.mkdir(root, 'p')
+  write_meta(M._meta_path(file), scratch)
+  return file
+end
+
+---@param root string
+---@param scratch snacks.scratch.File
+---@return string
+function M._scratch_path(root, scratch)
   local key = { scratch.id or scratch.name }
   key[#key + 1] = scratch.count and tostring(scratch.count) or nil
   key[#key + 1] = scratch.cwd and scratch.cwd or nil
   key[#key + 1] = scratch.branch and scratch.branch or nil
-  vim.fn.mkdir(root, 'p')
   local hash = vim.fn.sha256(table.concat(key, '|')):sub(1, 8)
-  local file = svim.fs.normalize(('%s/%s.%s'):format(root, hash, scratch.ft))
-  write_meta(M._meta_path(file), scratch)
-  return file
+  return svim.fs.normalize(('%s/%s.%s'):format(root, hash, scratch.ft))
 end
 
 ---@param file string
