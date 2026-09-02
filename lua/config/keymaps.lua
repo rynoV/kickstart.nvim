@@ -433,6 +433,19 @@ vim.keymap.set('n', '<leader>Dt', toggle_wrap_in_diff_windows, { desc = 'Toggle 
 --- try to jump to the next/previous change, and if that doesn't move the
 --- cursor, jump to the next/previous file, moving to the first/last change in
 --- that file, and centering the cursor.
+local function jump_to_diff_hunk(edge)
+  -- Ensure we don't skip a hunk at the very top/bottom of the file
+  if edge == 'last' then
+    vim.cmd 'normal! G'
+    vim.cmd 'normal! [c'
+    vim.cmd 'normal! ]c'
+  else
+    vim.cmd 'normal! gg'
+    vim.cmd 'normal! ]c'
+    vim.cmd 'normal! [c'
+  end
+end
+
 local function jump_to_next_change_or_quickfix(next)
   local initial_pos = vim.api.nvim_win_get_cursor(0)
   if next then
@@ -444,15 +457,15 @@ local function jump_to_next_change_or_quickfix(next)
   if new_pos[1] == initial_pos[1] and new_pos[2] == initial_pos[2] then
     if next then
       vim.cmd 'cnext'
-      vim.cmd 'normal! gg'
       vim.defer_fn(function()
-        vim.cmd 'normal! ]czz'
+        jump_to_diff_hunk 'first'
+        vim.cmd 'normal! zz'
       end, 100)
     else
       vim.cmd 'cprevious'
-      vim.cmd 'normal! G'
       vim.defer_fn(function()
-        vim.cmd 'normal! [czz'
+        jump_to_diff_hunk 'last'
+        vim.cmd 'normal! zz'
       end, 100)
     end
   end
