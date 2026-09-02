@@ -29,6 +29,19 @@ return {
             width = 85,
             height = 20,
           },
+          -- Avoid changing the remembered current window of an inactive tab.
+          config = function(terminal)
+            local fix_cursorline = terminal.fix_cursorline
+            terminal.fix_cursorline = function(self)
+              if
+                not self:win_valid()
+                or vim.api.nvim_win_get_tabpage(self.win) ~= vim.api.nvim_get_current_tabpage()
+              then
+                return
+              end
+              fix_cursorline(self)
+            end
+          end,
           keys = {
             stopinsert = false,
           },
