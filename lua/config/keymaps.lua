@@ -453,6 +453,7 @@ local function jump_to_next_change_or_quickfix(next)
   else
     vim.cmd 'normal! [c'
   end
+  vim.cmd 'normal! zz'
   local new_pos = vim.api.nvim_win_get_cursor(0)
   if new_pos[1] == initial_pos[1] and new_pos[2] == initial_pos[2] then
     if next then
