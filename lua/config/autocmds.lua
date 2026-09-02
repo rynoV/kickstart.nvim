@@ -1,10 +1,10 @@
 --  See `:help lua-guide-autocommands`
 
--- We set up a group of auto-commands that makes working with emacs within
--- neovim a bit nicer. Whenever the emacs terminal buffer is focused, we switch
--- to terminal mode automatically, and we disable line numbers. There is a
--- related customization in the mini.statusline config that clears the
--- statusline for the emacs window
+-- We set up a group of auto-commands that makes working with terminals within
+-- neovim a bit nicer. Whenever a running terminal buffer is focused, we switch
+-- to terminal mode automatically. Emacs terminals also disable line numbers.
+-- There is a related customization in the mini.statusline config that clears
+-- the statusline for the emacs window
 local emacs_focus_group = vim.api.nvim_create_augroup('calum-emacs-focus', { clear = true })
 
 local tabs = require 'calum.tabs'
@@ -14,6 +14,12 @@ local pending_new_window_options
 
 local function is_emacs_window(win)
   return tabs.is_emacs_window(win)
+end
+
+local function is_terminal_window(win)
+  return vim.api.nvim_win_is_valid(win)
+    and vim.api.nvim_win_get_config(win).relative == ''
+    and vim.bo[vim.api.nvim_win_get_buf(win)].buftype == 'terminal'
 end
 
 local function enter_emacs_window(win)
@@ -30,10 +36,28 @@ local function enter_emacs_window(win)
 
   vim.wo[win].number = false
   vim.wo[win].relativenumber = false
+end
 
+local function enter_terminal_window(win)
+  if not is_terminal_window(win) then
+    return
+  end
+
+  local buf = vim.api.nvim_win_get_buf(win)
+  if vim.b[buf].calum_terminal_state ~= 'running' and not is_emacs_window(win) then
+    return
+  end
+
+  if vim.fn.mode() ~= 't' then
+    vim.cmd.startinsert()
+  end
+end
+
+local function configure_terminal_window(win)
   vim.schedule(function()
-    if vim.api.nvim_win_is_valid(win) and vim.api.nvim_get_current_win() == win and is_emacs_window(win) and vim.fn.mode() ~= 't' then
-      vim.cmd.startinsert()
+    if vim.api.nvim_win_is_valid(win) and vim.api.nvim_get_current_win() == win then
+      enter_emacs_window(win)
+      enter_terminal_window(win)
     end
   end)
 end
@@ -53,16 +77,11 @@ local function leave_emacs_window(win)
 end
 
 vim.api.nvim_create_autocmd('WinEnter', {
-  desc = 'Configure focused Emacs terminal',
+  desc = 'Configure focused terminal window',
   group = emacs_focus_group,
   callback = function()
     pending_new_window_options = nil
-    local win = vim.api.nvim_get_current_win()
-    vim.schedule(function()
-      if vim.api.nvim_win_is_valid(win) and vim.api.nvim_get_current_win() == win then
-        enter_emacs_window(win)
-      end
-    end)
+    configure_terminal_window(vim.api.nvim_get_current_win())
   end,
 })
 
@@ -142,10 +161,11 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 vim.api.nvim_create_autocmd('TermOpen', {
   desc = 'Terminal specific options',
   group = vim.api.nvim_create_augroup('calum-terminal-settings', { clear = true }),
-  callback = function()
+  callback = function(event)
+    vim.b[event.buf].calum_terminal_state = 'unknown'
     vim.opt_local.relativenumber = true
     vim.opt_local.scrollback = 100000
-    enter_emacs_window(vim.api.nvim_get_current_win())
+    configure_terminal_window(vim.api.nvim_get_current_win())
   end,
 })
 
@@ -178,6 +198,22 @@ end
 
 if vim.fn.exists '##TermRequest' == 1 then
   vim.api.nvim_create_autocmd('TermRequest', {
+    group = vim.api.nvim_create_augroup('calum-terminal-state', { clear = true }),
+    callback = function(event)
+      if vim.bo[event.buf].buftype ~= 'terminal' then
+        return
+      end
+
+      local marker = event.data.sequence:match '^\027%]133;([ABCD])'
+      if marker == 'A' or marker == 'B' or marker == 'D' then
+        vim.b[event.buf].calum_terminal_state = 'prompt'
+      elseif marker == 'C' then
+        vim.b[event.buf].calum_terminal_state = 'running'
+      end
+    end,
+  })
+
+  vim.api.nvim_create_autocmd('TermRequest', {
     group = vim.api.nvim_create_augroup('calum-terminal-cwd', { clear = true }),
     callback = function(event)
       local sequence = event.data.sequence
@@ -192,3 +228,11 @@ if vim.fn.exists '##TermRequest' == 1 then
     end,
   })
 end
+
+vim.api.nvim_create_autocmd('TermClose', {
+  desc = 'Clear terminal state after the job exits',
+  group = vim.api.nvim_create_augroup('calum-terminal-state-close', { clear = true }),
+  callback = function(event)
+    vim.b[event.buf].calum_terminal_state = 'exited'
+  end,
+})
