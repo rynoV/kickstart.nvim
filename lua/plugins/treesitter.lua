@@ -67,8 +67,9 @@ return {
       }
 
       local no_ts_highlight = {
-        -- Treesitter syntax highlighting is inconsistent for fsharp
-        'fsharp',
+        -- Treesitter syntax highlighting can be inconsistent for fsharp,
+        -- though recent work has made it better
+        -- 'fsharp',
       }
 
       vim.treesitter.language.register('xml', { 'fsharp_project' })
