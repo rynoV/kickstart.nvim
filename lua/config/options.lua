@@ -32,6 +32,18 @@ vim.opt.showmode = false
 --
 -- On wsl, my solution for the clipboard was to install win32yank in windows (eg with winget). Also needed to ensure xclip wasn't installed on the linux distro.
 vim.schedule(function()
+  -- Autodetection probes many executables, and each probe on WSL walks the
+  -- slow /mnt/c PATH entries, blocking the UI for ~2s. Pin win32yank instead
+  -- (explicit commands also skip the exepath lookup that the string form does).
+  if vim.fn.has 'wsl' == 1 then
+    local copy = { 'win32yank.exe', '-i', '--crlf' }
+    local paste = { 'win32yank.exe', '-o', '--lf' }
+    vim.g.clipboard = {
+      name = 'win32yank',
+      copy = { ['+'] = copy, ['*'] = copy },
+      paste = { ['+'] = paste, ['*'] = paste },
+    }
+  end
   vim.opt.clipboard = 'unnamedplus'
 end)
 
