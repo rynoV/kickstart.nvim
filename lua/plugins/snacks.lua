@@ -652,6 +652,19 @@ return {
         Snacks.toggle.diagnostics():map '<leader>Ud'
         Snacks.toggle.line_number():map '<leader>Ul'
         Snacks.toggle.option('conceallevel', { off = 0, on = vim.o.conceallevel > 0 and vim.o.conceallevel or 2 }):map '<leader>Uc'
+        local anti_conceal = true
+        Snacks.toggle({
+          name = 'Markdown Anti-conceal',
+          get = function()
+            return anti_conceal
+          end,
+          set = function(state)
+            anti_conceal = state
+            -- setup() must be re-run with a non-empty table; it resets render-markdown's cached buffer config
+            require('render-markdown').setup { anti_conceal = { enabled = state } }
+            require('render-markdown').enable()
+          end,
+        }):map '<leader>Um'
         Snacks.toggle.treesitter():map '<leader>UT'
         Snacks.toggle.option('background', { off = 'light', on = 'dark', name = 'Dark Background' }):map '<leader>Ub'
         Snacks.toggle.inlay_hints():map '<leader>Uh'
