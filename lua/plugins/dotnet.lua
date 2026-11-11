@@ -23,6 +23,13 @@ return {
   },
   config = function()
     require('easy-dotnet').setup {
+      -- Disable all keymaps the plugin would otherwise add
+      csproj_mappings = false,
+      fsproj_mappings = false,
+      test_runner = {
+        -- Stops automatic test discovery, which registers buffer-local test keymaps on some files
+        auto_start_testrunner = false,
+      },
       lsp = {
         auto_refresh_codelens = false,
         enabled = false,
