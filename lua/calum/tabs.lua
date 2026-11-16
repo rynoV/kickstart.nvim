@@ -35,17 +35,34 @@ local function buffer_is_emacs(buf)
   return executable ~= nil and vim.fs.basename(executable:gsub('^[\'"]', ''):gsub('[\'"]$', '')) == 'emacs-nvim.sh'
 end
 
-local function source_window(tabpage)
-  local cwd = vim.fs.normalize(vim.fs.abspath '.')
+-- Files under a `.git` directory (e.g. COMMIT_EDITMSG) are never source files
+local function is_source_path(path)
+  if not path or path == '' then
+    return false
+  end
 
+  local cwd = vim.fs.normalize(vim.fs.abspath '.')
+  local absolute = vim.fs.normalize(vim.fs.abspath(path))
+  if not vim.startswith(absolute, cwd .. '/') then
+    return false
+  end
+
+  -- Check if any of the path components are named ".git", excluding the cwd
+  -- prefix and trailing slash
+  for component in absolute:sub(#cwd + 2):gmatch '[^/]+' do
+    if component == '.git' then
+      return false
+    end
+  end
+
+  local stat = vim.uv.fs_stat(absolute)
+  return stat ~= nil and stat.type == 'file'
+end
+
+local function source_window(tabpage)
   for _, win in ipairs(regular_windows(tabpage)) do
-    local path = vim.api.nvim_buf_get_name(vim.api.nvim_win_get_buf(win))
-    if path ~= '' then
-      path = vim.fs.normalize(vim.fs.abspath(path))
-      local stat = vim.uv.fs_stat(path)
-      if stat and stat.type == 'file' and (path == cwd or vim.startswith(path, cwd .. '/')) then
-        return win
-      end
+    if is_source_path(vim.api.nvim_buf_get_name(vim.api.nvim_win_get_buf(win))) then
+      return win
     end
   end
 end
@@ -176,12 +193,7 @@ function M.open_for_file(path, is_diff)
     return
   end
 
-  local absolute_path = vim.fs.normalize(vim.fs.abspath(path or ''))
-  local cwd = vim.fs.normalize(vim.fs.abspath '.')
-  local stat = vim.uv.fs_stat(absolute_path)
-  local is_cwd_file = stat and stat.type == 'file' and (absolute_path == cwd or vim.startswith(absolute_path, cwd .. '/'))
-
-  local kind = is_cwd_file and 'source' or 'other'
+  local kind = is_source_path(path) and 'source' or 'other'
   M.open(kind)
 
   -- Switch to the window containing the source files, since the source tab may
